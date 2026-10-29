@@ -9,7 +9,7 @@ Own the sequence from a task idea to a research-backed launch prompt for a fresh
 
 ## Resolve the two skills
 
-Read the installed `poteto-mode` and `research-to-goal` skills. Use their catalog paths when available. Otherwise look in the current CODEX_HOME/skills (default `~/.codex/skills`), including `pstack/skills/poteto-mode/SKILL.md` and `research-to-goal/SKILL.md`. Record the resolved paths for the handoff.
+Read the installed `poteto-mode` and `research-to-goal` skills. Use their catalog paths when available. Otherwise resolve this skill directory through symlinks and read `../poteto-mode/SKILL.md` and `../research-to-goal/SKILL.md`. Record the resolved paths for the handoff.
 
 If a dependency is missing, report which one and complete independent preparation where useful. Do not claim its workflow ran or silently replace it. Do not install dependencies without a request to do so.
 

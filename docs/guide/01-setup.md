@@ -1,10 +1,10 @@
 # Set up pstack for Codex
 
-This personal bundle lives at `${CODEX_HOME:-$HOME/.codex}/skills/pstack`. Keep it there to scope the installation to Codex. It does not need a shared `~/.agents/skills` copy or a second host's plugin installation.
+Install the collection from its source checkout using the [installation instructions](../../README.md#install-a-development-checkout). The default discovery entry is `~/.agents/skills/agent-skills`, a symlink to the checkout's `skills/` directory. Use `--target-dir` for a project installation.
 
 ## Pick your models
 
-Invoke `$setup-pstack` to inspect or change [codex-config.json](../../codex-config.json). Every unconfigured role inherits the parent chat's model. `auto` and `inherit-parent` both omit model and reasoning overrides.
+Invoke `$setup-pstack` to inspect the defaults in [codex-config.json](../../codex-config.json) or change the ignored `codex-config.local.json` override. Every unconfigured role inherits the parent chat's model. `auto` and `inherit-parent` both omit model and reasoning overrides.
 
 An explicit role override contains `model` and optionally `reasoning_effort`. Use only values supported by the current Codex subagent tool. A panel role can contain a list of overrides. Its length sets the reviewer count. Otherwise `panel_size` sets the count, with two as the default. Queue reviewers within the available concurrency limit.
 
@@ -28,6 +28,6 @@ $poteto-mode add a --json flag to this command. text output stays byte-identical
 
 The mode selects a playbook and tracks its steps in the available plan tool or a concise checklist. Follow-ups retain the current task's scope. Start a fresh chat to check discovery after installing or editing skills. If discovery has not refreshed, attach the installed `SKILL.md` by its absolute path.
 
-The bundled `agents/openai.yaml` files preserve explicit-only discovery. Invoking the mode can load sibling skills needed for the task. It does not change unrelated chats or install a persistent application mode.
+The bundled `agents/openai.yaml` files preserve the imported invocation policies. Invoking the mode can load sibling skills needed for the task. It does not change unrelated chats or install a persistent application mode.
 
 Next: [Route work through `$poteto-mode`](./02-poteto-mode.md).

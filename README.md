@@ -1,173 +1,59 @@
-# pstack for Codex
+# Agent skills
 
-This is a personal Codex-native edition of poteto's pstack workflows. It preserves the engineering playbooks and principles while using Codex tools directly. The original source and pinned revision are recorded in [codex-port.json](./codex-port.json). The [MIT license](./LICENSE) is retained.
+A customized collection of Codex skills, based on poteto's pstack workflows. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
-## Use the installed bundle
+## Install a development checkout
 
-The bundle lives at `${CODEX_HOME:-$HOME/.codex}/skills/pstack`. It is not installed under the shared `~/.agents/skills` directory. No host adapter is required.
+Use Python 3.9 or newer and Git. From this repository, run:
 
-Invoke [`$poteto-mode`](./skills/poteto-mode/SKILL.md) for a task, or attach that file by its absolute path. The existing explicit-only policies are preserved. The mode loads sibling skills when the task needs them. It does not alter other chats.
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python scripts/skills.py validate
+.venv/bin/python scripts/skills.py install --dry-run
+.venv/bin/python scripts/skills.py install
+```
+
+The installer creates `~/.agents/skills/agent-skills` as one symlink to this checkout's `skills/` directory. Edits take effect from the same source files. Refresh discovery in a fresh Codex chat after installation. Use `--target-dir /path/to/project/.agents/skills` for a project installation.
+
+If you have the former global pstack installation, follow [migration and recovery](docs/installation.md) before installing. A duplicate skill name stops installation. The installer preserves unrelated skills and refuses to overwrite unmanaged paths.
+
+## Use and customize
+
+Invoke [`$poteto-mode`](skills/poteto-mode/SKILL.md) with a task and a check that can pass or fail:
 
 ```text
 $poteto-mode investigate why retries create duplicate records. reproduce, fix, and verify.
 ```
 
-[`$setup-pstack`](./skills/setup-pstack/SKILL.md) configures model roles in [codex-config.json](./codex-config.json). Unconfigured roles inherit the parent model. Existing overrides remain in place. Only model and reasoning values supported by the current tool can be passed to a subagent.
+Imported invocation policies remain intact. The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the collection. The Benny automation skills remain outside discovery under `automations/`.
 
-Start with the [guide](./docs/guide/README.md), or ask [`$poteto-help`](./skills/poteto-help/SKILL.md) for a workflow. After changing the installation, check discovery in a fresh chat. The absolute skill path remains usable if discovery has not refreshed.
+Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-pstack`](skills/setup-pstack/SKILL.md) to save personal choices in ignored `codex-config.local.json`. That complete document replaces [the portable defaults](codex-config.json). Copy it explicitly to a different checkout when switching versions.
 
-## skills
+## Improve skills while using them
 
-[`$poteto-mode`](./skills/poteto-mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). the table below is for when you want one directly:
+Create a branch in this checkout with `git switch -c improve-skill-name`. Edit its linked source while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
 
-```
-$how do we cancel runs? do we have an n+1 when we look up every run to cancel?
-```
+A project installation does not override a global installation. If both expose the same names, the installer refuses the collision. Use a separate test environment or uninstall the global bundle before trying a project target.
 
-```
-$interrogate review this pr.
-```
+## Install a stable version or roll back
 
-<details>
-<summary>all skills</summary>
+Choose an exact commit or a release tag that exists, then follow [release and rollback instructions](docs/releases.md). This repository does not claim that a hosted release exists. Installation from another checkout switches the managed link after collision checks. Uninstall with the currently installed checkout:
 
-| skill | use it when |
-|---|---|
-| [`$poteto-mode`](./skills/poteto-mode/SKILL.md) | default entry point for any non-trivial task. |
-| [`$poteto-help`](./skills/poteto-help/SKILL.md) | you're new to pstack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$poteto-help`. |
-| [`$in-your-own-words`](./skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `$in-your-own-words`. |
-| [`$sharpen`](./skills/sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt and leaves your choices open. doesn't do the task. runs only when you type `$sharpen`. |
-| [`$how`](./skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
-| [`$why`](./skills/why/SKILL.md) | you want to know why something was built this way. discovers available MCPs at run time and queries each evidence category in parallel (source control, issue tracker, long-form docs, real-time chat, infra observability, error tracking, analytics warehouse). |
-| [`$recall`](./skills/recall/SKILL.md) | you're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
-| [`$ketchup`](./skills/ketchup/SKILL.md) | you want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
-| [`$blast-radius`](./skills/blast-radius/SKILL.md) | you have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
-| [`$architect`](./skills/architect/SKILL.md) | you're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
-| [`$arena`](./skills/arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
-| [`$swarm`](./skills/swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
-| [`$interrogate`](./skills/interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
-| [`$automate-me`](./skills/automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |
-| [`$make-bot-ui`](./skills/make-bot-ui/SKILL.md) | you want a dashboard for a supported, authorized automation endpoint. |
-| [`$setup-pstack`](./skills/setup-pstack/SKILL.md) | you want to pick which models pstack uses per role. checks supported models and updates codex-config.json. |
-| [`$reflect`](./skills/reflect/SKILL.md) | a long task landed and you want the recipe captured as a skill edit. |
-| [`$correct`](./skills/correct/SKILL.md) | you keep correcting agents for the same mistakes. mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and ci, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
-| [`$teach`](./skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs how + why and weaves one plain explanation, built up diagram by diagram. |
-| [`$tdd`](./skills/tdd/SKILL.md) | you're fixing a bug and there's a cheap local test path. write the failing test first, then the fix. |
-| [`$benchmark-checklist`](./skills/benchmark-checklist/SKILL.md) | you ran a benchmark or measured a speedup or regression. vets the number (limiter, tuning, errors, repeat runs, end-to-end relevance) before you report or act on it. |
-| [`$no-comments`](./skills/no-comments/SKILL.md) | strip comments before review; spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. |
-| [`$typescript-best-practices`](./skills/typescript-best-practices/SKILL.md) | you're reading or editing typescript. grounds the type-system-discipline principle in syntax. |
-| [`$figure-it-out`](./skills/figure-it-out/SKILL.md) | no bundled playbook fits. designs a rigorous, auditable playbook for the task. |
-| [`$show-me-your-work`](./skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
-| [`$create-verification-skill`](./skills/create-verification-skill/SKILL.md) | your project has no scripted way to prove app behavior. generates a project-local verify skill with a feature map, for any language or platform. |
-| [`$maintain-verification-skill`](./skills/maintain-verification-skill/SKILL.md) | your verify skill's feature map has drifted from the app. source wave + one live pass, at most one PR of proven corrections. |
-| [`$create-formal-verification-skill`](./skills/create-formal-verification-skill/SKILL.md) | tests can't reach the case that breaks a race, retry, state machine, parser, or unsafe code. verifies one property with the tool that fits and generates a project-local skill to recheck it on every change. |
-| [`$maintain-formal-verification-skill`](./skills/maintain-formal-verification-skill/SKILL.md) | code your formal verification covers has changed since it was last checked. updates the model, harness, or properties to match the code, reruns, and says whether each failure is drift in the verification or a bug in the code. |
-| [`$statechart`](./skills/statechart/SKILL.md) | someone who owns the behavior needs to see it, not read a spec. draws what the user sees as a mermaid statechart generated from a tla+ model, marks each state works, still wrong, or fixed by your open pr, and draws each bug tlc finds as a numbered path. also turns an agreed chart into a tla+ skeleton, or audits the code against an existing spec. |
-| [`$unslop`](./skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells. |
-| [`$bro`](./skills/bro/SKILL.md) | you want the last message restated in plain human language, no jargon. |
-| [`$technical-writing`](./skills/technical-writing/SKILL.md) | layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
-
-</details>
-
-
-
-### examples
-
-mostly i type [`$poteto-mode`](./skills/poteto-mode/SKILL.md) at the start of a task and let it route to a playbook. the other skills fire as the steps need them. a few i reach for directly.
-
-
-<details>
-<summary>all the examples</summary>
-
-```
-bug fix:           $poteto-mode this pr has a subtle bug where the scroll drifts every 750ms even
-                   when idle. repro first, then fix and verify.
-perf:              $poteto-mode a big list takes a second or two to load even though we virtualize.
-                   run a cpu trace and tell me why.
-feature:           $poteto-mode build a small feature behind a feature flag. verify it really works.
-prototype:         $poteto-mode build two prototypes of the markdown renderer so we can compare.
-                   spawn an agent for each.
-multi-phase:       $poteto-mode open source these skills as a plugin. nothing internal leaks, work
-                   in a temp dir, show me the dependency graph first.
-overnight run:     $poteto-mode i'm going to bed. land the stack only after required checks pass. i want
-                   everything merged by morning.
-babysit:           $poteto-mode check on pr 123. anything outstanding?
-visual parity:     $poteto-mode the row spacing is too tall when this flag is on. the second image
-                   is correct. repro and fix until it matches.
-figure it out:     $poteto-mode i'm stepping away. migrate every caller from the synchronous store
-                   to the new async one, keeping behavior identical. i want to trust it was done
-                   right when i'm back.
-how:               $how do we cancel runs? do we have an n+1 when we look up every run to cancel?
-why:               $why is this feature flag not on yet?
-architect:         design this instrumentation to be high signal with no false positives. $architect
-                   this first.
-arena:             $arena take my prompt to the arena verbatim. i want to compare their proposals
-                   with yours.
-swarm:             $swarm check every package under packages/ against its check.sh. one worker per
-                   package. one report.
-interrogate:       $interrogate review this pr.
-tdd:               $tdd implement
-unslop:            can we unslop and tighten the new changes?
-reflect:           $reflect that took too long. capture what we learned so the next run doesn't
-                   repeat it.
-correct:           $correct
-show-me-your-work: $show-me-your-work keep a decision trail i can review when i'm back.
-automate-me:       $automate-me
-help:              $poteto-help which skill should i use to review this branch?
+```sh
+.venv/bin/python scripts/skills.py uninstall --dry-run
+.venv/bin/python scripts/skills.py uninstall
 ```
 
-</details>
+Uninstall removes the bundle link. It retains source files, personal configuration, and migration backups.
 
-## Delegate with Codex subagents
+## Validate changes
 
-The parent owns the playbook and reviews delegated work. [poteto-agent](./agents/poteto-agent.md) and [Comment Sicko](./agents/comment-sicko.md) are prompt templates, not registered agent types. Use an available Codex role and include the relevant absolute skill paths in its brief.
+```sh
+.venv/bin/python scripts/skills.py validate
+.venv/bin/python -m unittest discover -s tests -v
+```
 
-Assign file ownership. Use separate worktrees for competing implementations. Respect the concurrency limit and queue required coverage. Independent reviewers inherit the parent model unless the role configuration provides a supported override. Reports name the models that actually ran.
+The validator parses YAML, checks metadata and local Markdown links, and checks configuration and provenance. See [the authoring playbook](skills/poteto-mode/playbooks/authoring-a-skill.md) for instruction changes.
 
-## principles
-
-twenty-four short skills, one principle each. `poteto-mode` indexes them inline and reads that index at task start. the standalone files are there so other skills can reference a principle by name, and so the index can point at the full rule for each.
-
-<details>
-<summary>all twenty-four principles</summary>
-
-| principle | group | rule |
-|---|---|---|
-| [laziness-protocol](./skills/principle-laziness-protocol/SKILL.md) | core | Bias toward deletion and the smallest change that solves the problem. |
-| [foundational-thinking](./skills/principle-foundational-thinking/SKILL.md) | core | Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious. |
-| [redesign-from-first-principles](./skills/principle-redesign-from-first-principles/SKILL.md) | core | Redesign as if the requirement had been a foundational assumption from day one, instead of bolting it on. |
-| [attack-the-premise](./skills/principle-attack-the-premise/SKILL.md) | core | Apply when two or more fixes that share one premise have failed the same gate. Write the premise down and test it directly before you write another fix that assumes it. |
-| [subtract-before-you-add](./skills/principle-subtract-before-you-add/SKILL.md) | core | Remove dead weight, redundant validators, and stub references first, then build on the simpler base. |
-| [minimize-reader-load](./skills/principle-minimize-reader-load/SKILL.md) | core | Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope. |
-| [outcome-oriented-execution](./skills/principle-outcome-oriented-execution/SKILL.md) | core | Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code. |
-| [experience-first](./skills/principle-experience-first/SKILL.md) | core | Choose user delight over implementation convenience; ship fewer polished features over more rough ones. |
-| [exhaust-the-design-space](./skills/principle-exhaust-the-design-space/SKILL.md) | core | Build 2-3 competing prototypes and compare side by side before committing. |
-| [build-the-lever](./skills/principle-build-the-lever/SKILL.md) | core | Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun. |
-| [model-the-domain](./skills/principle-model-the-domain/SKILL.md) | architecture | Encode the domain in a structure instead of scattered conditionals. |
-| [boundary-discipline](./skills/principle-boundary-discipline/SKILL.md) | architecture | Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions. |
-| [type-system-discipline](./skills/principle-type-system-discipline/SKILL.md) | architecture | Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, exhaust variants, derive from authoritative schemas. |
-| [make-operations-idempotent](./skills/principle-make-operations-idempotent/SKILL.md) | architecture | Converge to the same end state regardless of partial prior runs. |
-| [migrate-callers-then-delete-legacy-apis](./skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md) | architecture | Migrate callers and delete the old API in the same wave instead of preserving compatibility layers. |
-| [separate-before-serializing-shared-state](./skills/principle-separate-before-serializing-shared-state/SKILL.md) | architecture | Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant. |
-| [prove-it-works](./skills/principle-prove-it-works/SKILL.md) | verification | Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'. |
-| [fix-root-causes](./skills/principle-fix-root-causes/SKILL.md) | verification | Trace each symptom back to the first place the system went wrong and fix it there. A guard is a fix only when the state it handles is legitimate. |
-| [sequence-verifiable-units](./skills/principle-sequence-verifiable-units/SKILL.md) | verification | Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer. |
-| [test-behavior-not-implementation](./skills/principle-test-behavior-not-implementation/SKILL.md) | verification | Apply when you write, change, or keep a test. Assert what the code's users can observe, so the test fails when that behavior breaks and keeps passing when only the internals change. |
-| [explain-the-number](./skills/principle-explain-the-number/SKILL.md) | verification | Apply before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think. |
-| [guard-the-context-window](./skills/principle-guard-the-context-window/SKILL.md) | delegation | Route bulk to subagents; keep summaries in the main thread, not raw payloads. |
-| [never-block-on-the-human](./skills/principle-never-block-on-the-human/SKILL.md) | delegation | Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions. |
-| [encode-lessons-in-structure](./skills/principle-encode-lessons-in-structure/SKILL.md) | meta | Encode the rule as a lint, metadata flag, runtime check, or script instead of more text. |
-
-</details>
-
-## Host capabilities
-
-Use the bundled [authoring playbook](skills/poteto-mode/playbooks/authoring-a-skill.md) for skill authoring and [diff cleanup](skills/poteto-mode/references/diff-cleanup.md) before committing. Browser and terminal checks use the available tools and repository runbooks. A build alone does not prove UI behavior.
-
-Conversation recall uses scoped Codex chat tools and supplied evidence. Summaries are not complete transcripts. Scheduled follow-ups use the available Codex automation tool only when requested. An ordinary chat does not promise later execution.
-
-The dormant [Benny automation pack](./automations/benny/README.md) can be configured for an authorized repository and connected issue source. Its [setup brief](./automations/benny/FOR_AGENTS.md) describes the required capabilities and scheduling boundaries.
-
-## Maintain the local edition
-
-This is a pinned local installation. Upstream updates require a reviewed merge of changes into these native workflows. Do not overwrite it with an upstream package and restore the removed translation layer. Preserve the license, model configuration, invocation policies, and repository-specific validation rules.
+The [upstream record](codex-port.json) retains its pinned revision. The [import receipt](import-receipt.json) records the customized source hashes used for migration. The original [MIT license](LICENSE) and attribution remain. See [CHANGELOG.md](CHANGELOG.md) for collection changes.

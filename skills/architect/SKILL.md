@@ -7,6 +7,8 @@ description: "Sketch types, signatures, and module structure before code, then s
 
 Sketch types, function signatures, class shapes, and module boundaries with `not implemented` bodies and pseudocode. Synthesize across independent candidate perspectives, then fill in code against the chosen sketch.
 
+Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back.
+
 ## Start
 
 Use the available plan tool, or keep a concise checklist in chat, with one entry per phase before starting.
@@ -27,7 +29,7 @@ Skip Phase A only when the work is genuinely greenfield with no surrounding syst
 
 Run the **arena** skill with the design-sketch task and the Phase A grounding artifacts. Pass `references/runner-prompt.md` as each runner's prompt.
 
-Read `roles["architect runners"]` in `../../codex-config.json` in place of `arena runners`. A configured list sets the requested panel; otherwise use `panel_size` (default two). Missing roles inherit the parent. Apply arena's native model validation and delegation rules.
+Read `roles["architect runners"]` in the effective configuration in place of `arena runners`. A configured list sets the requested panel; otherwise use `panel_size` (default two). Missing roles inherit the parent. Apply arena's native model validation and delegation rules.
 
 Design it twice. Require at least two structurally distinct candidates before synthesis, even when the first looks sufficient. This is the **exhaust-the-design-space** principle skill made concrete. Whole-shape alternatives, not point fixes inside one shape.
 

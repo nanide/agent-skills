@@ -9,6 +9,8 @@ A guided flow for turning the user's working conventions into a skill agents wil
 
 This workflow combines the inline mining pass in step 1, [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md), and the bundled **unslop** skill.
 
+Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back.
+
 ## Flow
 
 ### 0. Check for an existing skill
@@ -27,7 +29,7 @@ Update mode changes the rest of the flow:
 
 Use the current conversation and available Codex list/read chat tools. Limit retrieval to the requested project, topic, and time window. Do not scan unrelated private chats or guess transcript paths. When only summaries are available, label that evidence limit.
 
-For a broad history request, delegate separate time or topic slices to read-only subagents using the current spawn tool. Give each the exact allowed chat IDs or scope. Inherit the parent model unless `../../codex-config.json` has a supported explicit role override. Workers return patterns and evidence references without messaging the source chats. Default signals worth hunting:
+For a broad history request, delegate separate time or topic slices to read-only subagents using the current spawn tool. Give each the exact allowed chat IDs or scope. Inherit the parent model unless the effective configuration has a supported explicit role override. Workers return patterns and evidence references without messaging the source chats. Default signals worth hunting:
 
 - Response preferences (length, tone, format, "dumb it down" corrections)
 - Delegation habits (subagents, models, specialized workflows, parallelism)
@@ -100,4 +102,3 @@ Run a description-optimization loop only if the skill's trigger accuracy turns o
 
 - User wants a task-specific skill (not working conventions): [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md), no mining required.
 - User wants to capture one narrow workflow (e.g. "how I write commit messages"). That's a regular skill, not a mode skill.
-

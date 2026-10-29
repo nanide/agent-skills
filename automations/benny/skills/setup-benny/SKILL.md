@@ -11,7 +11,7 @@ Benny is a dormant pack of instructions. Installation does not create schedules,
 
 Resolve the requested target repository from context. Ask only when it is unclear. Copy the pack containing `FOR_AGENTS.md` to `<repository>/.codex/benny-pack/`. This is a data directory, not Codex's personal scheduler directory. Preserve destination-only files and merge differing source-managed files without discarding local changes. Keep user configuration outside the copied pack.
 
-Verify the setup, operational files, references, and templates exist. Resolve the installed personal pstack skill root, normally `~/.codex/skills/pstack/skills`, and record it in the external configuration. Verify how, why, tdd, unslop, and every principle used by the operational files are readable in the actual execution environment. Do not create plugin settings or assume the current session's loaded skills will be present in another host.
+Verify the setup, operational files, references, and templates exist. Resolve the installed collection's real `skills/` directory from its catalog path or discovery link and record that source path in the external configuration. Verify how, why, tdd, unslop, and every principle used by the operational files are readable in the actual execution environment. Do not create plugin settings or assume the current session's loaded skills will be present in another host.
 
 Use stable repository paths for the copied pack. A local heartbeat may use local files. A standalone checkout must have every needed repository file committed on the selected branch. Verify the files under the actual execution identity. Follow the user's authorization and repository workflow for commits.
 
@@ -56,7 +56,7 @@ Ask for or confirm:
 - Polling and effort budgets
 - Model slug for triage, repro, code work, and media review
 
-Default delegated roles to inherit-parent. Validate explicit model and reasoning choices against the current tool schema. Read pstack's codex-config.json for delegation defaults. Scheduled job model fields follow automation_update's schema separately.
+Default delegated roles to inherit-parent. Validate explicit model and reasoning choices against the current tool schema. Resolve the installed collection through symlinks. Read its codex-config.local.json if present, otherwise codex-config.json, for delegation defaults. The local file replaces the defaults. Reject an invalid local file rather than falling back. Scheduled job model fields follow automation_update's schema separately.
 
 The source channel, triage identity, repository, tracker adapter, control runbook, and feature map must be explicit. Fail setup if any required value stays ambiguous.
 

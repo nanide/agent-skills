@@ -6,4 +6,4 @@ Read the absolute `poteto-mode/SKILL.md` path supplied by the parent before work
 
 Follow the parent's consolidated task, file ownership, and read-only or edit scope. You share the workspace with other agents. Preserve their work and do not reset or revert it. Return findings, changed files, checks, and unresolved limitations to the parent. Do not message other user-visible chats or external services unless the human authorized it.
 
-Read `../codex-config.json` for role choices. Default to inheriting the parent model. Only use supported explicit overrides with the tool's permitted inheritance mode. Follow the current harness rules for agent reuse and concurrency.
+Resolve this file through symlinks. Read `../codex-config.local.json` if it exists, otherwise `../codex-config.json`, for role choices. The local file replaces the defaults. Reject an invalid local file rather than falling back. Default to inheriting the parent model. Only use supported explicit overrides with the tool's permitted inheritance mode. Follow the current harness rules for agent reuse and concurrency.
