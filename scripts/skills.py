@@ -150,7 +150,7 @@ def validate_skill_names(collection: Collection):
     names = {skill.name for skill in collection.skills}
     if len(set(mapping.values())) != len(mapping) or set(mapping.values()) != names:
         raise Invalid("skill-names.json: public IDs must be unique and exactly cover discovered skill names")
-    obsolete = (set(mapping) - names) | {"audit"}
+    obsolete = (set(mapping) - names) | {"audit", "nanide-pr-description"}
     identifiers = "|".join(re.escape(name) for name in sorted(obsolete, key=len, reverse=True))
     selector = re.compile(rf"\$(?:{identifiers})(?![\w-])")
     local_path = re.compile(rf"(?:(?:\.\./)+|(?<![\w/])skills/)(?:{identifiers})/|/(?:{identifiers})/(?:SKILL\.md|(?:references|scripts|agents)/)")
@@ -236,7 +236,7 @@ def validate(collection: Collection):
         errors.append("codex-port.json: source URL and pinned upstream commit are required")
     import_receipt(root)
     validate_skill_names(collection)
-    required = ("skills/nanide-pr-description/SKILL.md", "skills/nanide-mode/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs")
+    required = ("skills/nanide-pr/SKILL.md", "skills/nanide-mode/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs")
     for name in required:
         if not (root / name).is_file():
             errors.append(f"Missing required reference {name}")

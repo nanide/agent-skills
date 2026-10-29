@@ -1,19 +1,16 @@
----
-name: nanide-pr-description
-description: "For tasks that selected Nanide, write or update PR descriptions with evidence-backed details and focused reviewer guidance. Use only for explicit invocation, an established current Nanide workflow, or an applicable repository default absent an explicit choice of another collection. Generic requests and installation alone do not select Nanide. Excludes title-only edits and PR monitoring."
----
+# Write a PR description
 
-# PR descriptions
-
-Apply this skill only when Nanide is selected for the current task under [collection selection](../nanide-mode/SKILL.md#select-a-collection-for-the-task). An explicit choice of another collection takes precedence over a repository default. Installation, a generic request, or reading and editing this skill does not select Nanide.
+Use these instructions only when Nanide is selected for the current task under [collection selection](../../nanide-mode/SKILL.md#select-a-collection-for-the-task). An explicit choice of another collection takes precedence over a repository default. Installation, a generic request, or reading and editing the PR skill does not select Nanide.
 
 Write a briefing for a reviewer who has not seen the conversation. Lead with what the PR changes and why that matters. Explain the consequential details, effects on consumers and maintainers, and what deserves review. Adapt the length and sections to the change rather than filling a fixed template.
+
+Apply [technical writing](../../nanide-technical-writing/SKILL.md) and [Unslop](../../nanide-unslop/SKILL.md) to the description. Repository PR templates and required sections take precedence over the default structure below.
 
 ## Establish the current scope
 
 Read the existing description, actual PR base and head, and complete diff against that base. Read repository PR instructions. For stacked PRs, describe what this PR adds over its parent, not the cumulative change against the default branch. Confirm that local files match the PR head before using them as evidence.
 
-Use the existing body as context, not proof. Remove claims that belong to earlier revisions or other PRs. Preserve useful issue links, stack context, and repository-required sections. Keep stack history below the main explanation unless the repository requires otherwise. In the stack section, bold the current PR’s linked number, title, and “(this PR)” marker as one entry. Identify it by the PR being described, and leave the other entries unbolded so exactly one PR stands out.
+Use the existing body as context, not proof. Remove claims that belong to earlier revisions or other PRs. Preserve useful issue links, stack context, and repository-required sections. Keep stack history below the main explanation unless the repository requires otherwise. In the stack section, bold the current PR's linked number, title, and "(this PR)" marker as one entry. Identify it by the PR being described, and leave the other entries unbolded so exactly one PR stands out.
 
 Check the current merge status of each PR in the stack through an available connector or CLI. Wrap each confirmed merged entry, including its linked number and title, in Markdown strikethrough (`~~...~~`). Preserve stack order and links. If the current PR is merged, apply strikethrough around its bold entry. Do not strike through open PRs or PRs closed without merging. If merge status cannot be verified, leave that entry's formatting unchanged and report the verification gap.
 
@@ -21,7 +18,7 @@ Inspect the implementation and relevant callers, build configuration, or tests t
 
 ## Put the main point first
 
-Write the Summary as two short paragraphs. The first says what changes. The second states the main benefits for users or maintainers, such as a failure avoided, a workflow made easier, or a capability enabled. Keep each to one or two sentences. Do not lead with a file inventory, stack bookkeeping, or a generic claim about improvements.
+By default, write the Summary as two short paragraphs. The first says what changes. The second states the main benefits for users or maintainers, such as a failure avoided, a workflow made easier, or a capability enabled. Keep each to one or two sentences. Do not lead with a file inventory, stack bookkeeping, or a generic claim about improvements.
 
 The benefits paragraph must add the practical value of the change rather than paraphrase its implementation. Ground benefits in the diff and available evidence; distinguish intended benefits from demonstrated results, and do not invent performance gains or guarantees. Put implementation mechanics, compatibility boundaries, and review-sensitive details in a separate section such as Important details. Reserve those facts for that section instead of previewing them in the Summary.
 
@@ -45,7 +42,7 @@ When describing a policy check or validation gate, trace where it runs and what 
 
 ## State validation accurately
 
-After the two Summary paragraphs, add a one-sentence testing summary. Name the applicable coverage or completed checks, such as unit tests, manual Storybook checks, automated Storybook tests, or E2E tests. Distinguish existing coverage from tests actually run, and briefly note when validation is missing. Leave commands, individual cases, and detailed results for the later Test plan.
+With the default Summary structure, add a one-sentence testing summary after the two paragraphs. Name the applicable coverage or completed checks, such as unit tests, manual Storybook checks, automated Storybook tests, or E2E tests. Distinguish existing coverage from tests actually run, and briefly note when validation is missing. Leave commands, individual cases, and detailed results for the later Test plan.
 
 Separate completed validation from the remaining test plan. Record only observed results or explicitly attributed prior evidence. Identify results from an earlier revision when they do not establish the current head's status. Distinguish building an artifact from exercising it, and mocked integration coverage from a real external integration run.
 
@@ -59,6 +56,6 @@ Give each fact one home. Do not repeat a change in the summary, expand it in det
 
 Use plain language, concrete verbs, and short paragraphs. Reuse the codebase's names. Avoid promotional language, invented jargon, long dashes, and bold labels that merely repeat the sentence. Keep the opening readable in under a minute. Add detail only when it changes a reviewer's understanding or next action.
 
-If the user asks for a draft, return a draft. If the user authorizes updating the PR body, save it with an available connector or CLI and read it back to verify the saved text. Preserve the title, base, state, and other metadata. Do not create comments, change code, merge, or start monitoring as part of a description update.
+If the user asks for a draft, return a draft without saving it. If the user authorizes updating the PR body, save it with an available connector or CLI and read it back to verify the saved text. Preserve the title, base, state, and other metadata. Do not create comments, change code, merge, or start monitoring as part of a description update.
 
-If the PR cannot be accessed, use available evidence to produce a clearly labeled draft and state what could not be verified or saved. Do not claim publication. Before saving, check whether the head or body changed during the work and reconcile any relevant changes without overwriting new user content.
+If the PR cannot be accessed, use available evidence to produce a clearly labeled draft and state what could not be verified or saved. Do not claim publication. Before saving, re-read the head and body. If either changed during the work, refresh affected evidence and reconcile the text without overwriting new user content. Read the saved body back and confirm that it reflects the reconciled head.

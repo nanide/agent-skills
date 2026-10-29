@@ -488,7 +488,7 @@ class InstallerTests(unittest.TestCase):
             "poteto-goal": "nanide-goal",
             "poteto-help": "nanide-help",
             "poteto-mode": "nanide-mode",
-            "poteto-pr-description": "nanide-pr-description",
+            "poteto-pr-description": "nanide-pr",
             "setup-pstack": "setup-nanide-skills",
         }
         self.assertEqual({name: mapping[name] for name in original_brands}, original_brands)
@@ -497,13 +497,15 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual({source for source, public in mapping.items() if source != public}, historical)
         self.assertTrue(all(public == "nanide-" + source for source, public in mapping.items() if source not in original_brands and source != public))
         self.assertEqual(set(mapping.values()), {skill.name for skill in cli.load_collection(SOURCE).skills})
+        self.assertFalse((SOURCE / "skills/nanide-pr-description").exists())
+        self.assertTrue((SOURCE / "skills/nanide-pr/SKILL.md").is_file())
         self.assertFalse((SOURCE / "skills/audit").exists())
         self.assertFalse((SOURCE / "skills/how").exists())
 
     def test_obsolete_selectors_and_paths_fail_but_shell_variables_do_not(self):
         path = self.root / "skills/nanide-mode/SKILL.md"
         original = path.read_text()
-        for reference in ("Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md.", "Use $how.", "Read ../how/SKILL.md.", "Use $audit.", "Read ../audit/SKILL.md.", "Read ../how/scripts/check.sh.", "Read skills/how/.", "Read ../audit/."):
+        for reference in ("Use $nanide-pr-description.", "Read ../nanide-pr-description/SKILL.md.", "Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md.", "Use $how.", "Read ../how/SKILL.md.", "Use $audit.", "Read ../audit/SKILL.md.", "Read ../how/scripts/check.sh.", "Read skills/how/.", "Read ../audit/."):
             with self.subTest(reference=reference):
                 path.write_text(original + reference + "\n")
                 self.assertIn("obsolete local skill", self.command("validate", success=False).stderr)

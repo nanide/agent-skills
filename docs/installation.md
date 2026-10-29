@@ -16,7 +16,7 @@ The installer checks the target directory, `~/.agents/skills`, `${CODEX_HOME:-$H
 
 Run the normal install command without a migration option to leave other collections in place. Each collection keeps its own model configuration. Save this collection's model choices in ignored `codex-config.local.json`.
 
-Each live public skill ID uses `nanide-`, except `$setup-nanide-skills`. For example, use `$nanide-how`, `$nanide-interrogate`, and `$nanide-audit` instead of the old generic Nanide selectors. Existing `$nanide-*` selectors keep their names. The [registry](../skill-names.json) records every source-to-public mapping and creates no runtime aliases. The old `how` selector belongs to other installed collections.
+Each live public skill ID uses `nanide-`, except `$setup-nanide-skills`. For example, use `$nanide-how`, `$nanide-interrogate`, and `$nanide-audit` instead of the old generic Nanide selectors. The former `nanide-pr-description` selector is renamed to [`$nanide-pr`](../skills/nanide-pr/SKILL.md), with no compatibility alias. Other existing `$nanide-*` selectors keep their names. The [registry](../skill-names.json) records every source-to-public mapping and creates no runtime aliases. The old `how` selector belongs to other installed collections.
 
 Any external skill with the same public ID stops installation, even when its bytes match this collection or it is reached through a symlink. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
 
@@ -24,13 +24,15 @@ The discovery link is named `agent-skills`. The installer uses that identity whe
 
 ## Choose a collection for the task
 
-Explicitly invoke a Nanide skill or ask to use Nanide to select it for the current task. Keep that collection through the task's continuations unless you explicitly switch. A repository default applies only when you have not explicitly chosen a collection. Installing Nanide or asking for a generic audit or PR description alone does not select it. Reading or editing a skill is not a choice to use its workflow.
+Explicitly invoke a Nanide skill or ask to use Nanide to select it for the current task. Keep that collection through the task's continuations unless you explicitly switch. A repository default applies only when you have not explicitly chosen a collection. Installing Nanide or asking for a generic audit or PR task alone does not select it. Reading or editing a skill is not a choice to use its workflow.
 
 For an optional project default, add this to the project's `AGENTS.md`:
 
 ```text
-When no collection has been explicitly selected for the current task, use Nanide for completion audits and PR descriptions. Use $nanide-audit and $nanide-pr-description. Keep an explicit collection choice through the current task unless the user switches.
+When no collection has been explicitly selected for the current task, use Nanide for completion audits and PR work. Use $nanide-audit and $nanide-pr. Keep an explicit collection choice through the current task unless the user switches.
 ```
+
+Selecting Nanide chooses the workflow, not permission for every PR action. A draft stays a draft, a status check stays within its requested mode, and merging follows an explicit shipping request and its gates. Editing the PR skill itself does not select it.
 
 The [selection guidance](../skills/nanide-mode/SKILL.md#select-a-collection-for-the-task) governs Nanide's helpers. Other installed collections retain their own descriptions and routing rules. This guidance does not promise deterministic host selection or suppress third-party skills. The installer stores no collection-selection state. Review [selection scenarios](collection-selection-scenarios.md) when changing these instructions.
 

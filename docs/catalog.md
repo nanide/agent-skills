@@ -31,6 +31,7 @@ $nanide-interrogate review this pr.
 | [`$nanide-architect`](../skills/nanide-architect/SKILL.md) | you're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
 | [`$nanide-arena`](../skills/nanide-arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`$nanide-swarm`](../skills/nanide-swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
+| [`$nanide-pr`](../skills/nanide-pr/SKILL.md) | you want PR writing, creation, review, metadata, status, CI, or shipping routed to the right workflow within your requested scope. |
 | [`$nanide-audit`](../skills/nanide-audit/SKILL.md) | you want completed task changes checked against applicable skills and instructions, with corrections within the existing task authorization. |
 | [`$nanide-interrogate`](../skills/nanide-interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
 | [`$nanide-automate-me`](../skills/nanide-automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |

@@ -28,6 +28,8 @@ $nanide-mode investigate why retries create duplicate records. reproduce, fix, a
 
 `$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. All helper selectors use `nanide-`, such as `$nanide-how` and `$nanide-audit`. `$setup-nanide-skills` keeps its existing name. Old generic selectors have no Nanide aliases. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
 
+Use [`$nanide-pr`](skills/nanide-pr/SKILL.md) for PR writing, creation, review, metadata, status, CI, or shipping within the requested scope. The former `nanide-pr-description` selector is renamed without an alias.
+
 The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the available skills and playbooks.
 
 ## Configure model roles

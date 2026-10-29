@@ -12,7 +12,7 @@ Resolve this file through symlinks first. Resolve every named helper and princip
 
 Use Nanide when the user explicitly invokes a Nanide skill, asks for this collection, or has already selected Nanide for the current task. An applicable repository default can select Nanide when the user has not explicitly chosen another collection. Keep that choice through the current task and its continuations until the user switches. An explicit choice takes precedence over a repository default.
 
-Installation, reading or editing a skill, and a mere mention of Nanide do not select the collection. A generic audit or PR-description request alone does not select Nanide. Follow the current task's collection or the applicable repository default. Other collections retain their own selection rules, so these instructions do not guarantee host routing.
+Installation, reading or editing a skill, and a mere mention of Nanide do not select the collection. A generic audit or PR request alone does not select Nanide. Follow the current task's collection or the applicable repository default. Other collections retain their own selection rules, so these instructions do not guarantee host routing.
 
 ## Non-negotiables
 
@@ -33,6 +33,7 @@ Remaining triggers:
 - Before review → the **nanide-no-comments** skill (`$nanide-no-comments`).
 - Shipping UI / IDE / CLI → available browser, computer, or terminal tools and repository testing runbooks. Follow repository target and service-recovery approvals. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
 - Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **nanide-benchmark-checklist** skill before you report or act on the number.
+- PR work, including bodies, titles, creation, review, and metadata → [nanide-pr](../nanide-pr/SKILL.md). Its routes preserve the requested scope. Editing the skill itself is skill authoring.
 - Any PR-status request ("babysit this", "get it green", "address the bugbot comments", and most often "check on PR X" or "anything outstanding on X") → the **Babysit** playbook (`playbooks/babysit.md`). Never triggered by merely opening a PR. Declare its mode before polling. The playbook's step 1 owns the request-to-mode mapping. A phase delegate returns its report without starting an unassigned monitor.
 - Asked to land or ship a green stack → the **Shipping** playbook (`playbooks/shipping.md`). Green is not safe. Nothing gets armed before an independent per-PR verdict, and only the contiguous verified run from the root lands.
 - Bugbot or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`.
@@ -148,4 +149,4 @@ A large or cross-cutting effort (a migration across many call sites, an ambitiou
 - **Pause safely.** Suspending in-flight work cleanly so it can be resumed, on an explicit pause. Going offline, restarting Codex, or imminent compaction requires a checkpoint; it does not by itself authorize stopping work or pausing a Goal. The complement to Session pickup.
 - **Multi-phase or multi-PR plan.** Work that spans phases or stacked PRs. File: `playbooks/multi-phase-plan.md`.
 - **Worktree and simulator cleanup.** Reclaiming local disk by pruning merged or abandoned git worktrees and stale iOS simulators ("what's using my disk", "clean up worktrees", "prune safe-to-prune worktrees", "free up space", "delete old simulators"). File: `playbooks/worktree-cleanup.md`.
-- **Opening a PR.** Invoked at the end of every other playbook.
+- **Opening a PR.** Use at the end of another playbook only when opening a PR is within the requested task.
