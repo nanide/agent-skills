@@ -4,5 +4,38 @@
   "version": "0.2.0",
   "description": "Shared skills for investigating, implementing, reviewing, and verifying engineering work.",
   "repository": "https://github.com/nanide/agent-skills",
-  "license": "MIT"
+  "license": "MIT",
+  "author": {
+    "name": "Borys"
+  },
+  "homepage": "https://github.com/nanide/agent-skills",
+  "keywords": [
+    "nanide",
+    "engineering",
+    "review",
+    "verification"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Nanide",
+        "shortDescription": "Engineering workflows with verified results.",
+        "longDescription": "Investigate, implement, review, and verify engineering work with Nanide skills. Start with nanide-mode for a task or nanide-help for guidance.",
+        "developerName": "Borys",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/nanide/agent-skills",
+        "defaultPrompt": [
+          "Use Nanide to explain this project.",
+          "Use Nanide to investigate and fix this bug."
+        ],
+        "brandColor": "#2563EB",
+        "composerIcon": "./assets/nanide.svg",
+        "logo": "./assets/nanide.svg"
+      }
+    }
+  }
 }

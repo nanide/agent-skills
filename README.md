@@ -4,7 +4,13 @@ Nanide is an independently maintained fork of [pstack](https://github.com/cursor
 
 Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or request a named helper through that mode. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
-## Install once for your user
+## Install as a plugin
+
+Teammates can install Nanide through their provider's plugin tools. Follow the [plugin installation guide](docs/plugins.md) for Codex, Cursor, or Claude Code. The package includes the complete skill collection and its dependencies. No Python setup or manual source checkout is needed for plugin installation.
+
+The repository includes marketplace catalogs and a build command for an uploadable ZIP. These files do not create a public directory listing. A maintainer must publish or share the plugin before teammates can discover it.
+
+## Install a source checkout
 
 Use Python 3.9 or newer and Git. Keep one checkout at a permanent path. New users can start with:
 

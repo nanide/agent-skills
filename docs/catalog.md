@@ -107,7 +107,7 @@ help:              $nanide-help which skill should i use to review this branch?
 
 ## Delegate with Subagents
 
-The parent owns the playbook and reviews delegated work. [nanide-agent](../agents/nanide-agent.md) and [Comment Sicko](../agents/comment-sicko.md) are prompt templates, not registered agent types. Use an available agent role and include the relevant absolute skill paths in its brief.
+The parent owns the playbook and reviews delegated work. [nanide-agent](../prompts/nanide-agent.md) and [Comment Sicko](../prompts/comment-sicko.md) are prompt templates, not registered agent types. Use an available agent role and include the relevant absolute skill paths in its brief.
 
 Assign file ownership. Use separate worktrees for competing implementations. Respect the concurrency limit and queue required coverage. Independent reviewers inherit the parent model unless the role configuration provides a supported override. Reports name the models that actually ran.
 

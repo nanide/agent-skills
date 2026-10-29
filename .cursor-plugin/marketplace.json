@@ -1,0 +1,13 @@
+{
+  "name": "nanide",
+  "owner": {
+    "name": "Borys"
+  },
+  "plugins": [
+    {
+      "name": "agent-skills",
+      "source": "./",
+      "description": "Shared skills for investigating, implementing, reviewing, and verifying engineering work."
+    }
+  ]
+}

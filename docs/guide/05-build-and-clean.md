@@ -74,7 +74,7 @@ Comments need their own pass, and not from the agent that wrote them. An author 
 $nanide-no-comments the diff
 ```
 
-[`$nanide-no-comments`](../../skills/nanide-no-comments/SKILL.md) uses the [Comment Sicko brief](../../agents/comment-sicko.md) with an available read-only subagent. Repository comment rules govern the review. Keep durable, non-obvious reasons and required notices. Remove narration and stale claims. Prefer better names or structure when they clarify the code, without broadening the change into unrelated refactoring.
+[`$nanide-no-comments`](../../skills/nanide-no-comments/SKILL.md) uses the [Comment Sicko brief](../../prompts/comment-sicko.md) with an available read-only subagent. Repository comment rules govern the review. Keep durable, non-obvious reasons and required notices. Remove narration and stale claims. Prefer better names or structure when they clarify the code, without broadening the change into unrelated refactoring.
 
 `$nanide-unslop` cleans prose. The diff cleanup removes redundant code, and `$nanide-no-comments` hands the comments to a reviewer who didn't write them.
 

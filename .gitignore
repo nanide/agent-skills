@@ -16,3 +16,4 @@ providers/*/config.local.json
 .venv/
 .preserve-config-*
 codex-config.local.json
+.audit/

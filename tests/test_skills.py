@@ -720,6 +720,19 @@ class InstallerTests(unittest.TestCase):
         path.write_text(original + "[Original helper](https://github.com/cursor/plugins/blob/main/pstack/skills/how/SKILL.md).\nUse $nanide-how and read ../nanide-how/SKILL.md.\n```sh\nhow=example\nprintf '%s' \"$how\"\n```\nExplain how this works and why.\n")
         self.command("validate")
 
+    def test_prompt_templates_retain_collection_validation(self):
+        path = self.root / "prompts/delegate.md"
+        path.parent.mkdir()
+        for content, message in (
+            ("Use $poteto-mode.\n", "obsolete local skill"),
+            ("Use Codex collaboration tools.\n", "provider-specific instructions"),
+        ):
+            with self.subTest(content=content):
+                path.write_text(content)
+                self.assertIn(message, self.command("validate", success=False).stderr)
+        path.write_text("Use $nanide-mode.\n")
+        self.command("validate")
+
     def test_registry_rejects_retired_skills_even_if_recreated(self):
         path = self.root / "skill-names.json"
         mapping = json.loads(path.read_text())
@@ -747,7 +760,7 @@ class InstallerTests(unittest.TestCase):
         shutil.copytree(SOURCE / "skills", self.root / "skills", symlinks=True)
         shutil.copytree(SOURCE / "providers", self.root / "providers", dirs_exist_ok=True, ignore=shutil.ignore_patterns("config.local.json"))
         shutil.copytree(SOURCE / "docs", self.root / "docs")
-        shutil.copytree(SOURCE / "agents", self.root / "agents")
+        shutil.copytree(SOURCE / "prompts", self.root / "prompts")
         shutil.copy2(SOURCE / "README.md", self.root / "README.md")
         shutil.copy2(SOURCE / "LICENSE", self.root / "LICENSE")
         self.install()

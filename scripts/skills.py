@@ -166,7 +166,7 @@ def validate_skill_names(collection: Collection):
     from markdown_it import MarkdownIt
     parser = MarkdownIt()
     documents = [collection.root / "README.md"]
-    for folder in ("skills", "docs", "agents"):
+    for folder in ("skills", "docs", "prompts"):
         documents.extend((collection.root / folder).rglob("*"))
     for path in documents:
         if not path.is_file() or path.suffix not in {".md", ".yaml", ".sh", ".ts", ".mjs"} or any(part in {"node_modules", ".git", ".pstack"} for part in path.relative_to(collection.root).parts):
@@ -222,7 +222,7 @@ def markdown_links(root: Path):
 def provider_boundaries(root: Path):
     errors = []
     provider_terms = re.compile(r"\b(?:codex|claude|openai|anthropic)\b|\.cursor\b", re.IGNORECASE)
-    for directory in ("skills", "agents"):
+    for directory in ("skills", "prompts"):
         for path in (root / directory).rglob("*"):
             if path.is_symlink() or not path.is_file() or path.suffix not in {".md", ".yaml", ".json", ".sh", ".py", ".mjs", ".ts"}:
                 continue

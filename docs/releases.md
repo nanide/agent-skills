@@ -1,8 +1,10 @@
 # Prepare and install a stable version
 
+For plugin ZIPs and marketplace distribution, follow [Prepare a Nanide plugin release](plugin-release.md). The steps below create a source archive for checkout installations.
+
 ## Prepare a source release
 
-From a development branch, update `plugin.json` to the release version. Run the [validation commands](../README.md#validate-changes) and review the diff. Commit the intended source files. Git's tracked tree defines the archive contents. Personal overrides, dependency directories, and caches stay untracked.
+From a development branch, update both `plugin.json` and `.claude-plugin/plugin.json` to the release version. Run the [validation commands](../README.md#validate-changes) and review the diff. Commit the intended source files. Git's tracked tree defines the archive contents. Personal overrides, dependency directories, and caches stay untracked.
 
 After review, tag the exact committed revision and create an archive. The commands below prepare version 0.2.0. Use a new version and tag for later changes. Keep existing release tags unchanged.
 

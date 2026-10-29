@@ -1,0 +1,17 @@
+{
+  "name": "agent-skills",
+  "version": "0.2.0",
+  "description": "Shared skills for investigating, implementing, reviewing, and verifying engineering work.",
+  "author": {
+    "name": "Borys"
+  },
+  "homepage": "https://github.com/nanide/agent-skills",
+  "repository": "https://github.com/nanide/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "nanide",
+    "engineering",
+    "review",
+    "verification"
+  ]
+}

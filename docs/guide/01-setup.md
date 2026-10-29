@@ -1,6 +1,6 @@
 # Set up Nanide skills
 
-Install the collection from its source checkout using the [installation instructions](../../README.md#install-once-for-your-user). Use `--provider all` to install once for all supported providers. Select one provider explicitly when you need a project-specific target. Each provider installation links the shared skill sources into its discovery directory. See [provider adapters](../../providers/README.md) for paths. Use `--target-dir` for a project installation.
+Install the collection from its source checkout using the [installation instructions](../../README.md#install-a-source-checkout). Use `--provider all` to install once for all supported providers. Select one provider explicitly when you need a project-specific target. Each provider installation links the shared skill sources into its discovery directory. See [provider adapters](../../providers/README.md) for paths. Use `--target-dir` for a project installation.
 
 ## Pick your models
 
