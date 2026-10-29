@@ -37,7 +37,7 @@ class InstallerTests(unittest.TestCase):
         self.write_json(self.root / "plugin.json", json.loads((SOURCE / "plugin.json").read_text()))
         shutil.copy2(SOURCE / "codex-port.json", self.root / "codex-port.json")
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
-        for name in (*mapping.values(), "prepare-goal", "research-to-goal", "how", "setup-pstack"):
+        for name in (*mapping.values(), "how", "setup-pstack"):
             self.skill(self.root / "skills" / name, name)
         script = self.root / "skills/nanide-mode/scripts/check-plan.mjs"
         script.parent.mkdir()
@@ -100,8 +100,8 @@ class InstallerTests(unittest.TestCase):
         discovered = list(cli.discovery_skills(self.legacy, set())) + list(cli.discovery_skills(self.target, set()))
         names = [skill.name for skill in discovered]
         personal_names = {skill.name for skill in cli.load_collection(self.root).skills}
-        self.assertEqual(set(names), set(mapping) | personal_names)
-        self.assertEqual({name for name in names if names.count(name) == 2}, {"how", "setup-pstack", "prepare-goal", "research-to-goal"})
+        self.assertEqual(set(names), set(mapping) | personal_names | {"prepare-goal", "research-to-goal"})
+        self.assertEqual({name for name in names if names.count(name) == 2}, {"how", "setup-pstack"})
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertEqual(self.make_receipt()["files"], baseline)
 
@@ -220,6 +220,50 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue(backups[0].exists())
         self.assertTrue((self.root / "codex-config.local.json").exists())
 
+    def test_migration_keeps_standalone_goal_helpers_discoverable(self):
+        self.populate_legacy()
+        originals = {}
+        for name in ("prepare-goal", "research-to-goal"):
+            path = self.legacy / name / "SKILL.md"
+            path.write_text(path.read_text() + "A local standalone change.\n")
+            originals[name] = path.read_bytes()
+        self.install("--migrate-from", str(self.legacy))
+        self.install("--migrate-from", str(self.legacy))
+        for name, contents in originals.items():
+            self.assertEqual((self.legacy / name / "SKILL.md").read_bytes(), contents)
+        discovered = list(cli.discovery_skills(self.legacy, set())) + list(cli.discovery_skills(self.target, set()))
+        for name in originals:
+            self.assertEqual([skill.name for skill in discovered].count(name), 1)
+        self.assertFalse((self.legacy / "pstack").exists())
+        self.assertFalse((self.legacy / "poteto-pr-description").exists())
+        backups = cli.state_dir(self.target) / "backups"
+        self.assertEqual({path.name for path in backups.glob("*/*")}, {"pstack", "poteto-pr-description"})
+        self.command("uninstall", "--target-dir", str(self.target))
+        for name, contents in originals.items():
+            self.assertEqual((self.legacy / name / "SKILL.md").read_bytes(), contents)
+
+    def test_old_pending_standalone_backups_stop_before_any_changes(self):
+        self.populate_legacy()
+        collection = cli.load_collection(self.root)
+        baseline = self.make_receipt()["files"]
+        state = cli.state_dir(self.target)
+        pending = state / "pending.json"
+        for name in ("prepare-goal", "research-to-goal"):
+            with self.subTest(name=name):
+                with patch.dict(os.environ, self.environment):
+                    changes = cli.plan_install(collection, self.target, self.legacy)
+                unsafe = cli.Change("backup", self.legacy / name, state / "backups/old-plan" / name)
+                journal = dict(root=str(self.root), target=str(self.target), migration=str(self.legacy), changes=[c.record() for c in (*changes, unsafe)])
+                self.write_json(pending, journal)
+                result = self.install("--migrate-from", str(self.legacy), success=False)
+                self.assertIn("Unsafe interrupted action", result.stderr)
+                self.assertEqual(self.make_receipt()["files"], baseline)
+                self.assertEqual(json.loads(pending.read_text()), journal)
+                self.assertFalse((state / "backups").exists())
+                self.assertFalse((self.root / "codex-config.local.json").exists())
+                self.assertFalse(cli.exists(self.target / cli.BUNDLE))
+                pending.unlink()
+
     def test_modified_or_added_legacy_source_stops_all_moves(self):
         for change in ("modified", "added", "removed"):
             with self.subTest(change=change):
@@ -233,7 +277,7 @@ class InstallerTests(unittest.TestCase):
                     path.unlink()
                 self.install("--migrate-from", str(self.legacy), success=False)
                 self.assertTrue((self.legacy / "pstack").exists())
-                self.assertTrue((self.legacy / "prepare-goal/SKILL.md").exists())
+                self.assertTrue((self.legacy / "poteto-pr-description/SKILL.md").exists())
                 self.assertFalse((self.root / "codex-config.local.json").exists())
                 self.assertFalse(cli.exists(self.target / cli.BUNDLE))
                 shutil.rmtree(self.legacy)
@@ -249,7 +293,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_symlinked_legacy_entry_is_never_moved(self):
         self.populate_legacy()
-        source = self.legacy / "prepare-goal"
+        source = self.legacy / "poteto-pr-description"
         source.rename(self.base / "external-source")
         source.symlink_to(self.base / "external-source")
         self.install("--migrate-from", str(self.legacy), success=False)
@@ -263,7 +307,7 @@ class InstallerTests(unittest.TestCase):
             changes = cli.plan_install(collection, self.target, self.legacy)
         original_rename = Path.rename
         def interrupt(path, destination):
-            if path == self.legacy / "prepare-goal":
+            if path == self.legacy / "poteto-pr-description":
                 raise OSError("simulated interruption")
             return original_rename(path, destination)
         with cli.installation_lock(self.target), patch.object(Path, "rename", interrupt):
@@ -326,7 +370,7 @@ class InstallerTests(unittest.TestCase):
         collection = cli.load_collection(self.root)
         with patch.dict(os.environ, self.environment):
             changes = cli.plan_install(collection, self.target, self.legacy)
-        (self.legacy / "prepare-goal").rename(self.base / "moved-elsewhere")
+        (self.legacy / "poteto-pr-description").rename(self.base / "moved-elsewhere")
         with cli.installation_lock(self.target):
             with self.assertRaises(cli.Invalid):
                 cli.apply_install(collection, self.target, self.legacy, changes)
@@ -407,15 +451,15 @@ class InstallerTests(unittest.TestCase):
         result = self.command("validate", success=False)
         self.assertIn("mapped skill names must be unique and present", result.stderr)
 
-    def test_collection_changes_only_the_five_poteto_names(self):
+    def test_collection_retains_upstream_helpers_and_five_personal_names(self):
         receipt = json.loads((SOURCE / "import-receipt.json").read_text())
         originals = {Path(path).parent.name for path in receipt["files"] if Path(path).name == "SKILL.md" and (path.startswith("pstack/skills/") or len(Path(path).parts) == 2)}
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         expected_mapping = {name: name.replace("poteto-", "nanide-", 1) for name in originals if name.startswith("poteto-")}
         self.assertEqual(len(expected_mapping), 5)
         self.assertEqual(mapping, expected_mapping)
-        generic = originals - mapping.keys()
-        self.assertEqual(len(generic), 57)
+        generic = {Path(path).parent.name for path in receipt["files"] if path.startswith("pstack/skills/") and Path(path).name == "SKILL.md"} - mapping.keys()
+        self.assertEqual(len(generic), 55)
         skills = cli.load_collection(SOURCE).skills
         self.assertEqual({skill.name for skill in skills}, generic | set(mapping.values()))
         self.assertTrue(all((SOURCE / "skills" / name / "SKILL.md").is_file() for name in generic))

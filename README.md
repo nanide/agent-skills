@@ -1,6 +1,6 @@
 # Agent skills
 
-Nanide's personal Codex skills, based on poteto's pstack workflows. Five skill names replace `poteto-` with `nanide-`. The other 57 retain their original names. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Nanide's personal Codex skills, based on poteto's pstack workflows. Five skill names replace `poteto-` with `nanide-`. The 55 generic pstack helpers retain their original names. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install a development checkout
 
@@ -33,7 +33,7 @@ Use `$poteto-mode` for the original baseline and `$nanide-mode` for this persona
 | Original baseline | `$poteto-mode`, `$how`, `$setup-pstack` | `~/.codex/skills/pstack/skills/` |
 | Personal variant | `$nanide-mode`, `$how`, `$setup-pstack` | This checkout's `skills/`, discovered through `~/.agents/skills/agent-skills` |
 
-The original standalone skills remain at `~/.codex/skills/poteto-pr-description/`, `~/.codex/skills/prepare-goal/`, and `~/.codex/skills/research-to-goal/`. Their personal counterparts are `$nanide-pr-description`, `$prepare-goal`, and `$research-to-goal`. The original pstack configuration stays at `~/.codex/skills/pstack/codex-config.json`. This checkout reads its own configuration files.
+The original standalone skills remain at `~/.codex/skills/poteto-pr-description/`, `~/.codex/skills/prepare-goal/`, and `~/.codex/skills/research-to-goal/`. This collection includes `$nanide-pr-description`. The two standalone goal helpers remain available from their original directories. The original pstack configuration stays at `~/.codex/skills/pstack/codex-config.json`. This checkout reads its own configuration files.
 
 Imported invocation policies remain intact. The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the collection.
 
@@ -65,4 +65,4 @@ Uninstall removes the bundle link. It retains source files, personal configurati
 
 The validator parses YAML, checks metadata and local Markdown links, and checks configuration and provenance. [The rename map](skill-names.json) records only the five `poteto-*` names and their `nanide-*` counterparts. Validation keeps those mapped skills present and rejects references to the renamed IDs. Generic helper names remain valid. New skills do not need a historical map entry. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
 
-The [upstream record](codex-port.json) retains its pinned revision. The [import receipt](import-receipt.json) records the customized source hashes used for migration. The original [MIT license](LICENSE) and attribution remain. See [CHANGELOG.md](CHANGELOG.md) for collection changes.
+The [upstream record](codex-port.json) retains its pinned revision. The [import receipt](import-receipt.json) retains the historical source hashes, including the two standalone goal helpers omitted from this collection. The original [MIT license](LICENSE) and attribution remain. See [CHANGELOG.md](CHANGELOG.md) for collection changes.

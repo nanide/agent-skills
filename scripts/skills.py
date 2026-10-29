@@ -18,6 +18,7 @@ import uuid
 ROOT = Path(__file__).resolve().parent.parent
 BUNDLE = "agent-skills"
 LEGACY = ("pstack", "poteto-pr-description", "prepare-goal", "research-to-goal")
+MIGRATION_SOURCES = ("pstack", "poteto-pr-description")
 
 
 class Invalid(ValueError):
@@ -223,7 +224,7 @@ def validate(collection: Collection):
         errors.append("codex-port.json: source URL and pinned upstream commit are required")
     import_receipt(root)
     validate_skill_names(collection)
-    required = ("skills/nanide-pr-description/SKILL.md", "skills/nanide-mode/SKILL.md", "skills/prepare-goal/SKILL.md", "skills/research-to-goal/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs")
+    required = ("skills/nanide-pr-description/SKILL.md", "skills/nanide-mode/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs")
     for name in required:
         if not (root / name).is_file():
             errors.append(f"Missing required reference {name}")
@@ -334,14 +335,14 @@ def plan_install(collection: Collection, target: Path, migration: Path | None) -
         for change in changes:
             valid = change.kind == "link" and change.source == collection.root / "skills" and change.destination == dest
             valid |= change.kind == "preserve-config" and migration is not None and change.source == migration / "pstack/codex-config.json" and change.destination == collection.root / "codex-config.local.json"
-            valid |= change.kind == "backup" and migration is not None and change.source.parent == migration and change.source.name in LEGACY and change.destination.name == change.source.name and change.destination.parent.parent == state / "backups"
+            valid |= change.kind == "backup" and migration is not None and change.source.parent == migration and change.source.name in MIGRATION_SOURCES and change.destination.name == change.source.name and change.destination.parent.parent == state / "backups"
             if not valid:
                 raise Invalid(f"Unsafe interrupted action in {pending}")
     else:
         changes = []
         if migration:
             saved = state / "backups" / uuid.uuid4().hex
-            for name in LEGACY:
+            for name in MIGRATION_SOURCES:
                 source = migration / name
                 if exists(source):
                     if source.is_symlink() or not source.is_dir():

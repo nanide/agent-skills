@@ -1,4 +1,0 @@
-interface:
-  display_name: "Research to Goal"
-  short_description: "Prepare research for a long-running Codex Goal"
-  default_prompt: "Use $research-to-goal to package this research into a self-contained handoff and Goal launch prompt for a new chat using nanide-mode."
