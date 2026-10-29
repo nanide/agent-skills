@@ -20,7 +20,7 @@ ${rule}
 ### PR mechanics
 ### Verdict and merge
 ### Boot recipe
-\`installed skill paths\` Codex automation status message
+\`installed skill paths\` host schedule status message
 
 ## PR 1
 **Depends on.** None.

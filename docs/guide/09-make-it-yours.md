@@ -10,7 +10,7 @@ Start smaller than you think. You don't need many skills on day one, or even thi
 $nanide-automate-me
 ```
 
-You don't describe your style, because [`$nanide-automate-me`](../../skills/nanide-automate-me/SKILL.md) reads it out of your history. It reads available recent conversation evidence scoped to the requested workspace and time window for repeated preferences, in how you like replies, delegation, verification, code, prose, and process, then asks you which patterns are really you. It drafts `${CODEX_HOME:-$HOME/.codex}/skills/<your-name>-mode/SKILL.md` with the bundled [authoring playbook](../../skills/nanide-mode/playbooks/authoring-a-skill.md) and runs the prose through [`$nanide-unslop`](../../skills/nanide-unslop/SKILL.md). A requested project skill follows repository conventions and its PR workflow. Personal skill edits do not need a repository PR.
+You don't describe your style, because [`$nanide-automate-me`](../../skills/nanide-automate-me/SKILL.md) reads it out of your history. It reads available recent conversation evidence scoped to the requested workspace and time window for repeated preferences, in how you like replies, delegation, verification, code, prose, and process, then asks you which patterns are really you. It drafts a personal skill in the selected provider's discovery directory with the bundled [authoring playbook](../../skills/nanide-mode/playbooks/authoring-a-skill.md) and runs the prose through [`$nanide-unslop`](../../skills/nanide-unslop/SKILL.md). A requested project skill follows repository conventions and its PR workflow. Personal skill edits do not need a repository PR.
 
 Run it again whenever your habits drift:
 
@@ -93,7 +93,7 @@ Read every output yourself before accepting the verdict. If you disagree with th
 
 ## Build a bot UI with `$nanide-make-bot-ui`
 
-[`$nanide-make-bot-ui`](../../skills/nanide-make-bot-ui/SKILL.md) can build a dashboard for an existing, authorized automation endpoint. Codex scheduling does not supply an arbitrary public webhook. The workflow must establish the real backend and authentication first. If those are unavailable, it can prepare a local mock and report the deployment gap. Secrets stay on the server.
+[`$nanide-make-bot-ui`](../../skills/nanide-make-bot-ui/SKILL.md) can build a dashboard for an existing, authorized automation endpoint. Scheduling does not supply an arbitrary public webhook. The workflow must establish the real backend and authentication first. If those are unavailable, it can prepare a local mock and report the deployment gap. Secrets stay on the server.
 
 
 **Pitfall:** don't edit a skill mid-task because it's misbehaving. Fix it in its own PR and keep the task moving. A skill edit that ships tangled into feature work is invisible to review and impossible to evaluate.

@@ -28,7 +28,7 @@ $nanide-interrogate review this pr.
 | [`$nanide-recall`](../skills/nanide-recall/SKILL.md) | you're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
 | [`$nanide-ketchup`](../skills/nanide-ketchup/SKILL.md) | you want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
 | [`$nanide-blast-radius`](../skills/nanide-blast-radius/SKILL.md) | you have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
-| [`$nanide-architect`](../skills/nanide-architect/SKILL.md) | you're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
+| [`$nanide-architect`](../skills/nanide-architect/SKILL.md) | a consequential design choice has viable alternatives and needs the caller's usage, types, and module shape settled first. |
 | [`$nanide-arena`](../skills/nanide-arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`$nanide-swarm`](../skills/nanide-swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
 | [`$nanide-audit`](../skills/nanide-audit/SKILL.md) | you want completed task changes checked against applicable skills and instructions, with corrections within the existing task authorization. |
@@ -105,9 +105,9 @@ help:              $nanide-help which skill should i use to review this branch?
 
 </details>
 
-## Delegate with Codex subagents
+## Delegate with Subagents
 
-The parent owns the playbook and reviews delegated work. [nanide-agent](../agents/nanide-agent.md) and [Comment Sicko](../agents/comment-sicko.md) are prompt templates, not registered agent types. Use an available Codex role and include the relevant absolute skill paths in its brief.
+The parent owns the playbook and reviews delegated work. [nanide-agent](../agents/nanide-agent.md) and [Comment Sicko](../agents/comment-sicko.md) are prompt templates, not registered agent types. Use an available agent role and include the relevant absolute skill paths in its brief.
 
 Assign file ownership. Use separate worktrees for competing implementations. Respect the concurrency limit and queue required coverage. Independent reviewers inherit the parent model unless the role configuration provides a supported override. Reports name the models that actually ran.
 
@@ -151,7 +151,7 @@ twenty-four short skills, one principle each. `nanide-mode` indexes them inline 
 
 Use the bundled [authoring playbook](../skills/nanide-mode/playbooks/authoring-a-skill.md) for skill authoring and [diff cleanup](../skills/nanide-mode/references/diff-cleanup.md) before committing. Browser and terminal checks use the available tools and repository runbooks. A build alone does not prove UI behavior.
 
-Conversation recall uses scoped Codex chat tools and supplied evidence. Summaries are not complete transcripts. Scheduled follow-ups use the available Codex automation tool only when requested. An ordinary chat does not promise later execution.
+Conversation recall uses scoped conversation tools and supplied evidence. Summaries are not complete transcripts. Scheduled follow-ups use the selected provider's available scheduling tool only when requested. An ordinary chat does not promise later execution.
 
 ## Update the collection
 

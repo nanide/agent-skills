@@ -1,6 +1,6 @@
 # Route work through `$nanide-mode`
 
-`$nanide-mode` is the front door. You give it a goal, it matches a matching playbook, copies that playbook's steps into the todo list, and calls the other skills as the steps need them. In this page you learn what a good prompt looks like, and how little of one you actually need.
+`$nanide-mode` is the front door. You give it a goal, it selects a playbook and tracks its applicable gates in a concise checklist, and calls the other skills as the steps need them. In this page you learn what a good prompt looks like, and how little of one you actually need.
 
 ![A dispatcher pulls a switch lever to route robots on rail handcars toward lit gates, under a $nanide-mode departure board listing BUG FIX, FEATURE, and INVESTIGATION.](./images/router.jpg)
 
@@ -104,13 +104,13 @@ $nanide-mode new task. figure out why the cache entry survives logout. don't cha
 
 ## Isolate parallel edits
 
-Codex subagents share the checkout unless given separate worktrees. Assign non-overlapping files for independent edits. Use separate worktrees for competing implementations, and name the base revision in each brief. Do not create user-visible chats as substitutes for subagents.
+Subagents share the checkout unless given separate worktrees. Assign non-overlapping files for independent edits. Use separate worktrees for competing implementations, and name the base revision in each brief. Do not create user-visible chats as substitutes for subagents.
 
 ```text
 $nanide-mode new task. branch off <base> in a fresh worktree, then port the parser change there.
 ```
 
-Inspect attached worktrees before creating another. Preserve dirty work and respect ownership. For cleanup, the [Worktree cleanup playbook](../../skills/nanide-mode/playbooks/worktree-cleanup.md) inspects Git state and available Codex attachments. Managed worktrees use the Codex archive tool. Uncertain ownership remains unresolved rather than inferred from missing history.
+Inspect attached worktrees before creating another. Preserve dirty work and respect ownership. For cleanup, the [Worktree cleanup playbook](../../skills/nanide-mode/playbooks/worktree-cleanup.md) inspects Git state and available host attachments. Managed worktrees use the host lifecycle tool. Uncertain ownership remains unresolved rather than inferred from missing history.
 
 
 ## Leave it running

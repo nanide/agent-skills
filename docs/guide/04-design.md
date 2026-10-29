@@ -121,13 +121,13 @@ $nanide-mode plan the migration of our ui library to the new styling system. sma
 You might be wondering whether every change needs this. No. Most changes need none of it. A rough ladder:
 
 - A small, finished change you're unsure about needs `$nanide-interrogate` alone.
-- A change that crosses function boundaries or moves ownership earns `$nanide-architect`, which brings `$nanide-arena` with it.
+- A consequential design choice with viable alternatives earns `$nanide-architect`, which brings `$nanide-arena` with it.
 - A standalone decision where independent attempts would help, like naming, formats, or an algorithm, is `$nanide-arena` directly.
 - A coverage matrix, set of parallel checks, or race with declared arms is `$nanide-swarm`.
 - An open question you could answer by running something, like a layout, a timing, or an approach, gets a prototype, not a debate.
 - A contested design that's expensive to reverse gets `$nanide-architect`, then `$nanide-interrogate` before shipping.
 - Work that spans several PRs gets a plan, written after the design settles.
 
-`$nanide-mode` already applies this ladder. Boundary-crossing work triggers `$nanide-architect` on its own, so you reach for these directly mainly when you want more or less scrutiny than the default.
+`$nanide-mode` already applies this ladder. Consequential design uncertainty triggers `$nanide-architect`, so you reach for these directly mainly when you want more or less scrutiny than the default.
 
 Next: [Build and clean the change](./05-build-and-clean.md).

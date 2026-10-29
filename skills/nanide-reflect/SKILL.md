@@ -11,13 +11,11 @@ Invoke when the user says "reflect" or "$nanide-reflect". Skip when the conversa
 
 ## 1. Gather the current session evidence
 
-Use the current conversation and, when needed, the available Codex list/read chat tools scoped to this chat and project. Pass a bounded evidence digest with real chat IDs, turn references, tool results, and artifact paths. Treat chat summaries as summaries, not complete execution transcripts. If tool-level evidence is unavailable, state that limitation and do not infer which tools or files an agent used. Never guess transcript paths or search unrelated chats.
+Use the current conversation and, when needed, the available list/read chat tools scoped to this chat and project. Pass a bounded evidence digest with real chat IDs, turn references, tool results, and artifact paths. Treat chat summaries as summaries, not complete execution transcripts. If tool-level evidence is unavailable, state that limitation and do not infer which tools or files an agent used. Never guess transcript paths or search unrelated chats.
 
 ## 2. Spawn three reviewers in parallel
 
-Use the available Codex collaboration tools to spawn, inspect, message, and wait for subagents. Respect current concurrency limits and queue excess work. Spawns run asynchronously. Give each brief its scope, absolute skill/reference paths, and expected evidence. Read-only is an instruction in the brief, not a tool permission flag. Give writers exclusive files or an isolated worktree, tell them they share the codebase, and forbid reverting others' work. Do not create user-visible chats as substitutes for subagents. If delegation is unavailable, report that limitation and perform the scoped work directly without claiming independent review. Reviewers are read-only and may inspect only connected evidence referenced by the session.
-
-Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back. Resolve the named role from `roles`, falling back to `default_model`, then `inherit-parent`. `auto` and `inherit-parent` mean omit model and reasoning overrides. An explicit role is an object with `model` and optional `reasoning_effort`. Validate it against the current spawn tool and use the context-inheritance mode that permits overrides. If unavailable, report the mismatch and inherit the parent unless the user requires that exact model. Never substitute another model family. Report the actual models used and distinguish independent same-model reviews from model diversity.
+Follow [Delegation](../nanide-mode/references/delegation.md) for scoped briefs, ownership, concurrency, and missing-tool handling. Reviewers are read-only and may inspect only connected evidence referenced by the session.
 
 | Lens | Configuration role | Default model behavior | Prompt template |
 |---|---|---|---|

@@ -32,10 +32,11 @@ class InstallerTests(unittest.TestCase):
         (self.root / "scripts").mkdir()
         shutil.copy2(SOURCE / "scripts/skills.py", self.root / "scripts/skills.py")
         shutil.copy2(SOURCE / "scripts/plugin.schema.json", self.root / "scripts/plugin.schema.json")
+        shutil.copytree(SOURCE / "providers", self.root / "providers", ignore=shutil.ignore_patterns("config.local.json", "*.md"))
         self.defaults = dict(default_model="inherit-parent", roles={}, panel_size=2)
-        self.write_json(self.root / "codex-config.json", self.defaults)
+        self.write_json(self.root / "agent-config.json", self.defaults)
         self.write_json(self.root / "plugin.json", json.loads((SOURCE / "plugin.json").read_text()))
-        shutil.copy2(SOURCE / "codex-port.json", self.root / "codex-port.json")
+        shutil.copy2(SOURCE / "upstream.json", self.root / "upstream.json")
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         for name in mapping.values():
             self.skill(self.root / "skills" / name, name)
@@ -81,6 +82,125 @@ class InstallerTests(unittest.TestCase):
     def install(self, *args, **kwargs):
         return self.command("install", "--target-dir", str(self.target), *args, **kwargs)
 
+    def test_each_provider_installs_the_same_flat_skills_without_copying(self):
+        for provider in cli.PROVIDERS:
+            target = self.home / {"codex": ".agents", "cursor": ".cursor", "claude": ".claude"}[provider] / "skills"
+            for _ in range(2):
+                self.command("install", "--provider", provider)
+            expected = set(json.loads((self.root / "skill-names.json").read_text()).values())
+            self.assertEqual({p.name for p in target.iterdir()}, expected)
+            for name in expected:
+                self.assertTrue((target / name).is_symlink())
+                self.assertEqual((target / name / "SKILL.md").resolve(), self.root / "skills" / name / "SKILL.md")
+            self.command("uninstall", "--provider", provider)
+            self.command("uninstall", "--provider", provider)
+            self.assertEqual(list(target.iterdir()), [])
+
+    @patch("builtins.print")
+    def test_provider_switch_recovers_after_interruption(self, _print):
+        with patch.dict(os.environ, self.environment):
+            collection = cli.load_collection(self.root)
+            cli.install_provider(collection, "claude", self.target, "install", False)
+            other = self.base / "release"
+            shutil.copytree(self.root, other, symlinks=True)
+            replacement = cli.load_collection(other)
+            original_replace = os.replace
+            calls = 0
+            def interrupt(source, destination):
+                nonlocal calls
+                if Path(source).name.startswith(".agent-skills-link-"):
+                    calls += 1
+                    if calls == 2:
+                        raise OSError("simulated interruption")
+                return original_replace(source, destination)
+            for _ in range(2):
+                calls = 0
+                with patch.object(os, "replace", interrupt):
+                    with self.assertRaises(OSError):
+                        cli.install_provider(replacement, "claude", self.target, "install", False)
+            with self.assertRaises(cli.Invalid):
+                cli.install_provider(collection, "claude", self.target, "install", False)
+            cli.install_provider(replacement, "claude", self.target, "install", False)
+            for skill in replacement.skills:
+                self.assertEqual((self.target / skill.name).resolve(), skill.source)
+            with self.assertRaises(cli.Invalid):
+                cli.install_provider(collection, "claude", self.target, "uninstall", False)
+            cli.install_provider(replacement, "claude", self.target, "uninstall", False)
+            self.assertEqual(list(self.target.iterdir()), [])
+
+    def test_provider_install_dry_run_and_unmanaged_entries(self):
+        for provider in cli.PROVIDERS:
+            target = self.base / provider / "skills"
+            self.command("install", "--provider", provider, "--target-dir", str(target), "--dry-run")
+            self.assertFalse(target.parent.exists())
+            self.skill(target / "nanide-mode", "nanide-mode")
+            result = self.command("install", "--provider", provider, "--target-dir", str(target), success=False)
+            self.assertIn("unmanaged", result.stderr)
+            self.assertTrue((target / "nanide-mode/SKILL.md").is_file())
+
+    def test_provider_install_preserves_tampered_links(self):
+        self.command("install", "--provider", "claude")
+        target = self.home / ".claude/skills/nanide-mode"
+        target.unlink()
+        target.symlink_to(self.base / "other")
+        self.assertIn("Managed link changed", self.command("uninstall", "--provider", "claude", success=False).stderr)
+        self.assertEqual(os.readlink(target), str(self.base / "other"))
+
+    def test_root_local_config_migration_preserves_bytes_and_rejects_conflicts(self):
+        old = self.root / "codex-config.local.json"
+        new = self.root / "providers/codex/config.local.json"
+        self.write_json(old, dict(self.defaults, panel_size=4))
+        before = old.read_bytes()
+        self.command("migrate-config", "--dry-run")
+        self.assertFalse(new.exists())
+        self.assertEqual(old.read_bytes(), before)
+        self.command("migrate-config")
+        self.command("migrate-config")
+        self.assertFalse(old.exists())
+        self.assertEqual(new.read_bytes(), before)
+        self.write_json(old, dict(self.defaults, panel_size=5))
+        self.command("migrate-config", success=False)
+        self.assertEqual(new.read_bytes(), before)
+        self.assertTrue(old.exists())
+
+    def test_provider_collisions_are_scoped_to_the_selected_host(self):
+        self.skill(self.home / ".codex/skills/custom", "nanide-mode")
+        self.assertIn("Skill name collision", self.command("install", "--provider", "codex", success=False).stderr)
+        self.command("install", "--provider", "cursor")
+        self.command("install", "--provider", "claude")
+        self.skill(self.home / ".cursor/skills/duplicate", "nanide-how")
+        self.command("install", "--provider", "cursor", "--target-dir", str(self.base / "project/skills"), success=False)
+
+    def test_old_pending_migration_config_destination_can_resume(self):
+        self.populate_legacy()
+        collection = cli.load_collection(self.root)
+        with patch.dict(os.environ, self.environment):
+            changes = cli.plan_install(collection, self.target, self.legacy)
+        old_config = self.root / "codex-config.local.json"
+        changes = tuple(cli.Change(c.kind, c.source, old_config) if c.kind == "preserve-config" else c for c in changes)
+        self.write_json(cli.state_dir(self.target) / "pending.json", dict(root=str(self.root), target=str(self.target), migration=str(self.legacy), changes=[c.record() for c in changes]))
+        self.install("--migrate-from", str(self.legacy))
+        self.assertEqual(json.loads((self.root / "providers/codex/config.local.json").read_text()), self.defaults)
+        self.assertFalse(old_config.exists())
+        self.assertFalse((cli.state_dir(self.target) / "pending.json").exists())
+
+    def test_validator_rejects_unsafe_provider_discovery_paths(self):
+        path = self.root / "providers/claude/adapter.json"
+        adapter = json.loads(path.read_text())
+        for invalid in ("/tmp/skills", "../skills", ""):
+            self.write_json(path, {**adapter, "discovery_directory": invalid})
+            self.assertIn("Invalid discovery directory", self.command("validate", success=False).stderr)
+
+    def test_provider_rules_must_live_outside_shared_instructions(self):
+        path = self.root / "skills/nanide-mode/SKILL.md"
+        original = path.read_text()
+        path.write_text(original + "Use Codex collaboration tools.\n")
+        self.assertIn("provider-specific instructions", self.command("validate", success=False).stderr)
+        path.write_text(original)
+        adapter = self.root / "providers/codex/runtime.md"
+        adapter.write_text("Use Codex collaboration tools.\n")
+        self.command("validate")
+
     def test_install_is_repeatable_and_uninstall_preserves_unrelated_skill(self):
         self.skill(self.target / "other", "other")
         self.install()
@@ -97,11 +217,11 @@ class InstallerTests(unittest.TestCase):
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         baseline = self.make_receipt()["files"]
         personal_config = dict(self.defaults, panel_size=3)
-        self.write_json(self.root / "codex-config.local.json", personal_config)
+        self.write_json(self.root / "providers/codex/config.local.json", personal_config)
         self.install()
         self.install()
         self.assertEqual(self.make_receipt()["files"], baseline)
-        self.assertEqual(json.loads((self.root / "codex-config.local.json").read_text()), personal_config)
+        self.assertEqual(json.loads((self.root / "providers/codex/config.local.json").read_text()), personal_config)
         self.assertFalse((cli.state_dir(self.target) / "backups").exists())
         discovered = list(cli.discovery_skills(self.legacy, set())) + list(cli.discovery_skills(self.target, set()))
         names = [skill.name for skill in discovered]
@@ -221,7 +341,7 @@ class InstallerTests(unittest.TestCase):
         original_config = (self.legacy / "pstack/codex-config.json").read_bytes()
         self.install("--migrate-from", str(self.legacy))
         self.install("--migrate-from", str(self.legacy))
-        self.assertEqual((self.root / "codex-config.local.json").read_bytes(), original_config)
+        self.assertEqual((self.root / "providers/codex/config.local.json").read_bytes(), original_config)
         backups = list((cli.state_dir(self.target) / "backups").glob("*/pstack"))
         self.assertEqual(len(backups), 1)
         self.assertEqual((backups[0] / ".pstack/history").read_text(), "personal state")
@@ -229,7 +349,7 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue((self.legacy / "unrelated/SKILL.md").is_file())
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertTrue(backups[0].exists())
-        self.assertTrue((self.root / "codex-config.local.json").exists())
+        self.assertTrue((self.root / "providers/codex/config.local.json").exists())
 
     def test_migration_keeps_standalone_goal_helpers_discoverable(self):
         self.populate_legacy()
@@ -271,7 +391,7 @@ class InstallerTests(unittest.TestCase):
                 self.assertEqual(self.make_receipt()["files"], baseline)
                 self.assertEqual(json.loads(pending.read_text()), journal)
                 self.assertFalse((state / "backups").exists())
-                self.assertFalse((self.root / "codex-config.local.json").exists())
+                self.assertFalse((self.root / "providers/codex/config.local.json").exists())
                 self.assertFalse(cli.exists(self.target / cli.BUNDLE))
                 pending.unlink()
 
@@ -289,16 +409,16 @@ class InstallerTests(unittest.TestCase):
                 self.install("--migrate-from", str(self.legacy), success=False)
                 self.assertTrue((self.legacy / "pstack").exists())
                 self.assertTrue((self.legacy / "poteto-pr-description/SKILL.md").exists())
-                self.assertFalse((self.root / "codex-config.local.json").exists())
+                self.assertFalse((self.root / "providers/codex/config.local.json").exists())
                 self.assertFalse(cli.exists(self.target / cli.BUNDLE))
                 shutil.rmtree(self.legacy)
 
     def test_differing_override_stops_migration_without_overwrite(self):
         self.populate_legacy()
         override = dict(self.defaults, panel_size=3)
-        self.write_json(self.root / "codex-config.local.json", override)
+        self.write_json(self.root / "providers/codex/config.local.json", override)
         self.install("--migrate-from", str(self.legacy), success=False)
-        self.assertEqual(json.loads((self.root / "codex-config.local.json").read_text()), override)
+        self.assertEqual(json.loads((self.root / "providers/codex/config.local.json").read_text()), override)
         self.assertTrue((self.legacy / "pstack").exists())
         self.assertFalse(cli.exists(self.target / cli.BUNDLE))
 
@@ -355,16 +475,16 @@ class InstallerTests(unittest.TestCase):
         with cli.installation_lock(self.target), patch.object(Path, "open", interrupted_open):
             with self.assertRaises(KeyboardInterrupt):
                 cli.apply_install(collection, self.target, self.legacy, changes)
-        self.assertFalse((self.root / "codex-config.local.json").exists())
+        self.assertFalse((self.root / "providers/codex/config.local.json").exists())
         self.assertFalse(list(self.root.glob(".preserve-config-*")))
         self.install("--migrate-from", str(self.legacy))
-        self.assertEqual(json.loads((self.root / "codex-config.local.json").read_text()), self.defaults)
+        self.assertEqual(json.loads((self.root / "providers/codex/config.local.json").read_text()), self.defaults)
         self.assertEqual((self.target / cli.BUNDLE).resolve(), self.root / "skills")
 
     def test_configuration_publish_never_overwrites_new_override(self):
         self.populate_legacy()
         source = self.legacy / "pstack/codex-config.json"
-        destination = self.root / "codex-config.local.json"
+        destination = self.root / "providers/codex/config.local.json"
         override = dict(self.defaults, panel_size=4)
         original_link = os.link
         def competing_override(source, target):
@@ -401,14 +521,14 @@ class InstallerTests(unittest.TestCase):
         self.assertFalse(cli.exists(self.target / cli.BUNDLE))
 
     def test_invalid_local_config_is_not_ignored(self):
-        (self.root / "codex-config.local.json").write_text("{broken")
+        (self.root / "providers/codex/config.local.json").write_text("{broken")
         self.command("validate", success=False)
         self.install(success=False)
         self.assertFalse(cli.exists(self.target / cli.BUNDLE))
 
     def test_uninstall_works_with_broken_source_metadata(self):
         self.install()
-        (self.root / "codex-config.local.json").write_text("{broken")
+        (self.root / "providers/codex/config.local.json").write_text("{broken")
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertFalse(cli.exists(self.target / cli.BUNDLE))
 
@@ -516,7 +636,7 @@ class InstallerTests(unittest.TestCase):
             with self.subTest(reference=reference):
                 path.write_text(original + reference + "\n")
                 self.assertIn("obsolete local skill", self.command("validate", success=False).stderr)
-        path.write_text(original + "Use $nanide-how and read ../nanide-how/SKILL.md.\n```sh\nhow=example\nprintf '%s' \"$how\"\n```\nExplain how this works and why.\n")
+        path.write_text(original + "[Original helper](https://github.com/cursor/plugins/blob/main/pstack/skills/how/SKILL.md).\nUse $nanide-how and read ../nanide-how/SKILL.md.\n```sh\nhow=example\nprintf '%s' \"$how\"\n```\nExplain how this works and why.\n")
         self.command("validate")
 
     def test_registry_rejects_retired_skills_even_if_recreated(self):
@@ -543,7 +663,12 @@ class InstallerTests(unittest.TestCase):
 
     def test_renamed_sibling_paths_resolve_through_installed_symlink(self):
         shutil.rmtree(self.root / "skills")
-        shutil.copytree(SOURCE / "skills", self.root / "skills")
+        shutil.copytree(SOURCE / "skills", self.root / "skills", symlinks=True)
+        shutil.copytree(SOURCE / "providers", self.root / "providers", dirs_exist_ok=True, ignore=shutil.ignore_patterns("config.local.json"))
+        shutil.copytree(SOURCE / "docs", self.root / "docs")
+        shutil.copytree(SOURCE / "agents", self.root / "agents")
+        shutil.copy2(SOURCE / "README.md", self.root / "README.md")
+        shutil.copy2(SOURCE / "LICENSE", self.root / "LICENSE")
         self.install()
         entry = self.target / cli.BUNDLE / "nanide-mode/SKILL.md"
         real = entry.resolve()

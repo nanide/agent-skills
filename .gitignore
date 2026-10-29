@@ -11,7 +11,8 @@ dist/
 .env
 .env.*
 !.env.example
-codex-config.local.json
+providers/*/config.local.json
 .pstack/
 .venv/
 .preserve-config-*
+codex-config.local.json

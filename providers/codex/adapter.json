@@ -1,0 +1,9 @@
+{
+  "discovery_directory": ".agents/skills",
+  "additional_discovery_directories": [
+    ".codex/skills"
+  ],
+  "environment_discovery_directories": {
+    "CODEX_HOME": "skills"
+  }
+}

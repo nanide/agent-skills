@@ -1,19 +1,19 @@
 ---
 name: nanide-goal
-description: "Run a long-running task through Nanide skills with a native Codex Goal and the collection's durable execution state. Use when the user invokes nanide-goal to start or continue task execution."
+description: "Run a long-running task through Nanide skills with the collection’s durable execution state and native goal tracking when available. Use when the user invokes nanide-goal to start or continue task execution."
 ---
 
 # Nanide Goal
 
-Use Nanide skills to own a long-running task in the current chat. A direct request such as `$nanide-goal <task>` requests starting that task as a native Codex Goal. A request to explain, edit, or prepare this skill does not request Goal activation. Automatic skill selection alone is not authorization to create a Goal. Honor explicit research-only or planning-only scope.
+Use Nanide skills to own a long-running task in the current chat. A direct request such as `$nanide-goal <task>` requests starting that task with durable goal tracking and the host’s native goal lifecycle when available. A request to explain, edit, or prepare this skill does not request Goal activation. Automatic skill selection alone is not authorization to create a Goal. Honor explicit research-only or planning-only scope.
 
 ## Start
 
-Read [nanide-mode](../nanide-mode/SKILL.md) and [Execution state in Codex](../nanide-mode/references/execution-state.md). These own routing, durable state, Goal lifecycle, and process ownership. Use their procedures rather than defining another framework.
+Read [nanide-mode](../nanide-mode/SKILL.md) and [Execution state](../nanide-mode/references/execution-state.md). These own routing, durable state, Goal lifecycle, and process ownership. Use their procedures rather than defining another framework.
 
 Ground the requested outcome and completion check in the user's request and repository evidence. Ask for a task if none is available. Resolve material ambiguity before dependent implementation without inventing acceptance thresholds.
 
-For execution requests, follow Execution state's Goal procedure. Prepare and display the canonical plan below before creating or continuing a Goal. If native Goals are unavailable, report the limitation and continue authorized work without claiming automatic continuation.
+For execution requests, follow Execution state's Goal procedure. Prepare and display the canonical plan below before creating or continuing a Goal. If native Goals are unavailable, use the canonical plan and checkpoint as the goal record. Continue authorized work in the active session without claiming native lifecycle transitions or automatic continuation.
 
 Let nanide-mode select and run the appropriate playbook and supporting skills. Its authorization boundaries and repository guidance apply throughout. Record applicable guidance paths and required checks in the canonical plan, revisit them when scope changes, and include them in nanide-mode's delegate briefs. No separate preparation chat or manual chain of invocations is required.
 
@@ -23,11 +23,11 @@ Use Execution state for checkpoint contents and storage. Keep the canonical stat
 
 Before creating a native Goal, save the plan at one canonical path under Execution state's conventions. Reuse the existing plan or checkpoint when it already holds the plan. Put a concise summary of completed work, current work, blockers, and the next action near the top.
 
-Open the saved plan beside the current chat with `open_in_codex`, using its absolute file path and right placement. Omit `threadId` to target the current chat. Confirm that the tool succeeded before reporting the plan as open. This displays a file panel; do not claim native Plan mode creation or sidebar pinning. If the display tool is unavailable or fails, link the saved file and report the limitation, then continue authorized execution. If the plan cannot be saved, report the failure and resolve it before creating a new Goal.
+Display the saved plan using the active [provider adapter](../../providers/README.md), or link the saved file when display tools are unavailable. Confirm success before reporting a panel as open. Continue authorized execution when only the display is unavailable. If the plan cannot be saved, report the failure and resolve it before creating a new Goal.
 
-At every Goal reevaluation, read the Goal and reconcile actual progress and evidence, then update the same plan document before continuing work. This includes each continuation turn, milestone assessment, scope change, pickup after compaction, and completion or other lifecycle assessment. Refresh the status summary and checkpoint contents defined by Execution state. Record the assessment time even when the plan is unchanged. Preserve useful history and link detailed evidence.
+At every goal reevaluation, read the native goal when available and the canonical checkpoint, reconcile actual progress and evidence, then update the same plan document before continuing work. This includes each continuation turn, milestone assessment, scope change, pickup after compaction, and completion or other lifecycle assessment. Refresh the status summary and checkpoint contents defined by Execution state. Record the assessment time even when the plan is unchanged. Preserve useful history and link detailed evidence.
 
-Edit the canonical file in place. Do not create a new plan per turn or repeatedly open duplicate panels. On pickup, reuse and reconcile the existing document, then open it beside the chat if needed. After a Goal lifecycle transition, record the returned status in that same document. If a later save fails, report that the visible plan is stale and retry at the next checkpoint without misrepresenting its freshness.
+Edit the canonical file in place. Do not create a new plan per turn or repeatedly open duplicate panels. On pickup, reuse and reconcile the existing document, then open it beside the chat if needed. After a native goal lifecycle transition, record the returned status in that same document. Without native tracking, record the local task status and label it as local. If a later save fails, report that the visible plan is stale and retry at the next checkpoint without misrepresenting its freshness.
 
 ## Finish
 

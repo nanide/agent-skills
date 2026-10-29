@@ -1,9 +1,9 @@
 {
-  "name": "@codex-skill/nanide-mode-tools",
+  "name": "@nanide/skill-tools",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "bun test orch watch-pr check-plan.test.ts",
+    "test": "bun test orch watch-pr check-plan.test.ts ../../../providers/cursor/review-signals.test.ts",
     "typecheck": "tsc --project watch-pr/tsconfig.json --noEmit --strict"
   },
   "dependencies": {

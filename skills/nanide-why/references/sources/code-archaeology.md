@@ -1,6 +1,6 @@
 # Code Archaeology (git + in-repo)
 
-Discover the currently available Codex connector tools and inspect their schemas before use. Names below are examples, not guaranteed tool calls. Prefer repository-approved CLIs where required. Keep queries read-only and scoped to the requested topic and dates; report missing access as a gap.
+Discover the currently available connector tools and inspect their schemas before use. Names below are examples, not guaranteed tool calls. Prefer repository-approved CLIs where required. Keep queries read-only and scoped to the requested topic and dates; report missing access as a gap.
 
 ## What this source contains
 

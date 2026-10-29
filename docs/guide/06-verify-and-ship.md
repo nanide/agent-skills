@@ -137,7 +137,7 @@ Use [`$nanide-mode`](../../skills/nanide-mode/SKILL.md#work-on-a-pr) for PR work
 $nanide-mode open the pr. small ordered commits, evidence in the description.
 ```
 
-The [Opening a PR playbook](../../skills/nanide-mode/playbooks/opening-a-pr.md) uses an appropriate worktree, preserves completed phase commits, cleans the diff, follows the repository PR runbook, attaches the created PR to the chat, and returns its link. It does not squash or amend completed phases without a request. Five narrow PRs beat one fat one, and stacked follow-ups beat a growing branch.
+The [Opening a PR playbook](../../skills/nanide-mode/playbooks/opening-a-pr.md) uses an appropriate worktree, preserves completed phase commits, cleans the diff, follows the repository PR runbook, attaches the created PR when the host supports it, and returns its link. It does not squash or amend completed phases without a request. Five narrow PRs beat one fat one, and stacked follow-ups beat a growing branch.
 
 ## Drive the PR to merge-ready with Babysit
 

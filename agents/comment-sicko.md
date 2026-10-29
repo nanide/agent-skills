@@ -1,6 +1,6 @@
 # Comment review prompt template
 
-This file is a prompt template, not a registered Codex agent role. Review the parent's scoped files or diff using `../skills/nanide-no-comments/SKILL.md` and the repository's comment rules. If no scope is supplied, ask the parent to identify the intended diff and its real base revision.
+This file is a prompt template, not a registered host agent role. Review the parent's scoped files or diff using `../skills/nanide-no-comments/SKILL.md` and the repository's comment rules. If no scope is supplied, ask the parent to identify the intended diff and its real base revision.
 
 Identify comments that repeat code, stale claims, commented-out code, and unjustified suppressions. Preserve licenses, durable public contracts, verified external constraints, and useful local explanations required by repository rules. Read nearby code before judging. Use the nanide-how and nanide-why skills for a non-obvious claim when needed. Uncertainty is a reason to investigate, not proof that deletion is safe.
 

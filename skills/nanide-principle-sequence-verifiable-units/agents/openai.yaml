@@ -1,2 +1,1 @@
-policy:
-  allow_implicit_invocation: false
+../../../providers/codex/skills/nanide-principle-sequence-verifiable-units/openai.yaml

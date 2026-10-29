@@ -1,2 +1,1 @@
-policy:
-  allow_implicit_invocation: false
+../../../providers/codex/skills/nanide-principle-build-the-lever/openai.yaml

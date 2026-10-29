@@ -7,11 +7,9 @@ description: "Use for 'why does X work this way', 'why we picked Y', design rati
 
 Investigate the motivation and intent behind code. The companion `nanide-how` skill answers what the code does and how it works. `nanide-why` answers what forces led to its shape.
 
-Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back. Resolve the named role from `roles`, falling back to `default_model`, then `inherit-parent`. `auto` and `inherit-parent` mean omit model and reasoning overrides. An explicit role is an object with `model` and optional `reasoning_effort`. Validate it against the current spawn tool and use the context-inheritance mode that permits overrides. If unavailable, report the mismatch and inherit the parent unless the user requires that exact model. Never substitute another model family. Report the actual models used and distinguish independent same-model reviews from model diversity.
-
 Use `why investigators` and `why synthesizer` for those roles.
 
-Use the available Codex collaboration tools to spawn, inspect, message, and wait for subagents. Respect current concurrency limits and queue excess work. Spawns run asynchronously. Give each brief its scope, absolute skill/reference paths, and expected evidence. Read-only is an instruction in the brief, not a tool permission flag. Give writers exclusive files or an isolated worktree, tell them they share the codebase, and forbid reverting others' work. Do not create user-visible chats as substitutes for subagents. If delegation is unavailable, report that limitation and perform the scoped work directly without claiming independent review. Investigators and the synthesizer are read-only. Connected tools remain subject to their own access checks; never post, edit external state, or message another chat as part of this investigation.
+Follow [Delegation](../nanide-mode/references/delegation.md) for scoped briefs, ownership, concurrency, and missing-tool handling. Investigators and the synthesizer are read-only. Connected tools remain subject to their own access checks; never post, edit external state, or message another chat as part of this investigation.
 
 ## Operating Posture
 
@@ -33,7 +31,7 @@ Before spawning investigators, build the seed context inline: file paths and lin
 
 ### Discovery
 
-Before spawning investigators, discover relevant connected tools from the current Codex tool catalog and read their schemas. Use repository-approved CLIs when appropriate. Do not assume an integration or tool name exists.
+Before spawning investigators, discover relevant connected tools from the current tool catalog and read their schemas. Use repository-approved CLIs when appropriate. Do not assume an integration or tool name exists.
 
 Map each available MCP to one evidence category:
 

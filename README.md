@@ -1,6 +1,6 @@
 # Agent skills
 
-Codex skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or invoke a helper directly. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or invoke a helper directly. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install a development checkout
 
@@ -10,11 +10,11 @@ Use Python 3.9 or newer and Git. From this repository, run:
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python scripts/skills.py validate
-.venv/bin/python scripts/skills.py install --dry-run
-.venv/bin/python scripts/skills.py install
+.venv/bin/python scripts/skills.py install --provider <provider> --dry-run
+.venv/bin/python scripts/skills.py install --provider <provider>
 ```
 
-The installer creates `~/.agents/skills/agent-skills` as one symlink to this checkout's `skills/` directory. Edits take effect from the same source files. Refresh discovery in a fresh Codex chat after installation. Use `--target-dir /path/to/project/.agents/skills` for a project installation.
+Replace `<provider>` with `codex`, `cursor`, or `claude`. The installer links each skill into that application's discovery directory. All three use the same source files. Refresh discovery in a fresh session. Use `--target-dir` for a project installation. The [provider adapters](providers/README.md) contain discovery paths, invocation syntax, and native tool behavior.
 
 The installer checks for conflicting skill names and unmanaged destination paths. See [installation and recovery](docs/installation.md) for collision rules, migration, and recovery.
 
@@ -34,24 +34,24 @@ The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) 
 
 ## Configure model roles
 
-Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-nanide-skills`](skills/setup-nanide-skills/SKILL.md) to save your choices in ignored `codex-config.local.json`. That complete document replaces [the portable defaults](codex-config.json). Copy it explicitly to a different checkout when switching versions.
+Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-nanide-skills`](skills/setup-nanide-skills/SKILL.md) to save your choices in an ignored provider-local configuration. That complete document replaces [the portable defaults](agent-config.json). Read [configuration precedence](providers/README.md#configuration). Copy it explicitly to a different checkout when switching versions.
 
 ## Improve skills while using them
 
 Create a branch in this checkout with `git switch -c improve-skill-name`. Edit its linked source while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
 
-A project installation does not override a global installation. The installer refuses every duplicate public skill name. Use a separate test environment or uninstall the global bundle before trying another project target.
+The installer rejects conflicting public skill names in checked discovery roots. Provider installations can link the same canonical sources. Use a separate test environment when validating a different checkout.
 
 ## Install a stable version or roll back
 
-Choose an exact commit or an existing release tag, then follow [release and rollback instructions](docs/releases.md). Installation from another checkout switches the managed link after collision checks. Uninstall with the currently installed checkout:
+Choose an exact commit or an existing release tag, then follow [release and rollback instructions](docs/releases.md). Installation from another checkout switches the managed links after collision checks. Uninstall with the currently installed checkout:
 
 ```sh
-.venv/bin/python scripts/skills.py uninstall --dry-run
-.venv/bin/python scripts/skills.py uninstall
+.venv/bin/python scripts/skills.py uninstall --provider <provider> --dry-run
+.venv/bin/python scripts/skills.py uninstall --provider <provider>
 ```
 
-Uninstall removes the bundle link. It retains source files, personal configuration, and migration backups.
+Uninstall removes the managed discovery links. It retains source files, personal configuration, and migration backups.
 
 ## Validate changes
 
@@ -63,3 +63,7 @@ Uninstall removes the bundle link. It retains source files, personal configurati
 The validator parses YAML, checks metadata and local Markdown links, and checks configuration and installation records. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
 
 Distributed copies must include the [MIT license](LICENSE) and its attribution.
+
+## Shared workflows and provider support
+
+The original [pstack](https://github.com/cursor/plugins/tree/main/pstack) informs the skill, playbook, reference, and script structure. Shared skills contain workflow decisions. [Provider adapters](providers/README.md) contain host-specific behavior and metadata. The [review notes](docs/provider-neutral-review.md) explain the changes and validation limits.

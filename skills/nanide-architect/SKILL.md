@@ -7,7 +7,7 @@ description: "Sketch types, signatures, and module structure before code, then s
 
 Sketch types, function signatures, class shapes, and module boundaries with `not implemented` bodies and pseudocode. Synthesize across independent candidate perspectives, then fill in code against the chosen sketch.
 
-Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back.
+Follow [Delegation](../nanide-mode/references/delegation.md) for the active provider’s role configuration.
 
 ## Start
 

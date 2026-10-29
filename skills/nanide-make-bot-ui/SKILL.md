@@ -1,6 +1,6 @@
 ---
 name: nanide-make-bot-ui
-description: Build a custom UI for an explicitly configured bot service, or assess whether Codex scheduling can meet a requested bot workflow.
+description: Build a custom UI for an explicitly configured bot service, or assess whether host scheduling can meet a requested bot workflow.
 ---
 
 # Build a bot UI
@@ -9,9 +9,9 @@ Start by identifying the user action, payload, backend, and expected result. The
 
 ## Check the execution service
 
-Codex's `automation_update` tool supports scheduled automations. Its exposed schema does not supply a webhook receiver, sender key, secret-request card, or event-triggered wake API. Do not invent one or claim a UI button can wake Codex through a private endpoint.
+Read the active [provider adapter](../../providers/README.md) and inspect the available scheduling tools. A scheduler does not imply a webhook receiver, secret manager, or event-triggered wake API. Do not invent endpoints or claim unsupported capabilities.
 
-If scheduled work meets the user's request, use `automation_update` only when the user requests scheduling. Prefer a heartbeat for a follow-up in this chat. Standalone project jobs require an explicit request and a project ID from `list_projects`. Inspect existing automation files before creating a duplicate. Preserve notification preferences when updating.
+If scheduled work meets the user’s request, use supported scheduling only when the user requests it. Inspect existing schedules before creating a duplicate. Preserve notification preferences. Report unavailable scheduling and continue independently useful authorized work.
 
 If a button must invoke a bot immediately, require a separately configured service with a documented endpoint and authentication contract. Read that service's documentation and use its real API. If none is available, build any independently useful local UI and payload validation within scope, and report the missing backend. Do not pretend a mock response proves delivery.
 

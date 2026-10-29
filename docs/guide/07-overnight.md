@@ -32,12 +32,12 @@ Walk through what each line buys you:
 - "done means..." turns the goal into checks every iteration can run.
 - "fresh worktree off `<base>`" keeps the run from colliding with anything else you have open.
 - "don't ask me before committing" pre-answers the permission the agent would otherwise block on.
-- An active chat can continue working within its execution limits. A request to wake later or monitor progress uses the available Codex automation tool. The [Autonomous run playbook](../../skills/nanide-mode/playbooks/autonomous-run.md) distinguishes those cases.
+- An active chat can continue working within its execution limits. A request to wake later or monitor progress uses the selected provider's available scheduling tool. The [Autonomous run playbook](../../skills/nanide-mode/playbooks/autonomous-run.md) distinguishes those cases.
 - The escape hatch lets it stop at a genuine dead end and write up why, which beats eight hours of creative goal reinterpretation.
 
 Because you'll review this work after stepping away, `$nanide-mode` routes it through [`$nanide-figure-it-out`](../../skills/nanide-figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
 
-To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart Codex. The [Pause safely playbook](../../skills/nanide-mode/playbooks/pause-safely.md) finishes or backs out of the current step, commits a work-in-progress checkpoint, and writes a resume note. A fresh chat picks the work up from that note through the Session pickup playbook. Saying "keep going" never triggers a pause.
+To stop a run on purpose, tell the agent to pause, with an explicit pause request. The [Pause safely playbook](../../skills/nanide-mode/playbooks/pause-safely.md) finishes or backs out of the current step, commits a work-in-progress checkpoint, and writes a resume note. A fresh chat picks the work up from that note through the Session pickup playbook. Saying "keep going" never triggers a pause.
 
 ## What the loop does all night
 
@@ -93,9 +93,9 @@ $nanide-mode orchestrate the store migration. own it until every package is conv
 
 ## Run many projects in parallel
 
-Use one Codex chat per body of work when you explicitly want separate chats. Within a task, use subagents for delegated work and keep a durable plan and decision log. A chat does not become a persistent worker merely because it owns a plan.
+Use one agent session per body of work when you explicitly want separate chats. Within a task, use subagents for delegated work and keep a durable plan and decision log. A chat does not become a persistent worker merely because it owns a plan.
 
-For later continuation or recurring checks, explicitly request an automation. The available Codex automation tool creates or updates the schedule. Thread heartbeats are the default for follow-ups. Keep them quiet while nothing actionable changes. Standalone scheduled work needs an identified project and an explicit request for that execution shape.
+For later continuation or recurring checks, explicitly request an automation. The selected provider's available scheduling tool creates or updates the schedule. Use the scheduler supported by the selected provider. Keep them quiet while nothing actionable changes. Standalone scheduled work needs an identified project and an explicit request for that execution shape.
 
 A local schedule depends on the host's availability. Do not promise that work continues with a closed laptop. Report the actual schedule result and any missing execution capability.
 

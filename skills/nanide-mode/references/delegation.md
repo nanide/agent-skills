@@ -1,0 +1,11 @@
+# Delegation
+
+Read the [provider adapter](../../../providers/README.md) for the current host only. It owns configuration paths, native tool mappings, and model override syntax. Resolve this collection through symlinks before reading its configuration. A local configuration replaces the defaults. Reject invalid local configuration rather than silently falling back.
+
+Resolve a named role from `roles`, then `default_model`, then `inherit-parent`. Missing configuration, `inherit-parent`, and `auto` mean inherit without an override. A configured panel list sets the reviewer count. Otherwise use `panel_size`, default two. Validate explicit model and reasoning choices against the live tool schema. Report an unavailable choice and inherit unless the user requires that exact model. Never invent model IDs or substitute families. Report actual models when the host exposes them, and distinguish independent same-model review from model diversity.
+
+Use supported delegation tools within the host's concurrency and depth limits. Give each brief the task, absolute skill and reference paths, bounded evidence, ownership, and acceptance criteria. Declare read-only scope in review briefs. Give writers exclusive files or isolated worktrees and tell them they share the codebase and must preserve others' changes. Do not create user-visible chats as substitutes for subagents.
+
+Queue only independent work. Inspect agent status without restarting idle workers. Reuse agents according to host rules when retained context helps the same task. Start a fresh agent when independence or a materially different task requires it. Supply a consolidated brief with all corrections when transferring work. Confirm a previous writer has stopped before transferring ownership.
+
+If delegation is unavailable, report the limitation and perform authorized work directly. Do not claim independent review or model diversity. When independent review is a required acceptance gate, keep that gate unmet and report it. The parent reviews the actual artifacts and owns the final result.

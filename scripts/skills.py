@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the collection and manage its single discovery link."""
+"""Validate shared skills and manage provider discovery links."""
 from __future__ import annotations
 
 import argparse
@@ -17,6 +17,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parent.parent
 BUNDLE = "agent-skills"
+PROVIDERS = ("codex", "cursor", "claude")
 LEGACY = ("pstack", "poteto-pr-description", "prepare-goal", "research-to-goal")
 MIGRATION_SOURCES = ("pstack", "poteto-pr-description")
 RETIRED_SKILLS = ("poteto-pr-description", "nanide-pr-description", "nanide-pr")
@@ -119,9 +120,14 @@ def load_collection(root: Path) -> Collection:
         skills.append(Skill(data["name"], path.parent))
     if not skills:
         raise Invalid(f"{root}: no skills found")
-    config(root / "codex-config.json")
+    config(root / "agent-config.json")
     if exists(root / "codex-config.local.json"):
         config(root / "codex-config.local.json")
+    for provider in PROVIDERS:
+        for name in ("config.json", "config.local.json"):
+            path = root / "providers" / provider / name
+            if exists(path):
+                config(path)
     return Collection(root, tuple(skills))
 
 
@@ -169,7 +175,8 @@ def validate_skill_names(collection: Collection):
         selectable = text if path.suffix == ".yaml" else ""
         if path.suffix == ".md":
             selectable = "\n".join(token.content for token in parser.parse(text) if token.type == "inline" or token.type == "fence" and token.info.strip() in {"", "text", "md", "markdown"})
-        if local_path.search(text) or selector.search(selectable):
+        local_text = re.sub(r"https?://[^\s)>]+", "", text)
+        if local_path.search(local_text) or selector.search(selectable):
             raise Invalid(f"{path}: obsolete local skill selector or path")
 
 
@@ -212,10 +219,27 @@ def markdown_links(root: Path):
     return errors
 
 
+def provider_boundaries(root: Path):
+    errors = []
+    provider_terms = re.compile(r"\b(?:codex|claude|openai|anthropic)\b|\.cursor\b", re.IGNORECASE)
+    for directory in ("skills", "agents"):
+        for path in (root / directory).rglob("*"):
+            if path.is_symlink() or not path.is_file() or path.suffix not in {".md", ".yaml", ".json", ".sh", ".py", ".mjs", ".ts"}:
+                continue
+            if any(part in {"node_modules", ".pstack"} for part in path.relative_to(root).parts):
+                continue
+            text = re.sub(r"https?://[^\s)>]+", "", path.read_text())
+            # Adapter links identify their destination without prescribing provider behavior.
+            text = re.sub(r"(?:\.\./)*providers/[^\s)`]+", "", text)
+            if provider_terms.search(text) or path.suffix == ".md" and re.search(r"\bCursor\b", text):
+                errors.append(f"{path.relative_to(root)}: provider-specific instructions belong in providers/")
+    return errors
+
+
 def validate(collection: Collection):
     import yaml
     root = collection.root
-    errors = markdown_links(root)
+    errors = markdown_links(root) + provider_boundaries(root)
     for path in (root / "skills").rglob("SKILL.md"):
         frontmatter(path)
     for path in (root / "skills").glob("*/agents/openai.yaml"):
@@ -225,6 +249,8 @@ def validate(collection: Collection):
             raise Invalid(f"{path}: invalid YAML: {error}") from error
         if not isinstance(data, dict) or ("policy" in data and (not isinstance(data["policy"], dict) or ("allow_implicit_invocation" in data["policy"] and type(data["policy"]["allow_implicit_invocation"]) is not bool))):
             errors.append(f"{path}: policy.allow_implicit_invocation must be boolean")
+    for provider in PROVIDERS:
+        adapter_config(root, provider)
     manifest = read_json(root / "plugin.json")
     try:
         from jsonschema import Draft202012Validator
@@ -234,9 +260,9 @@ def validate(collection: Collection):
     errors.extend(f"plugin.json: {error.message}" for error in Draft202012Validator(schema).iter_errors(manifest))
     if isinstance(manifest, dict) and (manifest.get("name") != BUNDLE or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", str(manifest.get("version", "")))):
         errors.append("plugin.json: expected agent-skills identity and semantic version")
-    provenance = read_json(root / "codex-port.json")
+    provenance = read_json(root / "upstream.json")
     if not isinstance(provenance, dict) or not isinstance(provenance.get("source"), str) or not provenance["source"].startswith("https://") or not re.fullmatch(r"[a-f0-9]{40}", provenance.get("commit", "")):
-        errors.append("codex-port.json: source URL and pinned upstream commit are required")
+        errors.append("upstream.json: source URL and pinned upstream commit are required")
     import_receipt(root)
     validate_skill_names(collection)
     required = ("skills/nanide-mode/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs", "skills/nanide-mode/references/pr-titles.md", "skills/nanide-mode/references/pr-descriptions.md", "skills/nanide-mode/references/pr-metadata.md")
@@ -337,7 +363,7 @@ def plan_install(collection: Collection, target: Path, migration: Path | None) -
         changes = tuple(Change(item["kind"], Path(item["source"]), Path(item["destination"])) for item in journal["changes"])
         for change in changes:
             valid = change.kind == "link" and change.source == collection.root / "skills" and change.destination == dest
-            valid |= change.kind == "preserve-config" and migration is not None and change.source == migration / "pstack/codex-config.json" and change.destination == collection.root / "codex-config.local.json"
+            valid |= change.kind == "preserve-config" and migration is not None and change.source == migration / "pstack/codex-config.json" and change.destination in {collection.root / "providers/codex/config.local.json", collection.root / "codex-config.local.json"}
             valid |= change.kind == "backup" and migration is not None and change.source.parent == migration and change.source.name in MIGRATION_SOURCES and change.destination.name == change.source.name and change.destination.parent.parent == state / "backups"
             if not valid:
                 raise Invalid(f"Unsafe interrupted action in {pending}")
@@ -353,7 +379,7 @@ def plan_install(collection: Collection, target: Path, migration: Path | None) -
                     changes.append(Change("backup", source, saved / name))
             legacy_config = migration / "pstack/codex-config.json"
             if legacy_config.exists():
-                changes.insert(0, Change("preserve-config", legacy_config, collection.root / "codex-config.local.json"))
+                changes.insert(0, Change("preserve-config", legacy_config, collection.root / "providers/codex/config.local.json"))
         if not (dest.is_symlink() and dest.resolve() == collection.root / "skills"):
             changes.append(Change("link", collection.root / "skills", dest))
         changes = tuple(changes)
@@ -416,6 +442,7 @@ def config_source(change: Change, changes: tuple[Change, ...]) -> Path:
 
 def preserve_config(source: Path, destination: Path):
     contents = source.read_bytes()
+    destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(".preserve-config-" + uuid.uuid4().hex)
     try:
         with temporary.open("xb") as stream:
@@ -457,6 +484,8 @@ def apply_install(collection: Collection, target: Path, migration: Path | None, 
                     os.replace(temporary, change.destination)
                 finally:
                     temporary.unlink(missing_ok=True)
+        if any(c.kind == "preserve-config" and c.destination == collection.root / "codex-config.local.json" for c in changes):
+            migrate_config(collection.root, False)
         write_json(state / "install.json", dict(source=str(collection.root / "skills"), target=str(target / BUNDLE)))
         if any(c.kind == "backup" for c in changes):
             pending.rename(state / ("migration-" + uuid.uuid4().hex + ".json"))
@@ -476,22 +505,145 @@ def plan_uninstall(collection: Collection, target: Path):
     return (Change("unlink", dest, collection.root / "skills"),)
 
 
+
+def adapter_config(root: Path, provider: str):
+    path = root / "providers" / provider / "adapter.json"
+    adapter = read_json(path)
+    if not isinstance(adapter, dict) or set(adapter) != {"discovery_directory", "additional_discovery_directories", "environment_discovery_directories"} or not isinstance(adapter["additional_discovery_directories"], list):
+        raise Invalid(f"Invalid provider adapter: {path}")
+    environments = adapter["environment_discovery_directories"]
+    if not isinstance(environments, dict) or any(not re.fullmatch(r"[A-Z_][A-Z_0-9]*", key) for key in environments):
+        raise Invalid(f"Invalid provider environment directories: {path}")
+    directories = [adapter["discovery_directory"], *adapter["additional_discovery_directories"], *environments.values()]
+    for value in directories:
+        if not isinstance(value, str) or not value or Path(value).is_absolute() or ".." in Path(value).parts:
+            raise Invalid(f"Invalid discovery directory in {path}")
+    return adapter
+
+
+def provider_target(provider: str) -> Path:
+    return Path.home() / adapter_config(ROOT, provider)["discovery_directory"]
+
+
+def migrate_config(root: Path, dry_run: bool):
+    source = root / "codex-config.local.json"
+    destination = root / "providers/codex/config.local.json"
+    if not exists(source):
+        return
+    if source.is_symlink():
+        raise Invalid(f"Refusing to migrate a symlinked configuration: {source}")
+    config(source)
+    if exists(destination) and (destination.is_symlink() or destination.read_bytes() != source.read_bytes()):
+        raise Invalid(f"Differing provider configuration exists: {destination}. Reconcile it before migration.")
+    print(f"migrate-config: {source} -> {destination}")
+    if not dry_run:
+        preserve_config(source, destination)
+        source.unlink()
+
+
+def install_provider(collection: Collection, provider: str, target: Path, command: str, dry_run: bool):
+    if target.is_symlink():
+        raise Invalid(f"Discovery directory must not be a symlink: {target}")
+    adapter = adapter_config(collection.root, provider)
+    roots = {target, absolute(Path.home() / adapter["discovery_directory"])}
+    roots.update(absolute(Path.home() / value) for value in adapter["additional_discovery_directories"])
+    roots.update(absolute(Path(os.environ[key]) / value) for key, value in adapter["environment_discovery_directories"].items() if os.environ.get(key))
+    state = state_dir(target)
+    record = state / "provider-install.json"
+    if any(state.resolve() == directory.resolve() or directory.resolve() in state.resolve().parents for directory in roots):
+        raise Invalid("Installer state must be outside the discovery directory")
+    print(f"Provider: {provider}\nDiscovery directory: {target}")
+
+    def run():
+        previous = read_json(record) if record.exists() else None
+        if previous and (previous.get("provider") != provider or previous.get("target") != str(target)):
+            raise Invalid(f"Another provider owns this installation: {record}")
+        if previous and "prior_links" in previous and previous.get("root") != str(collection.root):
+            raise Invalid(f"Resume the interrupted provider installation from its original checkout: {record}")
+        owned = previous.get("links", {}) if previous else {}
+        if not isinstance(owned, dict) or any(not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) or not isinstance(source, str) for name, source in owned.items()):
+            raise Invalid(f"Invalid installation record: {record}")
+        desired = {skill.name: str(skill.source) for skill in collection.skills} if command == "install" else {}
+        if command == "install":
+            validate(collection)
+        elif previous and previous.get("root") != str(collection.root):
+            raise Invalid(f"Refusing to uninstall another checkout: {record}")
+        prior_links = previous.get("prior_links", {}) if previous else {}
+        if not isinstance(prior_links, dict) or not set(prior_links) <= set(owned) or any(not isinstance(source, str) for source in prior_links.values()):
+            raise Invalid(f"Invalid recovery links: {record}")
+        for name, source in owned.items():
+            destination = target / name
+            allowed = {source, prior_links.get(name, source)}
+            if exists(destination) and (not destination.is_symlink() or str(destination.resolve()) not in allowed):
+                raise Invalid(f"Managed link changed; preserve and review it: {destination}")
+        for name, source in desired.items():
+            destination = target / name
+            if exists(destination) and name not in owned:
+                raise Invalid(f"Refusing to replace unmanaged entry {destination}")
+        excluded = {target / name for name in owned}
+        wanted = set(desired)
+        for directory in roots:
+            for skill in discovery_skills(directory, excluded):
+                if skill.name in wanted:
+                    raise Invalid(f"Skill name collision: {skill.name} at {skill.source}")
+        changes = [Change("unlink", target / name, Path(source)) for name, source in owned.items() if name not in desired]
+        changes.extend(Change("link", Path(source), target / name) for name, source in desired.items() if not (target / name).is_symlink() or (target / name).resolve() != Path(source))
+        for change in changes:
+            print(f"{change.kind}: {change.source} -> {change.destination}")
+        if dry_run:
+            return
+        # Persist ownership before links so an interrupted installation can resume.
+        if command == "install":
+            write_json(record, dict(provider=provider, root=str(collection.root), target=str(target), links={**owned, **desired}, prior_links={**owned, **prior_links}))
+        target.mkdir(parents=True, exist_ok=True)
+        for change in changes:
+            if change.kind == "unlink":
+                change.source.unlink(missing_ok=True)
+            else:
+                temporary = target / (".agent-skills-link-" + uuid.uuid4().hex)
+                try:
+                    temporary.symlink_to(change.source, target_is_directory=True)
+                    os.replace(temporary, change.destination)
+                finally:
+                    temporary.unlink(missing_ok=True)
+        if command == "install":
+            write_json(record, dict(provider=provider, root=str(collection.root), target=str(target), links=desired))
+        else:
+            record.unlink(missing_ok=True)
+    if dry_run:
+        run()
+    else:
+        with installation_lock(target):
+            run()
+    return 0
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("validate", "install", "uninstall"))
-    parser.add_argument("--target-dir", type=Path, default=Path.home() / ".agents/skills")
+    parser.add_argument("command", choices=("validate", "install", "uninstall", "migrate-config"))
+    parser.add_argument("--provider", choices=tuple(PROVIDERS))
+    parser.add_argument("--target-dir", type=Path)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--migrate-from", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.migrate_from and args.command != "install":
             raise Invalid("--migrate-from is only valid with install")
+        if args.command == "migrate-config":
+            if args.provider or args.target_dir:
+                raise Invalid("migrate-config operates on this checkout, without provider or target options")
+            migrate_config(ROOT, args.dry_run)
+            return 0
         collection = Collection(ROOT, ()) if args.command == "uninstall" else load_collection(ROOT)
         if args.command == "validate":
             validate(collection)
             print(f"Validated {len(collection.skills)} skills in {collection.root}")
             return 0
-        target = absolute(args.target_dir)
+        if args.provider:
+            if args.migrate_from:
+                raise Invalid("Use the legacy bundle installer for --migrate-from, then install provider links.")
+            target = absolute(args.target_dir or provider_target(args.provider))
+            return install_provider(collection, args.provider, target, args.command, args.dry_run)
+        target = absolute(args.target_dir or Path.home() / ".agents/skills")
         migration = absolute(args.migrate_from) if args.migrate_from else None
         if migration and (migration == target or migration in target.parents or target in migration.parents):
             raise Invalid("Migration and target discovery directories must be separate")

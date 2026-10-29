@@ -38,7 +38,7 @@ A prompt states the intent and the check for done. The playbook supplies the ste
 ## Before stepping away
 
 - Say "im going to bed" or "im stepping away" so the agent can apply reasonable defaults within the authorized scope.
-- Write done as checks every iteration can run, and ask Codex to continue until that predicate holds.
+- Write done as checks every iteration can run, and ask the agent to continue until that predicate holds.
 - Ask for a fresh worktree off a named base.
 - Pre-answer what the agent would stop for, such as "don't ask me before committing".
 - Ask for a decision log to audit later.

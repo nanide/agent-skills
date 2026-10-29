@@ -1,21 +1,16 @@
 ### Feature
 
-**You own the design. Plan, review, verify.** Delegate implementation. Stay in the lead.
+**You own the design and result.** Scale the workflow to the uncertainty and blast radius.
 
-1. `nanide-how` over the affected subsystem.
-2. `nanide-architect` for parallel design exploration.
-3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
-   - **Blocking first steps.** Gates run before fan-out.
-   - **Independent workstreams.** Disjoint files, services, or layers parallelize. Shared writes serialize.
-   - **Shared mutable state.** Default to splitting the target (the **nanide-principle-separate-before-serializing-shared-state** principle skill). Serialize only for real invariants.
-   - **Smallest safe decomposition.** If one worker is best, name why.
-4. Delegate code-writing to a subagent using your configured feature model (default `inherit-parent`) with a specific scope (file paths, named data shape and its organizing structure per **nanide-principle-model-the-domain**, a state machine over scattered booleans, a table/registry over branching, a typed model over repeated shape assumptions, chosen before the delegate writes logic, and success criteria). Apply the model policy in the Subagents section. Omit model and reasoning overrides unless configured and supported. When the implementation admits multiple valid shapes (error handling, abstraction layer, test structure), delegate via the **nanide-arena** skill instead so the runners surface the alternatives and the cross-judge guards the pick. Mandatory: no skip-with-reason escape, and Laziness Protocol does not override it (the gain is review separation, not lines saved). A subagent forbidden to spawn satisfies this by owning the diff directly with the same review separation. No "standing by" reply that waits on a nested agent. Comments per **Comments**. Surgical edits, re-ground against the source for upstream-derived files. Port shared-primitive improvements to all consumers and verify each. Commit liberally.
-5. Verify on the matching surface. "Inconclusive" or wrong-surface is not a pass. Flag it.
-6. Create small, ordered phase commits. Preserve completed phase history unless the user requests rewriting. Stack authorized follow-ups.
-   Use the **nanide-principle-sequence-verifiable-units** principle skill, building, verifying, and committing each small unit before the next.
-7. If the design is contested, `nanide-interrogate` before shipping.
-8. Run **Opening a PR**.
+1. Ground the affected behavior in current source and checks. Use `nanide-how` when the subsystem is unfamiliar or the behavior is unclear. Reuse applicable evidence from the current task.
+2. Name the data shape and success criteria before writing logic. Use `nanide-architect` for consequential design choices with viable alternatives. An established pattern or narrow change can proceed directly.
+3. For multi-step work, record the throughput checkpoint. Name blocking checks, independent workstreams, shared mutable state, and the smallest safe decomposition. Keep this concise. A single-owner change needs no fan-out plan. Split shared write targets before serializing them.
+4. Implement the smallest coherent change. Work directly for a narrow change with clear ownership. Delegate separable work when it reduces the critical path or supplies needed independent expertise. Follow [Delegation](../references/delegation.md) and use the configured feature role. Use **nanide-arena** only when competing implementations will settle a consequential uncertainty. Give each writer the files, data shape, and success criteria. Re-ground upstream-derived edits against the source. Migrate shared-primitive consumers together and verify each.
+5. Verify on the matching surface. "Inconclusive" or wrong-surface evidence is not a pass. Report missing proof.
+6. For multi-phase work, create coherent, ordered phase commits after each unit passes its checks. Preserve completed phase history unless the user requests rewriting. Use **nanide-principle-sequence-verifiable-units** when sequencing the units.
+7. Use `nanide-interrogate` for substantial changes or a contested design. Reuse independent review that covers the final scope and revision. Keep required independent review unmet when delegation is unavailable.
+8. Run **Opening a PR** only when PR creation is authorized.
 
-Code-coupled work (one feature, one migration) goes to a single owner with the checkpoint inline. That owner fans out internally after the blocking phase. Parent-level fan-out is for slices that produce independent artifacts (audits, cross-subsystem investigations, competing experiments). Rewrite the checkpoint at phase boundaries. Spawn a fresh owner rather than chaining interrupts.
+Keep tightly coupled implementation under one owner. Parallelize slices with independent artifacts or exclusive write ownership. Update the checkpoint when phase boundaries change ownership or dependencies.
 
-**Reply:** what you built, what you chose and why, the throughput checkpoint, open decisions. Tables for design alternatives.
+**Reply:** what you built, the material design choices, verification, and open decisions. Include the throughput checkpoint only when it affected the work.

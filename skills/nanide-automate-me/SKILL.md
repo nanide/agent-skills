@@ -9,13 +9,13 @@ A guided flow for turning the user's working conventions into a skill agents wil
 
 This workflow combines the inline mining pass in step 1, [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md), and the bundled **nanide-unslop** skill.
 
-Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back.
+Follow [Delegation](../nanide-mode/references/delegation.md) for the active provider’s role configuration.
 
 ## Flow
 
 ### 0. Check for an existing skill
 
-Look for a matching mode in the configured `$CODEX_HOME/skills` directory, normally `~/.codex/skills`, and any explicitly supplied repository skill directory. Mode skills can live in a personal category directory (`.codex/skills/<handle>/`), not only at the top level. If one exists, confirm intent with the available user-input tool or chat (unless they already said "update my skill" or similar):
+Look for a matching mode in the active host’s configured personal skill directory and any explicitly supplied repository skill directory. Use the [provider adapter](../../providers/README.md) to locate these. Include existing category directories. If one exists, confirm intent with the available user-input tool or chat (unless they already said "update my skill" or similar):
 
 - Update the existing skill (default for repeat runs)
 - Start fresh (rare, ask why before doing it)
@@ -27,7 +27,7 @@ Update mode changes the rest of the flow:
 
 ### 1. Mine their history
 
-Use the current conversation and available Codex list/read chat tools. Limit retrieval to the requested project, topic, and time window. Do not scan unrelated private chats or guess transcript paths. When only summaries are available, label that evidence limit.
+Use the current conversation and available list/read chat tools. Limit retrieval to the requested project, topic, and time window. Do not scan unrelated private chats or guess transcript paths. When only summaries are available, label that evidence limit.
 
 For a broad history request, delegate separate time or topic slices to read-only subagents using the current spawn tool. Give each the exact allowed chat IDs or scope. Inherit the parent model unless the effective configuration has a supported explicit role override. Workers return patterns and evidence references without messaging the source chats. Default signals worth hunting:
 
@@ -67,11 +67,11 @@ The **nanide-mode** skill shows the shape. Read it for granularity. Don't copy i
 
 Follow [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md) to author the skill. Placement:
 
-- Path: preserve an existing mode skill's category. For a new mode, use `$CODEX_HOME/skills/<handle>-mode/SKILL.md` for a new personal Codex mode, normally `~/.codex/skills/<handle>-mode/SKILL.md`. Use a repository location only when requested, following its conventions.
+- Path: preserve an existing mode skill’s category. For a new personal mode, use the active provider’s personal skill directory. Use a repository location when requested, following its conventions.
 - Handle: the user's first name or chosen identifier.
 - Frontmatter `description`: trigger on their name + `$<handle>-mode` + "work in their style", not on generic keywords like "write code" or "review PR".
 - Frontmatter formatting: follow the bundled authoring playbook. Keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
-- Set `policy.allow_implicit_invocation: false` in `agents/openai.yaml` by default. Change that only when the user asks for implicit invocation.
+- Preserve existing invocation policy. For a new skill, use the host’s normal discovery behavior unless the user requests explicit-only invocation. Keep provider-specific metadata in that provider’s adapter and use its supported format.
 
 ### 5. Iterate on prose
 

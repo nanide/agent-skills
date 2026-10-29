@@ -1,6 +1,6 @@
 # Notes verification map
 
-This is a fictional Notes example. `control-notes` and `notes` illustrate a project-owned harness; they are not bundled Codex commands. Replace them with verified commands from the target repository.
+This is a fictional Notes example. `control-notes` and `notes` illustrate a project-owned harness; they are not bundled commands. Replace them with verified commands from the target repository.
 
 This directory is the maintained source for verifying the user-facing behavior of Notes. Read the index before driving the app, then use the matching feature file as the recipe.
 

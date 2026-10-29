@@ -20,14 +20,14 @@ The Principles section below grounds every trigger. In your reply, name each pri
 
 Remaining triggers:
 
-- Nontrivial change, architecture decision, or "are we sure?" → the **nanide-how** skill.
+- For an unfamiliar subsystem or unresolved architecture question, use **nanide-how**. Reuse current evidence when it already explains the affected behavior.
 - About to ask a user-input question on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Actions outside the authorization scope still need the operator. Never apply a default as approval for such actions.
 - Any code → name the data shape first, and choose its organizing structure per **nanide-principle-model-the-domain**.
-- Code crossing a function boundary → the **nanide-architect** skill, parallel design exploration before implementing.
+- For a consequential design choice with viable alternatives, use **nanide-architect** before implementing. A mechanical edit or established pattern needs no design fan-out.
 - Parallel fan-out → the **nanide-swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **nanide-arena** for design or code bakeoffs with base selection and grafting.
 - Contested design → the **nanide-interrogate** skill (independent adversarial review) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
-- Any prose surface, your reply to the user included → the **nanide-unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose follows the bundled [authoring playbook](playbooks/authoring-a-skill.md).
+- Write replies per **Writing the reply**. Use **nanide-unslop** for a prose review when needed. Agent-facing prose follows the bundled [authoring playbook](playbooks/authoring-a-skill.md).
 - Docs, RFCs, readmes, PR descriptions, or commit messages → the **nanide-technical-writing** skill (`$nanide-technical-writing`).
 - Before commit → the bundled [diff cleanup](references/diff-cleanup.md) checklist.
 - Before review → the **nanide-no-comments** skill (`$nanide-no-comments`).
@@ -106,19 +106,13 @@ Proceed autonomously within the user’s authorized task. System and developer i
 
 For long implementation work, create a local commit after each coherent phase is reviewed and its required checks pass. Stage only that phase, preserve unrelated changes, and follow repository branch rules. The parent coordinates commits in shared checkouts. Do not squash or amend completed phase commits without a user request. This preference authorizes local phase commits, not pushes or merges. Report each phase hash and validation result.
 
-Continue active work with bounded waits and updates. Use the Codex automation tool only for an explicit reminder, monitor, recurring run, or future continuation request. Do not promise background progress from an ordinary chat. Invoking this skill creates no automation or Goal. For long or resumable work, read [Execution state in Codex](references/execution-state.md) for durable plans, explicit Goal activation, checkpoints, process ownership, and native worktree lifecycle.
+Continue active work with bounded waits and updates. Use the host scheduling tool only for an explicit reminder, monitor, recurring run, or future continuation request. Do not promise background progress from an ordinary chat. Invoking this skill creates no automation or Goal. For long or resumable work, read [Execution state](references/execution-state.md) for durable plans, explicit Goal activation, checkpoints, process ownership, and native worktree lifecycle.
 
 **No is an acceptable answer.** Asked whether to do something, invited to add scope, or shown an approach, reply with your real judgment. Decline, push back, or say "this doesn't earn its place" when true. A recommendation is a judgment, not a validation. Agreement is not the default, candor over sycophancy.
 
 ## Subagents
 
-Use the available Codex collaboration tools. The parent runs the playbook. Give delegates this skill’s absolute path, the task, evidence, file ownership, and acceptance criteria. Do not create sidebar chats as substitutes for subagents. Workers share the filesystem. Tell them not to revert others’ edits. Give competing implementations isolated worktrees and explicit base SHAs. Inspect attached worktrees first and reuse a suitable one. Archive managed worktrees through the Codex tool after preserving needed files.
-
-Resolve this skill directory through symlinks before reading configuration. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`, before spawning. The local file replaces the defaults. Reject an invalid local file rather than falling back. Every role defaults to `inherit-parent`; missing configuration and `auto` also mean omit model and reasoning overrides. An explicit override supplies `model` and optional `reasoning_effort`; validate both against the current spawn schema and use its supported context mode. Report an unavailable override and inherit unless the user requires that exact model. Do not invent model IDs or silently substitute families. Panel lists set reviewer count; otherwise use configured `panel_size`, default two. Queue excess work within available slots and depth limits. Follow current harness rules for reuse and inheritance.
-
-You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. Use independent reviewers. Report whether they used the same or different models; agreement alone does not establish correctness.
-
-**Fresh subagents by default.** Give new work to a fresh subagent with consolidated scope, meaning the original brief, every later directive, and the prior agent's report and branch. This holds for a fix round, a follow-up, a retry, and the next queue item. Resume, message, or queue a follow-up on an existing subagent only when the new work strictly needs state that lives in that agent and is costly to move: its local checkout, its uncommitted changes, or a process it still runs, such as a dev server, a simulator, or a babysit watcher. A stop or hold order to a running agent is not reuse. A role such as a PR owner outlives its agent. Once that agent returns, a fresh agent takes the role's next round. Interrupt-chained resumes silently drop directives, so fire a fresh subagent with consolidated scope rather than trusting a "done" summary.
+Follow [Delegation](references/delegation.md) for role configuration, model selection, ownership, concurrency, and agent reuse. The parent runs the playbook and reviews each delegate's artifacts. Give delegates this skill's absolute path so they resolve the same collection. Use [Execution state](references/execution-state.md) for worktree and process lifecycle.
 
 ## Writing the reply
 
@@ -140,7 +134,7 @@ Comments follow the same rule as the reply. Write them clean as you go. Keep a c
 
 ## Playbooks
 
-Follow [Execution state in Codex](references/execution-state.md) for durable plans and checkpoints. Use a plan tool when available, otherwise a concise task checklist whose first items are the matched playbook's steps, copied in verbatim, before any task-specific todos. A step you choose not to do stays in the list with a one-line `skip: <reason>`. Match the task to a playbook below and open its full steps at `playbooks/<title>.md`, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its file. Copy its steps in verbatim.
+Follow [Execution state](references/execution-state.md) for durable plans and checkpoints. For multi-step work, use a plan tool when available or a concise checklist. Track the applicable playbook gates and task-specific checks without copying the full playbook. Explain skipped required gates. Match the task to a playbook below and open its full steps at `playbooks/<title>.md`, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its file. Read only the matched playbook and references needed for the current phase.
 
 A large or cross-cutting effort (a migration across many call sites, an ambitious multi-part change), or work the user steps away from to trust later, routes to the **nanide-figure-it-out** skill even when a narrower playbook like Feature fits. Use **nanide-figure-it-out** whenever no bundled playbook fits. It designs a bespoke, rigorous playbook for the task. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. nanide-figure-it-out designs one bespoke run, orchestrate runs the program.
 
@@ -163,7 +157,7 @@ A large or cross-cutting effort (a migration across many call sites, an ambitiou
 - **Autopilot-full.** A queue of independent PRs run to merged with full autonomy. One owner per PR carries build through merge, and the root swarm-verifies each PR before its owner merges ("autopilot this queue", "full autopilot", one-owner-per-PR programs).
 - **Autopilot-stack.** A queue of changes built and verified with full autonomy, delivered as one linear reviewed base-branch stack the operator lands ("autopilot-stack", "stack them, don't ship", "build the stack, I'll land it").
 - **Session pickup.** Resuming or taking over a prior agent's in-flight work from a transcript, cloud-agent URL, or pushed branch.
-- **Pause safely.** Suspending in-flight work cleanly so it can be resumed, on an explicit pause. Going offline, restarting Codex, or imminent compaction requires a checkpoint; it does not by itself authorize stopping work or pausing a Goal. The complement to Session pickup.
+- **Pause safely.** Suspending in-flight work cleanly so it can be resumed, on an explicit pause. Going offline, restarting the host, or imminent compaction requires a checkpoint; it does not by itself authorize stopping work or pausing a Goal. The complement to Session pickup.
 - **Multi-phase or multi-PR plan.** Work that spans phases or stacked PRs. File: `playbooks/multi-phase-plan.md`.
 - **Worktree and simulator cleanup.** Reclaiming local disk by pruning merged or abandoned git worktrees and stale iOS simulators ("what's using my disk", "clean up worktrees", "prune safe-to-prune worktrees", "free up space", "delete old simulators"). File: `playbooks/worktree-cleanup.md`.
 - **Opening a PR.** Use at the end of another playbook only when opening a PR is within the requested task.

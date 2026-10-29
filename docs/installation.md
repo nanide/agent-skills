@@ -5,22 +5,22 @@ Run `scripts/skills.py` with the Python environment prepared in the [README](../
 ## Preview an installation
 
 ```sh
-.venv/bin/python scripts/skills.py install --dry-run
+.venv/bin/python scripts/skills.py install --provider <provider> --dry-run
 ```
 
-Review the printed source, discovery directory, and actions. A dry run writes nothing. Use the same `--target-dir` for installation, switching versions, and uninstalling.
+Replace `<provider>` with a provider ID from the [adapter index](../providers/README.md). Review the printed source, discovery directory, and actions. A dry run writes nothing. Use the same `--target-dir` for installation, switching versions, and uninstalling.
 
-The installer checks the target directory, `~/.agents/skills`, `${CODEX_HOME:-$HOME/.codex}/skills`, and the explicit migration directory for conflicting skill names. Check any additional discovery roots separately.
+The installer checks the selected target and the selected provider's personal discovery roots for conflicting skill names before replacing managed links. Use the selected adapter for discovery paths. Check additional custom discovery roots and other projects separately.
 
 ## Install alongside other collections
 
-Run the normal install command without a migration option to leave other collections in place. Each collection keeps its own model configuration. Save this collection's model choices in ignored `codex-config.local.json`.
+Run the normal install command without a migration option to leave other collections in place. Each collection keeps its own model configuration. Save this collection's model choices in ignored `providers/<provider>/config.local.json`.
 
 Each live public skill ID uses `nanide-`, except `$setup-nanide-skills`. For example, use `$nanide-how`, `$nanide-interrogate`, and `$nanide-audit` instead of the old generic Nanide selectors. Use [`$nanide-mode`](../skills/nanide-mode/SKILL.md#work-on-a-pr) for PR work. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references. Other existing `$nanide-*` selectors keep their names. The [registry](../skill-names.json) records the source-to-public mappings for live skills and creates no runtime aliases. The old `how` selector belongs to other installed collections.
 
-Any external skill with the same public ID stops installation, even when its bytes match this collection or it is reached through a symlink. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
+An unmanaged entry with the same public ID stops installation. Managed provider installations can point to the same canonical source. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
 
-The discovery link is named `agent-skills`. The installer uses that identity when switching checkouts.
+Explicit provider installations use one link per public skill ID and a receipt outside discovery. The older command without `--provider` retains the single `agent-skills` bundle link for compatibility. Uninstall that legacy bundle before installing flat links into the same discovery directory. Use the same provider and target for later operations.
 
 ## Choose a collection for the task
 
@@ -38,16 +38,13 @@ The [selection guidance](../skills/nanide-mode/SKILL.md#select-a-collection-for-
 
 ## Migrate an installation
 
-Use `--migrate-from /path/to/discovery-directory` only to move the supported source directories out of discovery. Omit this option to keep those sources installed. Preview the migration before applying it:
+The legacy bundle migration is separate from provider installation. Preview it first and preserve its recovery records. See the [legacy migration instructions](../providers/codex/legacy-migration.md). It moves only recognized sources whose hashes match the import receipt. It leaves unrelated collections installed.
 
-```sh
-.venv/bin/python scripts/skills.py install --migrate-from /path/to/discovery-directory --dry-run
-.venv/bin/python scripts/skills.py install --migrate-from /path/to/discovery-directory
-```
+After migration, uninstall the managed legacy bundle before installing provider links into the same target. Uninstall retains source backups and local configuration.
 
-Migration moves only the `pstack` and `poteto-pr-description` directories. It leaves `prepare-goal` and `research-to-goal` in discovery. The installer checks the moved sources against [the import receipt](../import-receipt.json) before moving anything. A source change stops migration. It copies `pstack/codex-config.json` to ignored `codex-config.local.json`. A differing personal override stops migration.
+## Recover an interrupted provider installation
 
-Backups include runtime data and dependencies. They live beside the discovery directory under `.agent-skills/<discovery-directory-name>/backups/`, outside skill discovery. The installer retains those backups and unrelated siblings.
+Rerun the same provider install command from the same checkout with the same target. The `provider-install.json` receipt records both intended and prior link targets until installation completes. Repeated interruption retains those accepted targets. Finish recovery before switching to another checkout. If a managed link was changed by another actor, preserve it and resolve the conflict before retrying.
 
 ## Recover an interrupted migration
 
@@ -61,6 +58,6 @@ To restore manually, uninstall the bundle link from its source checkout. Move ea
 
 ## Switch checkouts and uninstall
 
-Copy `codex-config.local.json` into the destination checkout if you want the same model choices. Run that checkout's installer with the same target. Switching requires the current symlink to match the install receipt, so an arbitrary symlink cannot become managed through replacement.
+Copy `providers/<provider>/config.local.json` into the destination checkout if you want the same model choices. Run that checkout's installer with the same target. Switching requires the current symlink to match the install receipt, so an arbitrary symlink cannot become managed through replacement.
 
-Run uninstall from the checkout currently named by the bundle link. Uninstall refuses a link belonging to another checkout. It removes only the bundle link and current install receipt, and leaves migration receipts and backups for recovery.
+Run uninstall with the same provider and target from the currently installed checkout. It refuses changed managed links or another checkout's installation. It removes managed links and the current receipt while retaining migration receipts, backups, and local configuration. For the legacy bundle, omit `--provider`.

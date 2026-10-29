@@ -15,7 +15,7 @@ Identify what to review from context:
 - If on a feature branch, determine the actual base branch and run `git diff <base>...HEAD` for the full changeset.
 - If the user's message references recent work, gather the relevant files.
 
-When the user targets an existing PR for review, attach it to this chat using `attach_artifact`. Do not attach background references or dependencies.
+When the user targets an existing PR for review, link it in this chat and use the active provider’s attachment capability when available. Do not attach background references or dependencies.
 
 Package the diff or file contents with any surrounding context files the reviewers need to understand the code.
 
@@ -27,9 +27,7 @@ Before spawning reviewers, state the intent in one clear paragraph from the user
 
 Resolve `interrogate reviewers` in the effective configuration. A configured list sets the reviewer count. Otherwise use `panel_size` (default two), each inheriting the parent. Label seats Reviewer A, B, and so on.
 
-Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back. Resolve the named role from `roles`, falling back to `default_model`, then `inherit-parent`. `auto` and `inherit-parent` mean omit model and reasoning overrides. An explicit role is an object with `model` and optional `reasoning_effort`. Validate it against the current spawn tool and use the context-inheritance mode that permits overrides. If unavailable, report the mismatch and inherit the parent unless the user requires that exact model. Never substitute another model family. Report the actual models used and distinguish independent same-model reviews from model diversity.
-
-Use the available Codex collaboration tools to spawn, inspect, message, and wait for subagents. Respect current concurrency limits and queue excess work. Spawns run asynchronously. Give each brief its scope, absolute skill/reference paths, and expected evidence. Read-only is an instruction in the brief, not a tool permission flag. Give writers exclusive files or an isolated worktree, tell them they share the codebase, and forbid reverting others' work. Do not create user-visible chats as substitutes for subagents. If delegation is unavailable, report that limitation and perform the scoped work directly without claiming independent review. Every reviewer is read-only.
+Follow [Delegation](../nanide-mode/references/delegation.md) for scoped briefs, ownership, concurrency, and missing-tool handling. Every reviewer is read-only.
 
 Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Use only supported model and reasoning overrides from the role configuration.
 

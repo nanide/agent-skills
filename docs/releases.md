@@ -18,7 +18,7 @@ python3 -m venv .venv
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-Inspect the archive with `tar -tzf /tmp/agent-skills-0.2.0.tar.gz`. Confirm it contains no `node_modules`, caches, credentials, or `codex-config.local.json`. Tagging creates a local tag. Publishing a tag or hosted release is a separate action.
+Inspect the archive with `tar -tzf /tmp/agent-skills-0.2.0.tar.gz`. Confirm it contains no `node_modules`, caches, credentials, or `providers/<provider>/config.local.json`. Tagging creates a local tag. Publishing a tag or hosted release is a separate action.
 
 ## Install a pinned checkout
 
@@ -31,12 +31,12 @@ cd "$HOME/.local/share/agent-skills/stable"
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python scripts/skills.py validate
-.venv/bin/python scripts/skills.py install --dry-run
-.venv/bin/python scripts/skills.py install
+.venv/bin/python scripts/skills.py install --provider <provider> --dry-run
+.venv/bin/python scripts/skills.py install --provider <provider>
 ```
 
-An extracted archive works with the same environment and install commands. Neither method downloads updates during installation. Save personal choices in that checkout's ignored `codex-config.local.json`.
+Replace `<provider>` with the selected provider ID from the [adapters](../providers/README.md). An extracted archive works with the same environment and install commands. Neither method downloads updates during installation. Save personal choices in that checkout's ignored `providers/<provider>/config.local.json`.
 
 ## Roll back to a previous checkout
 
-Retain the previous checkout and its local configuration. Run its installer against the same target directory to switch the managed link back. Refresh Codex discovery in a fresh chat. Do not move or remove either checkout while its link is active.
+Retain the previous checkout and its local configuration. Run its installer against the same target directory to switch the managed links back. Refresh skill discovery in a fresh chat. Do not move or remove either checkout while its link is active.
