@@ -17,5 +17,5 @@ Use these cases when evaluating changes to audit. Give an independent reader the
 | A follow-up adds a new preference for examples after the first audit. | Apply the new preference going forward without claiming the first audit violated an unstated requirement. |
 | Current review and test evidence already cover the complete unchanged task. | Reuse the evidence. Do not launch duplicate reviews or tests. |
 | A required verification tool or historical revision is unavailable. | Report the specific proof or preservation gap. Continue independent checks and do not claim full completion. |
-| Existing pstack skills already own review delegation and test coordination. | Reference those owners instead of copying their procedures or inventing another framework. |
+| Existing Nanide skills already own review delegation and test coordination. | Reference those owners instead of copying their procedures or inventing another framework. |
 | The user asks to explain a function, with no audit request or completion requirement. | Do not expand the explanation into a compliance audit. |

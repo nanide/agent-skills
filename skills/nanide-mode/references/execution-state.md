@@ -1,6 +1,6 @@
 # Execution state in Codex
 
-Use the current tool schemas as the authority. Discover available tools before calling them. If a capability is unavailable, report the limitation and preserve a recoverable local checkpoint. This reference belongs to pstack and requires no other skill bundle.
+Use the current tool schemas as the authority. Discover available tools before calling them. If a capability is unavailable, report the limitation and preserve a recoverable local checkpoint. This reference belongs to Nanide skills and requires no other skill bundle.
 
 ## Plans and checkpoints
 

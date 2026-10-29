@@ -87,7 +87,7 @@ Validate the saved skill and its local links with the checks in the bundled auth
 
 - **Don't overfit to one conversation.** A preference stated once and contradicted another time is noise. Require multiple instances before codifying it.
 - **Don't be clever.** Restating other skills' contents, inventing metaphors, or writing "poetic" prose for an agent reader is cost without benefit. Keep it operational.
-- **Keep dependencies within pstack.** Link bundled guidance by its verified path. Encode the user's specific conventions directly when no bundled guidance covers them. Do not require another installed skill. Honor applicable repository instructions and runbooks.
+- **Keep dependencies within Nanide skills.** Link bundled guidance by its verified path. Encode the user's specific conventions directly when no bundled guidance covers them. Do not require another installed skill. Honor applicable repository instructions and runbooks.
 - **Keep sections minimal.** Only add a section if the user has a specific, non-default rule there. "Communicate clearly" is not a section. "Short paragraphs. Tables when comparing options. Bullets only when items are genuinely parallel." is.
 - **Name conventions generic.** Use "the user" or "the human" in imperatives, not the author's first name.
 - **Don't force symmetry.** If a user has no process rules worth writing down, skip the Process section entirely.

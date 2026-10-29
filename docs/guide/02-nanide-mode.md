@@ -90,7 +90,7 @@ continue
 keep going until done
 ```
 
-Short follow-ups work because the current chat already carries the goal and constraints. If a fresh chat lacks that context, provide a handoff and invoke `$nanide-mode` again. [Set up pstack](./01-setup.md#run-your-first-task) describes invocation.
+Short follow-ups work because the current chat already carries the goal and constraints. If a fresh chat lacks that context, provide a handoff and invoke `$nanide-mode` again. [Set up Nanide skills](./01-setup.md#run-your-first-task) describes invocation.
 
 ## Switch tasks with "new task"
 

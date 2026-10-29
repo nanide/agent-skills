@@ -1,11 +1,11 @@
 ---
 name: nanide-goal
-description: "Run a long-running task through pstack with a native Codex Goal and pstack's durable execution state. Use when the user invokes nanide-goal to start or continue task execution."
+description: "Run a long-running task through Nanide skills with a native Codex Goal and the collection's durable execution state. Use when the user invokes nanide-goal to start or continue task execution."
 ---
 
 # Nanide Goal
 
-Use pstack to own a long-running task in the current chat. A direct request such as `$nanide-goal <task>` requests starting that task as a native Codex Goal. A request to explain, edit, or prepare this skill does not request Goal activation. Automatic skill selection alone is not authorization to create a Goal. Honor explicit research-only or planning-only scope.
+Use Nanide skills to own a long-running task in the current chat. A direct request such as `$nanide-goal <task>` requests starting that task as a native Codex Goal. A request to explain, edit, or prepare this skill does not request Goal activation. Automatic skill selection alone is not authorization to create a Goal. Honor explicit research-only or planning-only scope.
 
 ## Start
 

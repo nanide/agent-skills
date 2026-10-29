@@ -37,7 +37,7 @@ class InstallerTests(unittest.TestCase):
         self.write_json(self.root / "plugin.json", json.loads((SOURCE / "plugin.json").read_text()))
         shutil.copy2(SOURCE / "codex-port.json", self.root / "codex-port.json")
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
-        for name in (*mapping.values(), "how", "setup-pstack"):
+        for name in (*mapping.values(), "how"):
             self.skill(self.root / "skills" / name, name)
         script = self.root / "skills/nanide-mode/scripts/check-plan.mjs"
         script.parent.mkdir()
@@ -101,7 +101,7 @@ class InstallerTests(unittest.TestCase):
         names = [skill.name for skill in discovered]
         personal_names = {skill.name for skill in cli.load_collection(self.root).skills}
         self.assertEqual(set(names), set(mapping) | personal_names | {"prepare-goal", "research-to-goal"})
-        self.assertEqual({name for name in names if names.count(name) == 2}, {"how", "setup-pstack"})
+        self.assertEqual({name for name in names if names.count(name) == 2}, {"how"})
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertEqual(self.make_receipt()["files"], baseline)
 
@@ -452,16 +452,17 @@ class InstallerTests(unittest.TestCase):
         result = self.command("validate", success=False)
         self.assertIn("mapped skill names must be unique and present", result.stderr)
 
-    def test_collection_retains_upstream_helpers_audit_and_four_personal_names(self):
+    def test_collection_renames_source_brands_and_retains_generic_helpers(self):
         receipt = json.loads((SOURCE / "import-receipt.json").read_text())
         originals = {Path(path).parent.name for path in receipt["files"] if Path(path).name == "SKILL.md" and (path.startswith("pstack/skills/") or len(Path(path).parts) == 2)}
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         expected_mapping = {name: name.replace("poteto-", "nanide-", 1) for name in originals if name.startswith("poteto-")}
         expected_mapping["poteto-audit"] = "audit"
-        self.assertEqual(len(expected_mapping), 5)
+        expected_mapping["setup-pstack"] = "setup-nanide-skills"
+        self.assertEqual(len(expected_mapping), 6)
         self.assertEqual(mapping, expected_mapping)
         generic = {Path(path).parent.name for path in receipt["files"] if path.startswith("pstack/skills/") and Path(path).name == "SKILL.md"} - mapping.keys()
-        self.assertEqual(len(generic), 55)
+        self.assertEqual(len(generic), 54)
         skills = cli.load_collection(SOURCE).skills
         self.assertEqual({skill.name for skill in skills}, generic | set(mapping.values()))
         self.assertTrue(all((SOURCE / "skills" / name / "SKILL.md").is_file() for name in generic))
@@ -472,7 +473,7 @@ class InstallerTests(unittest.TestCase):
     def test_rename_map_requires_audit_and_preserves_other_personal_names(self):
         path = self.root / "skill-names.json"
         mapping = json.loads(path.read_text())
-        for original, replacement in (("poteto-audit", "nanide-audit"), ("poteto-audit", "review"), ("poteto-goal", "goal")):
+        for original, replacement in (("poteto-audit", "nanide-audit"), ("poteto-audit", "review"), ("poteto-goal", "goal"), ("setup-pstack", "setup-skills")):
             with self.subTest(original=original, replacement=replacement):
                 self.write_json(path, {**mapping, original: replacement})
                 result = self.command("validate", success=False)
@@ -483,7 +484,7 @@ class InstallerTests(unittest.TestCase):
     def test_personal_skill_cannot_route_to_original_namespace(self):
         path = self.root / "skills/nanide-mode/SKILL.md"
         original = path.read_text()
-        for reference in ("Use $poteto-mode.", "Read ../poteto-mode/SKILL.md."):
+        for reference in ("Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md."):
             path.write_text(original + reference + "\n")
             result = self.command("validate", success=False)
             self.assertIn("personal skill references the original namespace", result.stderr)

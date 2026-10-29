@@ -1,10 +1,10 @@
-# Set up pstack for Codex
+# Set up Nanide skills for Codex
 
 Install the collection from its source checkout using the [installation instructions](../../README.md#install-a-development-checkout). The default discovery entry is `~/.agents/skills/agent-skills`, a symlink to the checkout's `skills/` directory. Use `--target-dir` for a project installation.
 
 ## Pick your models
 
-Invoke `$setup-pstack` to inspect the defaults in [codex-config.json](../../codex-config.json) or change the ignored `codex-config.local.json` override. Every unconfigured role inherits the parent chat's model. `auto` and `inherit-parent` both omit model and reasoning overrides.
+Invoke `$setup-nanide-skills` to inspect the defaults in [codex-config.json](../../codex-config.json) or change the ignored `codex-config.local.json` override. Every unconfigured role inherits the parent chat's model. `auto` and `inherit-parent` both omit model and reasoning overrides.
 
 An explicit role override contains `model` and optionally `reasoning_effort`. Use only values supported by the current Codex subagent tool. A panel role can contain a list of overrides. Its length sets the reviewer count. Otherwise `panel_size` sets the count, with two as the default. Queue reviewers within the available concurrency limit.
 

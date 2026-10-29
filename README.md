@@ -32,7 +32,7 @@ The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) 
 
 ## Configure model roles
 
-Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-pstack`](skills/setup-pstack/SKILL.md) to save your choices in ignored `codex-config.local.json`. That complete document replaces [the portable defaults](codex-config.json). Copy it explicitly to a different checkout when switching versions.
+Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-nanide-skills`](skills/setup-nanide-skills/SKILL.md) to save your choices in ignored `codex-config.local.json`. That complete document replaces [the portable defaults](codex-config.json). Copy it explicitly to a different checkout when switching versions.
 
 ## Improve skills while using them
 
