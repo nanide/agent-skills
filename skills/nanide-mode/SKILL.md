@@ -1,12 +1,12 @@
 ---
 name: nanide-mode
-description: nanide's personal variant of poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for nanide, $nanide-mode, or requests to work in this style.
+description: Engineering workflow for concise, detailed responses, deliberate subagents, clear prose, simple code, and verified work. Use for nanide, $nanide-mode, or requests to work in this style.
 ---
 
 
 # Nanide mode
 
-Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<name>/SKILL.md` from its real directory before looking up a catalog name. Shared helper names can also appear in the original pstack collection. Put this file's absolute path in every delegated pstack prompt so delegates use this collection's siblings.
+Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<name>/SKILL.md` from its real directory before looking up a catalog name. Other installed collections may expose the same helper names. Put this file's absolute path in every delegate brief so delegates use this collection's siblings.
 
 ## Non-negotiables
 

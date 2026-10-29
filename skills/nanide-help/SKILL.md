@@ -22,4 +22,4 @@ Use $recall for relevant prior chat context, $reflect for lessons from a run, an
 
 Invoke the skill for each new task. Use the Codex automation tool for explicitly requested future work. Ordinary chat execution does not promise background continuation. Event-triggered webhooks require separately configured infrastructure.
 
-Give at most one relevant example prompt and link the actual installed file. For update questions, read ../../codex-port.json and ../../README.md. Do not suggest reinstalling upstream over the local version.
+Give at most one relevant example prompt and link the actual installed file. For update questions, read ../../README.md and ../../docs/releases.md. Preserve local configuration when switching installations.

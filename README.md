@@ -1,6 +1,6 @@
 # Agent skills
 
-Nanide's personal Codex skills, based on poteto's pstack workflows. Four skill names replace `poteto-` with `nanide-`. The audit helper is `$audit`. The 55 generic pstack helpers retain their original names. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Codex skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or invoke a helper directly. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install a development checkout
 
@@ -16,9 +16,9 @@ python3 -m venv .venv
 
 The installer creates `~/.agents/skills/agent-skills` as one symlink to this checkout's `skills/` directory. Edits take effect from the same source files. Refresh discovery in a fresh Codex chat after installation. Use `--target-dir /path/to/project/.agents/skills` for a project installation.
 
-Install this collection alongside the original global pstack collection with the normal command above. The installer permits unchanged helpers at their recorded baseline locations and refuses unrelated duplicate names or unmanaged destination paths. See [installation and recovery](docs/installation.md).
+The installer checks for conflicting skill names and unmanaged destination paths. See [installation and recovery](docs/installation.md) for collision rules, migration, and recovery.
 
-## Use and customize
+## Use the skills
 
 Invoke [`$nanide-mode`](skills/nanide-mode/SKILL.md) with a task and a check that can pass or fail:
 
@@ -26,28 +26,23 @@ Invoke [`$nanide-mode`](skills/nanide-mode/SKILL.md) with a task and a check tha
 $nanide-mode investigate why retries create duplicate records. reproduce, fix, and verify.
 ```
 
-Use `$poteto-mode` for the original baseline and `$nanide-mode` for this personal variant. Each mode resolves helpers from its own real sibling directory and reads its own configuration. Shared helpers have duplicate catalog selectors. Select a direct helper by its source path; there is no override precedence.
+`$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. If another collection exposes the same helper name, select a direct helper by its source path. Duplicate catalog selectors establish no override precedence.
 
-| Collection | Entrypoint and helper example | Source |
-| --- | --- | --- |
-| Original baseline | `$poteto-mode`, `$how`, `$setup-pstack` | `~/.codex/skills/pstack/skills/` |
-| Personal variant | `$nanide-mode`, `$how`, `$setup-pstack` | This checkout's `skills/`, discovered through `~/.agents/skills/agent-skills` |
+The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the available skills and playbooks.
 
-The original standalone skills remain at `~/.codex/skills/poteto-pr-description/`, `~/.codex/skills/prepare-goal/`, and `~/.codex/skills/research-to-goal/`. This collection includes `$nanide-pr-description`. The two standalone goal helpers remain available from their original directories. The original pstack configuration stays at `~/.codex/skills/pstack/codex-config.json`. This checkout reads its own configuration files.
+## Configure model roles
 
-Imported invocation policies remain intact. The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the collection.
-
-Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-pstack`](skills/setup-pstack/SKILL.md) to save personal choices in ignored `codex-config.local.json`. That complete document replaces [the portable defaults](codex-config.json). Copy it explicitly to a different checkout when switching versions.
+Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-pstack`](skills/setup-pstack/SKILL.md) to save your choices in ignored `codex-config.local.json`. That complete document replaces [the portable defaults](codex-config.json). Copy it explicitly to a different checkout when switching versions.
 
 ## Improve skills while using them
 
 Create a branch in this checkout with `git switch -c improve-skill-name`. Edit its linked source while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
 
-A project installation does not override a global installation. The installer refuses duplicate names outside the recorded baseline exception. Use a separate test environment or uninstall the global bundle before trying another project target.
+A project installation does not override a global installation. The installer refuses duplicate names outside its recorded collision exception. Use a separate test environment or uninstall the global bundle before trying another project target.
 
 ## Install a stable version or roll back
 
-Choose an exact commit or a release tag that exists, then follow [release and rollback instructions](docs/releases.md). This repository does not claim that a hosted release exists. Installation from another checkout switches the managed link after collision checks. Uninstall with the currently installed checkout:
+Choose an exact commit or an existing release tag, then follow [release and rollback instructions](docs/releases.md). Installation from another checkout switches the managed link after collision checks. Uninstall with the currently installed checkout:
 
 ```sh
 .venv/bin/python scripts/skills.py uninstall --dry-run
@@ -63,6 +58,6 @@ Uninstall removes the bundle link. It retains source files, personal configurati
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-The validator parses YAML, checks metadata and local Markdown links, and checks configuration and provenance. [The rename map](skill-names.json) records the five original `poteto-*` names and their current names, `audit` and four `nanide-*` skills. Validation keeps those mapped skills present and rejects references to the renamed IDs. Generic helper names remain valid. New skills do not need a historical map entry. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
+The validator parses YAML, checks metadata and local Markdown links, and checks configuration and installation records. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
 
-The [upstream record](codex-port.json) retains its pinned revision. The [import receipt](import-receipt.json) retains the historical source hashes, including the two standalone goal helpers omitted from this collection. The original [MIT license](LICENSE) and attribution remain. See [CHANGELOG.md](CHANGELOG.md) for collection changes.
+Distributed copies must include the [MIT license](LICENSE) and its attribution.

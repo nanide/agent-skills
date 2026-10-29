@@ -2,7 +2,7 @@
 
 ## Prepare a source release
 
-From a development branch, update `plugin.json` to the next version and add its changes to `CHANGELOG.md`. Run the [validation commands](../README.md#validate-changes) and review the diff. Commit the intended source files. Git's tracked tree defines the archive contents. Personal overrides, dependency directories, and caches stay untracked.
+From a development branch, update `plugin.json` to the release version. Run the [validation commands](../README.md#validate-changes) and review the diff. Commit the intended source files. Git's tracked tree defines the archive contents. Personal overrides, dependency directories, and caches stay untracked.
 
 After review, tag the exact committed revision and create an archive. The commands below prepare version 0.2.0. Use a new version and tag for later changes. Keep existing release tags unchanged.
 
@@ -40,5 +40,3 @@ An extracted archive works with the same environment and install commands. Neith
 ## Roll back to a previous checkout
 
 Retain the previous checkout and its local configuration. Run its installer against the same target directory to switch the managed link back. Refresh Codex discovery in a fresh chat. Do not move or remove either checkout while its link is active.
-
-Version `v0.1.0` retains the five original `poteto-*` names and rejects shared helper collisions. It cannot coexist with the original global baseline. Keep a version with the five renamed entrypoints and the recorded baseline exception when the baseline is installed. Test `v0.1.0` in a separate discovery environment if you need that version. Existing release tags remain unchanged.

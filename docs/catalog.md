@@ -1,6 +1,6 @@
 # Skill catalog
 
-`poteto-audit` becomes `audit`. Only `poteto-goal`, `poteto-help`, `poteto-mode`, and `poteto-pr-description` become `nanide-*`. All other names stay unchanged. When both collections are installed, select shared helpers such as `$how` by this checkout's source path. `$nanide-mode` resolves its own sibling helpers. Duplicate catalog selectors establish no override precedence.
+`$nanide-mode` resolves its own sibling helpers. If another collection exposes the same helper name, select a direct helper by this checkout's source path. Duplicate catalog selectors establish no override precedence.
 
 ## skills
 
@@ -20,7 +20,7 @@ $interrogate review this pr.
 | skill | use it when |
 |---|---|
 | [`$nanide-mode`](../skills/nanide-mode/SKILL.md) | default entry point for any non-trivial task. |
-| [`$nanide-help`](../skills/nanide-help/SKILL.md) | you're new to pstack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$nanide-help`. |
+| [`$nanide-help`](../skills/nanide-help/SKILL.md) | you're new to the collection, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$nanide-help`. |
 | [`$in-your-own-words`](../skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `$in-your-own-words`. |
 | [`$sharpen`](../skills/sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt and leaves your choices open. doesn't do the task. runs only when you type `$sharpen`. |
 | [`$how`](../skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
@@ -35,7 +35,7 @@ $interrogate review this pr.
 | [`$interrogate`](../skills/interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
 | [`$automate-me`](../skills/automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |
 | [`$make-bot-ui`](../skills/make-bot-ui/SKILL.md) | you want a dashboard for a supported, authorized automation endpoint. |
-| [`$setup-pstack`](../skills/setup-pstack/SKILL.md) | you want to pick which models pstack uses per role. checks supported models and updates the ignored local configuration. |
+| [`$setup-pstack`](../skills/setup-pstack/SKILL.md) | you want to pick which models the collection uses per role. checks supported models and updates the ignored local configuration. |
 | [`$reflect`](../skills/reflect/SKILL.md) | a long task landed and you want the recipe captured as a skill edit. |
 | [`$correct`](../skills/correct/SKILL.md) | you keep correcting agents for the same mistakes. mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and ci, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
 | [`$teach`](../skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs how + why and weaves one plain explanation, built up diagram by diagram. |
@@ -153,6 +153,6 @@ Use the bundled [authoring playbook](../skills/nanide-mode/playbooks/authoring-a
 
 Conversation recall uses scoped Codex chat tools and supplied evidence. Summaries are not complete transcripts. Scheduled follow-ups use the available Codex automation tool only when requested. An ordinary chat does not promise later execution.
 
-## Maintain the local edition
+## Update the collection
 
-This is a pinned local installation. Upstream updates require a reviewed merge of changes into these native workflows. Do not overwrite it with an upstream package and restore the removed translation layer. Preserve the license, model configuration, invocation policies, and repository-specific validation rules.
+Review skill changes in this checkout and run the [validation commands](../README.md#validate-changes). Preserve the license, model configuration, invocation policies, and repository-specific validation rules.
