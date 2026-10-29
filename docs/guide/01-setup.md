@@ -1,0 +1,33 @@
+# Set up pstack for Codex
+
+This personal bundle lives at `${CODEX_HOME:-$HOME/.codex}/skills/pstack`. Keep it there to scope the installation to Codex. It does not need a shared `~/.agents/skills` copy or a second host's plugin installation.
+
+## Pick your models
+
+Invoke `$setup-pstack` to inspect or change [codex-config.json](../../codex-config.json). Every unconfigured role inherits the parent chat's model. `auto` and `inherit-parent` both omit model and reasoning overrides.
+
+An explicit role override contains `model` and optionally `reasoning_effort`. Use only values supported by the current Codex subagent tool. A panel role can contain a list of overrides. Its length sets the reviewer count. Otherwise `panel_size` sets the count, with two as the default. Queue reviewers within the available concurrency limit.
+
+Setup preserves existing overrides unless you ask to change them. Remove a role's override to restore inherited execution. Unsupported configured models are reported rather than replaced with a guessed model. Independent reviewers can use the same model. The report says which models actually ran.
+
+## Choose verification for your project
+
+Use the repository's existing verification tools first. If none can prove the changed behavior, `$create-verification-skill` can create a project skill with launch, control, evidence, and cleanup steps. It follows the repository's skill-directory convention. Personal skills belong under `~/.codex/skills`.
+
+Use `$create-formal-verification-skill` when one important property needs a model checker or another verifier. The result states the model, bounds, and limitations. Neither generator changes product code or creates schedules merely because you ran setup.
+
+## Keep cost in check
+
+Use fewer reviewers when independent coverage does not need more. Choose supported role overrides deliberately. Inherited execution avoids a stale model catalog. There is no fixed model-family or reasoning-budget ladder.
+
+## Run your first task
+
+```text
+$poteto-mode add a --json flag to this command. text output stays byte-identical. verify both.
+```
+
+The mode selects a playbook and tracks its steps in the available plan tool or a concise checklist. Follow-ups retain the current task's scope. Start a fresh chat to check discovery after installing or editing skills. If discovery has not refreshed, attach the installed `SKILL.md` by its absolute path.
+
+The bundled `agents/openai.yaml` files preserve explicit-only discovery. Invoking the mode can load sibling skills needed for the task. It does not change unrelated chats or install a persistent application mode.
+
+Next: [Route work through `$poteto-mode`](./02-poteto-mode.md).

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare Goal"
+  short_description: "Research a task and prepare its new-chat Goal"
+  default_prompt: "Use $prepare-goal to research this task with poteto-mode, automatically package the findings with research-to-goal, and give me the exact prompt to start execution in a new chat."

@@ -1,0 +1,48 @@
+---
+name: arena
+description: "Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for $arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape."
+---
+
+# Arena
+
+Use the available plan tool, or a concise checklist in chat, for Frame, Fan out, Cross-judge, Pick, Graft, and Verify before launching anything.
+
+## Phase A: Frame
+
+Every candidate gets the same prompt, so the prompt is the contract.
+
+1. State the artifact each candidate is producing.
+2. Derive the rubric, 3-6 concrete gradeable criteria for what success looks like on *this* task. It is the picker's tool in Phase D. Candidates only see the task.
+3. Pick runners from `roles["arena runners"]` in `../../codex-config.json`. A configured list sets the panel size; otherwise use `panel_size` (default two) independent candidates. Read `../../codex-config.json` relative to this skill. Resolve the named role from `roles`, falling back to `default_model`, then `inherit-parent`. `auto` and `inherit-parent` mean omit model and reasoning overrides. An explicit role is an object with `model` and optional `reasoning_effort`. Validate it against the current spawn tool and use the context-inheritance mode that permits overrides. If unavailable, report the mismatch and inherit the parent unless the user requires that exact model. Never substitute another model family. Report the actual models used and distinguish independent same-model reviews from model diversity.
+
+4. Give each candidate its own output location (a git worktree where possible, otherwise `/tmp/arena-<slug>/candidate-<n>/`), per the **separate-before-serializing-shared-state** principle skill. Follow the [native worktree lifecycle](../poteto-mode/references/execution-state.md#worktrees), including verified base refs, asynchronous creation, attachment recovery, and archival.
+
+## Phase B: Fan out
+
+Use the available Codex collaboration tools to spawn, inspect, message, and wait for subagents. Respect current concurrency limits and queue excess work. Spawns run asynchronously. Give each brief its scope, absolute skill/reference paths, and expected evidence. Read-only is an instruction in the brief, not a tool permission flag. Give writers exclusive files or an isolated worktree, tell them they share the codebase, and forbid reverting others' work. Do not create user-visible chats as substitutes for subagents. If delegation is unavailable, report that limitation and perform the scoped work directly without claiming independent review. Each candidate gets the task, shared grounding path, its own output path, and instructions to produce the artifact and a short rationale naming the alternatives considered and rejected.
+
+If a candidate produces no output, proceed with N-1 and note the dropout.
+
+## Phase C: Cross-judge
+
+After all Phase B candidates complete, resolve `arena cross-judge pool` from the configuration. Choose one entry if it is a list, preferring an available model different from the parent when configured. Otherwise inherit the parent. Spawn one independent read-only judge. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your reading in Phase D. Don't spawn it while candidates are still writing.
+
+## Phase D: Pick a base
+
+Read every candidate end to end before picking. Score each against the rubric criterion by criterion, not on holistic feel, and compare with the cross-judge. Agreement on the base confirms the pick. Disagreement means one of you is biased or the rubric was ambiguous. Read both rationales before deciding.
+
+Pick the base a future maintainer can extend most easily without breaking invariants. When two feel tied, prefer the cleaner boundary or smaller API, per the Laziness Protocol.
+
+## Phase E: Graft
+
+Walk each losing candidate once more for what is worth porting into the base, usually one or two things per candidate, not most of it. Fold each graft in by hand, per the **redesign-from-first-principles** principle skill, so the result stays coherent under one mental model. Don't paste mechanically.
+
+If the candidates converge on one shape, that is strong agreement. Note it and ship the consensus shape. No graft is needed. If they wildly diverge, Phase A was under-specified. Reframe and re-run rather than averaging the divergence.
+
+## Phase F: Verify
+
+Verify the synthesized artifact like any other output, per the **prove-it-works** principle skill. If verification finds a problem the arena missed, either Phase A was wrong (re-frame and re-run) or a candidate caught it and you missed the graft (go back to Phase E). Don't paper over it.
+
+## Outputs
+
+One synthesized artifact, with a short synthesis note alongside naming the base and why, the cross-judge's verdict, each graft with its source candidate, what was rejected and why, any convergence or dropouts, and the verification result.

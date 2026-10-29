@@ -1,0 +1,15 @@
+node_modules/
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+dist/
+.env
+.env.*
+!.env.example
+codex-config.local.json
+.pstack/

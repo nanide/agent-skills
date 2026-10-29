@@ -1,0 +1,98 @@
+{
+  "default_model": "inherit-parent",
+  "roles": {
+    "how explorer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "why investigators": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "reflect tooling": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "feature, refactoring": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "bug-fix": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "perf-issue": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "hillclimb": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "swarm workers": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "how explainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "judgment and prose": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium"
+    },
+    "why synthesizer": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "reflect judgment, divergent, synthesizer": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    "hardest tasks": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "architect runners": [
+      {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high"
+      },
+      {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      }
+    ],
+    "interrogate reviewers": [
+      {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high"
+      },
+      {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      }
+    ],
+    "arena runners": [
+      {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high"
+      },
+      {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      }
+    ],
+    "arena cross-judge pool": [
+      {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high"
+      },
+      {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      }
+    ]
+  },
+  "panel_size": 2
+}
