@@ -132,13 +132,14 @@ class InstallerTests(unittest.TestCase):
                     dest.unlink()
 
     def test_duplicate_name_in_target_or_global_root_stops_install(self):
-        for location in (self.target / "custom-name", self.legacy / "custom-name"):
-            with self.subTest(location=location):
-                self.skill(location, "nanide-mode")
-                result = self.install(success=False)
-                self.assertIn("Skill name collision", result.stderr)
-                self.assertFalse(cli.exists(self.target / cli.BUNDLE))
-                shutil.rmtree(location)
+        for name in ("nanide-mode", "audit"):
+            for location in (self.target / "custom-name", self.legacy / "custom-name"):
+                with self.subTest(name=name, location=location):
+                    self.skill(location, name)
+                    result = self.install(success=False)
+                    self.assertIn("Skill name collision", result.stderr)
+                    self.assertFalse(cli.exists(self.target / cli.BUNDLE))
+                    shutil.rmtree(location)
 
     def test_unrelated_metadata_does_not_require_our_skill_conventions(self):
         location = self.target / "third-party"
@@ -451,11 +452,12 @@ class InstallerTests(unittest.TestCase):
         result = self.command("validate", success=False)
         self.assertIn("mapped skill names must be unique and present", result.stderr)
 
-    def test_collection_retains_upstream_helpers_and_five_personal_names(self):
+    def test_collection_retains_upstream_helpers_audit_and_four_personal_names(self):
         receipt = json.loads((SOURCE / "import-receipt.json").read_text())
         originals = {Path(path).parent.name for path in receipt["files"] if Path(path).name == "SKILL.md" and (path.startswith("pstack/skills/") or len(Path(path).parts) == 2)}
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         expected_mapping = {name: name.replace("poteto-", "nanide-", 1) for name in originals if name.startswith("poteto-")}
+        expected_mapping["poteto-audit"] = "audit"
         self.assertEqual(len(expected_mapping), 5)
         self.assertEqual(mapping, expected_mapping)
         generic = {Path(path).parent.name for path in receipt["files"] if path.startswith("pstack/skills/") and Path(path).name == "SKILL.md"} - mapping.keys()
@@ -466,6 +468,17 @@ class InstallerTests(unittest.TestCase):
         path = self.root / "skill-names.json"
         self.write_json(path, {**mapping, "how": "nanide-how"})
         self.assertIn("invalid rename for how", self.command("validate", success=False).stderr)
+
+    def test_rename_map_requires_audit_and_preserves_other_personal_names(self):
+        path = self.root / "skill-names.json"
+        mapping = json.loads(path.read_text())
+        for original, replacement in (("poteto-audit", "nanide-audit"), ("poteto-audit", "review"), ("poteto-goal", "goal")):
+            with self.subTest(original=original, replacement=replacement):
+                self.write_json(path, {**mapping, original: replacement})
+                result = self.command("validate", success=False)
+                self.assertIn(f"invalid rename for {original}", result.stderr)
+        self.write_json(path, mapping)
+        self.command("validate")
 
     def test_personal_skill_cannot_route_to_original_namespace(self):
         path = self.root / "skills/nanide-mode/SKILL.md"

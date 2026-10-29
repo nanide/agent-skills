@@ -1,13 +1,28 @@
 ---
-name: nanide-audit
+name: audit
 description: "Audit completed task changes against applicable skills and instructions, including changed skills and documentation. Use for completion audits, requests to align work with skills, or audits of new guidance. Apply corrections within the existing task authorization."
 ---
 
-# Nanide audit
+# Audit
 
 Audit the complete requested work and its guidance. Produce evidence-backed findings, authorized corrections, and an accurate account of remaining gaps.
 
 Use the user's scope and existing authorization. Audit-only and planning requests stay read-only. An audit within an authorized implementation task includes necessary scoped corrections. Do not ask again for permission already given. This skill adds no authorization for publishing, external messages, branch resets, Goals, or schedules.
+
+## Delegate an audit
+
+The parent coordinates the task. A delegate audits its assigned scope and returns findings to the parent. The implementation task's editing authorization does not by itself authorize a delegate to edit.
+
+Give the delegate this skill's absolute path and a brief containing:
+
+- The approved outcome, later corrections, and acceptance criteria.
+- The repository path, actual base, complete change range, and relevant uncommitted work or generated artifacts.
+- The assigned audit scope, applicable guidance paths, and existing review and verification evidence tied to the artifact state.
+- Whether corrections are assigned. If so, identify the owned files and allowed checks. Preserve others' changes in the shared checkout.
+
+Delegates are read-only unless explicitly assigned corrections within the user's authorization. Return findings directly rather than writing a checkpoint unless that file is assigned. Do not assume access to the parent's conversation. Recover observable facts from the supplied artifacts. Report missing intent, scope, or authorization to the parent and continue checks that do not depend on it.
+
+The parent owns further review delegation and coordination of shared-resource verification. A delegate reports additional review or verification needs instead of spawning another panel or running shared-resource checks without assignment. Existing repository approvals still apply to assigned checks.
 
 ## Establish the audit boundary
 
@@ -19,7 +34,7 @@ Use relevant prior audit results and follow-ups when available. Compare the orig
 
 ## Check implementation and evidence
 
-Map applicable requirements to the changed artifacts and proof. For substantial audits, record a compact table in the existing task checkpoint, or report it directly when no checkpoint exists. Include the requirement source, artifact location, evidence, and disposition. A small audit can report this directly.
+Map applicable requirements to the changed artifacts and proof. For substantial audits, record a compact table in the existing task checkpoint when writing it is authorized, or report it directly. Include the requirement source, artifact location, evidence, and disposition. A small audit can report this directly.
 
 Check intent, behavior, architecture, naming, tests, comments, and configuration under their owning guidance. Include integration points and affected callers. Reject tests that merely repeat declarations when the repository requires meaningful behavioral proof.
 
@@ -41,7 +56,7 @@ For skill edits, use [Authoring a skill](../nanide-mode/playbooks/authoring-a-sk
 
 ## Resolve and finish
 
-For each actionable finding, state the violated requirement, artifact location, consequence, and required correction or proof. Distinguish confirmed defects from suggestions and uncertain claims. The parent judges findings and coordinates fixes within scope. Route skill corrections through the authoring playbook. Never weaken guidance merely to excuse a noncompliant implementation.
+For each actionable finding, state the violated requirement and its source, artifact location, consequence, supporting evidence, and required correction or proof. Distinguish confirmed defects from suggestions and uncertain claims. The parent judges findings and coordinates fixes within scope. When invoked directly, the calling agent performs that parent role. Route skill corrections through the authoring playbook. Never weaken guidance merely to excuse a noncompliant implementation.
 
 Rerun checks affected by corrections and review the corrected requirements. Preserve evidence that remains valid. If a required tool or source is unavailable, continue independent work and report the missing proof. Stop when scoped requirements have adequate evidence or the remaining work requires unavailable access or authorization. Record out-of-scope findings without expanding the task.
 

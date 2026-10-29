@@ -1,6 +1,6 @@
 # Skill catalog
 
-Only `poteto-audit`, `poteto-goal`, `poteto-help`, `poteto-mode`, and `poteto-pr-description` become `nanide-*`. All other names stay unchanged. When both collections are installed, select shared helpers such as `$how` by this checkout's source path. `$nanide-mode` resolves its own sibling helpers. Duplicate catalog selectors establish no override precedence.
+`poteto-audit` becomes `audit`. Only `poteto-goal`, `poteto-help`, `poteto-mode`, and `poteto-pr-description` become `nanide-*`. All other names stay unchanged. When both collections are installed, select shared helpers such as `$how` by this checkout's source path. `$nanide-mode` resolves its own sibling helpers. Duplicate catalog selectors establish no override precedence.
 
 ## skills
 
@@ -31,6 +31,7 @@ $interrogate review this pr.
 | [`$architect`](../skills/architect/SKILL.md) | you're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
 | [`$arena`](../skills/arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`$swarm`](../skills/swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
+| [`$audit`](../skills/audit/SKILL.md) | you want completed task changes checked against applicable skills and instructions, with corrections within the existing task authorization. |
 | [`$interrogate`](../skills/interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
 | [`$automate-me`](../skills/automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |
 | [`$make-bot-ui`](../skills/make-bot-ui/SKILL.md) | you want a dashboard for a supported, authorized automation endpoint. |

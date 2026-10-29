@@ -142,7 +142,7 @@ def validate_skill_names(collection: Collection):
     if not isinstance(mapping, dict) or not mapping:
         raise Invalid("skill-names.json: expected the original-to-personal rename map")
     for original, personal in mapping.items():
-        if not isinstance(original, str) or not re.fullmatch(r"poteto-[a-z0-9]+(?:-[a-z0-9]+)*", original) or personal != original.replace("poteto-", "nanide-", 1):
+        if not isinstance(original, str) or not re.fullmatch(r"poteto-[a-z0-9]+(?:-[a-z0-9]+)*", original) or personal != ("audit" if original == "poteto-audit" else original.replace("poteto-", "nanide-", 1)):
             raise Invalid(f"skill-names.json: invalid rename for {original}")
     names = {skill.name for skill in collection.skills}
     if len(set(mapping.values())) != len(mapping) or not set(mapping.values()) <= names:

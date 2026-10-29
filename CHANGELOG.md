@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Remove the standalone `prepare-goal` and `research-to-goal` copies. Retain the 55 generic pstack helpers and five `nanide-*` skills.
+- Rename `nanide-audit` to `audit` as an ordinary repository helper. Retain `poteto-audit` as its historical rename-map key.
+- Remove the standalone `prepare-goal` and `research-to-goal` copies. Retain the 55 generic pstack helpers, `audit`, and four `nanide-*` skills.
 - Leave the original standalone goal helpers in discovery during migration. Reject older pending plans that would move them, and document recovery.
 - Preserve the historical import receipt and rename map.
 

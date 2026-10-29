@@ -14,7 +14,7 @@ The installer checks the target directory, `~/.agents/skills`, `${CODEX_HOME:-$H
 
 ## Keep the original baseline installed
 
-Run the normal install command without a migration option. Only five `poteto-*` skill IDs become `nanide-*`. The 55 generic pstack helper names stay unchanged. Installation and uninstall leave the original `pstack`, `poteto-pr-description`, `prepare-goal`, and `research-to-goal` directories in place. Each collection keeps its own model configuration. Personal choices live in this checkout's ignored `codex-config.local.json`.
+Run the normal install command without a migration option. `poteto-audit` becomes `audit`, and the other four `poteto-*` skill IDs become `nanide-*`. The 55 generic pstack helper names stay unchanged. Installation and uninstall leave the original `pstack`, `poteto-pr-description`, `prepare-goal`, and `research-to-goal` directories in place. Each collection keeps its own model configuration. Personal choices live in this checkout's ignored `codex-config.local.json`.
 
 The collision exception covers only unchanged helper IDs at their exact original `SKILL.md` locations under `${CODEX_HOME:-$HOME/.codex}/skills`, recorded in [the import receipt](../import-receipt.json). Their file hashes must match the receipt, and the paths cannot contain symlinks below that discovery root. Modified baseline helpers and duplicates at other paths stop installation.
 

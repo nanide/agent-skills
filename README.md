@@ -1,6 +1,6 @@
 # Agent skills
 
-Nanide's personal Codex skills, based on poteto's pstack workflows. Five skill names replace `poteto-` with `nanide-`. The 55 generic pstack helpers retain their original names. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Nanide's personal Codex skills, based on poteto's pstack workflows. Four skill names replace `poteto-` with `nanide-`. The audit helper is `$audit`. The 55 generic pstack helpers retain their original names. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install a development checkout
 
@@ -63,6 +63,6 @@ Uninstall removes the bundle link. It retains source files, personal configurati
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-The validator parses YAML, checks metadata and local Markdown links, and checks configuration and provenance. [The rename map](skill-names.json) records only the five `poteto-*` names and their `nanide-*` counterparts. Validation keeps those mapped skills present and rejects references to the renamed IDs. Generic helper names remain valid. New skills do not need a historical map entry. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
+The validator parses YAML, checks metadata and local Markdown links, and checks configuration and provenance. [The rename map](skill-names.json) records the five original `poteto-*` names and their current names, `audit` and four `nanide-*` skills. Validation keeps those mapped skills present and rejects references to the renamed IDs. Generic helper names remain valid. New skills do not need a historical map entry. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
 
 The [upstream record](codex-port.json) retains its pinned revision. The [import receipt](import-receipt.json) retains the historical source hashes, including the two standalone goal helpers omitted from this collection. The original [MIT license](LICENSE) and attribution remain. See [CHANGELOG.md](CHANGELOG.md) for collection changes.
