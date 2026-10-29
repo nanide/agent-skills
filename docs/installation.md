@@ -2,13 +2,18 @@
 
 Run `scripts/skills.py` with the Python environment prepared in the [README](../README.md). Keep the source checkout at its installed path. Moving or deleting it breaks the discovery link.
 
-## Preview an installation
+## Install once across supported providers
 
 ```sh
-.venv/bin/python scripts/skills.py install --provider <provider> --dry-run
+.venv/bin/python scripts/skills.py install --provider all --dry-run
+.venv/bin/python scripts/skills.py install --provider all
 ```
 
-Replace `<provider>` with a provider ID from the [adapter index](../providers/README.md). Review the printed source, discovery directory, and actions. A dry run writes nothing. Use the same `--target-dir` for installation, switching versions, and uninstalling.
+This installs globally for the current user into all supported provider discovery directories. It uses one shared checkout and lightweight links. It also prepares discovery for supported applications that are not installed yet. It does not install applications or promise support for unlisted agents. See the [adapter index](../providers/README.md) for supported providers and paths.
+
+Review the printed targets and actions. A dry run writes nothing. All targets are checked before the command applies changes. Each target retains its own recovery receipt. If execution is interrupted, rerun the same command from the same checkout. Targets that already finished need no changes.
+
+Use `--provider <provider>` to select just one adapter. A project installation additionally uses `--target-dir`. Neither `--target-dir` nor `--migrate-from` can be combined with `--provider all`. Use the same target for installation, switching versions, and uninstalling.
 
 The installer checks the selected target and the selected provider's personal discovery roots for conflicting skill names before replacing managed links. Use the selected adapter for discovery paths. Check additional custom discovery roots and other projects separately.
 
@@ -20,7 +25,16 @@ Each live public skill ID uses `nanide-`, except `$setup-nanide-skills`. For exa
 
 An unmanaged entry with the same public ID stops installation. Managed provider installations can point to the same canonical source. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
 
-Explicit provider installations use one link per public skill ID and a receipt outside discovery. The older command without `--provider` retains the single `agent-skills` bundle link for compatibility. Uninstall that legacy bundle before installing flat links into the same discovery directory. Use the same provider and target for later operations.
+Explicit provider installations use one link per public skill ID and a receipt outside discovery. The older command without `--provider` retains the single `agent-skills` bundle link for compatibility. Uninstall that legacy bundle before installing flat links into the same discovery directory. For the default legacy target, run these commands from its installed checkout:
+
+```sh
+.venv/bin/python scripts/skills.py uninstall --dry-run
+.venv/bin/python scripts/skills.py uninstall
+.venv/bin/python scripts/skills.py install --provider all --dry-run
+.venv/bin/python scripts/skills.py install --provider all
+```
+
+The legacy uninstall removes only its managed link and receipt. It retains the checkout and personal configuration. Use the same provider and target for later operations.
 
 ## Choose a collection for the task
 
@@ -56,8 +70,16 @@ A lock records the installer process ID. If a lock remains after a crash, verify
 
 To restore manually, uninstall the bundle link from its source checkout. Move each saved source back to its printed source path only when that path is absent. Leave unrelated skill entries in place. Keep the migration receipt until you have checked discovery in a fresh chat.
 
+## Remove an old collection from discovery
+
+Removing another collection is separate from installing Nanide. Inspect the exact discovery entries first. Move an obsolete collection outside every skill discovery root to retain its files and runtime state. For a symlink, preserve or remove the link without deleting its target. Keep a record of the original and backup paths. Do not remove unrelated skills merely because they came from the same source.
+
+The legacy migration command only accepts the source hashes recorded in this repository. Use a separately reviewed backup for customized sources that do not match. A normal Nanide install never removes another collection automatically.
+
 ## Switch checkouts and uninstall
 
 Copy `providers/<provider>/config.local.json` into the destination checkout if you want the same model choices. Run that checkout's installer with the same target. Switching requires the current symlink to match the install receipt, so an arbitrary symlink cannot become managed through replacement.
 
 Run uninstall with the same provider and target from the currently installed checkout. It refuses changed managed links or another checkout's installation. It removes managed links and the current receipt while retaining migration receipts, backups, and local configuration. For the legacy bundle, omit `--provider`.
+
+To remove the global installation from every supported provider, run `scripts/skills.py uninstall --provider all --dry-run`, then omit `--dry-run`. Source files and personal configuration remain.

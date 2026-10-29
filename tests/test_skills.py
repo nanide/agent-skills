@@ -96,6 +96,50 @@ class InstallerTests(unittest.TestCase):
             self.command("uninstall", "--provider", provider)
             self.assertEqual(list(target.iterdir()), [])
 
+    def test_all_providers_share_sources_and_repeat_safely(self):
+        original = sorted(self.home.rglob("*"))
+        self.command("install", "--provider", "all", "--dry-run")
+        self.assertEqual(sorted(self.home.rglob("*")), original)
+        for _ in range(2):
+            self.command("install", "--provider", "all")
+        expected = set(json.loads((self.root / "skill-names.json").read_text()).values())
+        for directory in (".agents", ".cursor", ".claude"):
+            target = self.home / directory / "skills"
+            self.assertEqual({path.name for path in target.iterdir()}, expected)
+            for name in expected:
+                self.assertEqual((target / name / "SKILL.md").resolve(), self.root / "skills" / name / "SKILL.md")
+        self.command("uninstall", "--provider", "all", "--dry-run")
+        self.assertTrue((self.target / "nanide-mode").is_symlink())
+        for _ in range(2):
+            self.command("uninstall", "--provider", "all")
+        for directory in (".agents", ".cursor", ".claude"):
+            self.assertEqual(list((self.home / directory / "skills").iterdir()), [])
+
+    def test_all_provider_preflight_rejects_last_host_collision_before_writes(self):
+        collision = self.home / ".claude/skills/nanide-mode"
+        self.skill(collision, "nanide-mode")
+        self.assertIn("unmanaged", self.command("install", "--provider", "all", success=False).stderr)
+        self.assertFalse((self.home / ".agents").exists())
+        self.assertFalse((self.home / ".cursor").exists())
+        self.assertTrue((collision / "SKILL.md").is_file())
+        self.assertFalse(cli.state_dir(collision.parent).exists())
+
+    def test_all_provider_uninstall_preflight_preserves_other_hosts(self):
+        self.command("install", "--provider", "all")
+        target = self.home / ".claude/skills/nanide-mode"
+        target.unlink()
+        target.symlink_to(self.base / "other")
+        self.assertIn("Managed link changed", self.command("uninstall", "--provider", "all", success=False).stderr)
+        self.assertTrue((self.home / ".agents/skills/nanide-mode").is_symlink())
+        self.assertTrue((self.home / ".cursor/skills/nanide-mode").is_symlink())
+        self.assertEqual(target.readlink(), self.base / "other")
+
+    def test_all_provider_rejects_non_global_options(self):
+        original = sorted(self.home.rglob("*"))
+        for arguments in (("install", "--target-dir", str(self.target)), ("install", "--migrate-from", str(self.legacy)), ("validate",), ("migrate-config",)):
+            self.command(*arguments, "--provider", "all", success=False)
+        self.assertEqual(sorted(self.home.rglob("*")), original)
+
     @patch("builtins.print")
     def test_provider_switch_recovers_after_interruption(self, _print):
         with patch.dict(os.environ, self.environment):

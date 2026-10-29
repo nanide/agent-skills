@@ -8,7 +8,7 @@ Nanide keeps one canonical workflow in `skills/` and shared role defaults in [ag
 | Cursor | [Cursor](cursor/README.md) | `~/.cursor/skills` |
 | Claude Code | [Claude Code](claude/README.md) | `~/.claude/skills` |
 
-Run `python3 scripts/skills.py install --provider <provider> --dry-run` to preview. Replace `<provider>` with `codex`, `cursor`, or `claude`. Each installation links the same shared source. Read [installation](../docs/installation.md) for dependencies, project targets, conflicts, and recovery.
+Run `python3 scripts/skills.py install --provider all --dry-run` to preview one global installation across all supported providers. Omit `--dry-run` to install. Use `codex`, `cursor`, or `claude` instead of `all` to select a single provider. Each installation links the same shared source. Read [installation](../docs/installation.md) for dependencies, project targets, conflicts, and recovery.
 
 ## Configuration
 

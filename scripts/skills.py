@@ -620,7 +620,7 @@ def install_provider(collection: Collection, provider: str, target: Path, comman
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("validate", "install", "uninstall", "migrate-config"))
-    parser.add_argument("--provider", choices=tuple(PROVIDERS))
+    parser.add_argument("--provider", choices=(*PROVIDERS, "all"))
     parser.add_argument("--target-dir", type=Path)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--migrate-from", type=Path)
@@ -633,10 +633,20 @@ def main(argv=None):
                 raise Invalid("migrate-config operates on this checkout, without provider or target options")
             migrate_config(ROOT, args.dry_run)
             return 0
+        if args.provider == "all" and (args.command not in {"install", "uninstall"} or args.target_dir or args.migrate_from):
+            raise Invalid("--provider all supports global install or uninstall without --target-dir or --migrate-from")
         collection = Collection(ROOT, ()) if args.command == "uninstall" else load_collection(ROOT)
         if args.command == "validate":
             validate(collection)
             print(f"Validated {len(collection.skills)} skills in {collection.root}")
+            return 0
+        if args.provider == "all":
+            targets = [(provider, absolute(provider_target(provider))) for provider in PROVIDERS]
+            for provider, target in targets:
+                install_provider(collection, provider, target, args.command, True)
+            if not args.dry_run:
+                for provider, target in targets:
+                    install_provider(collection, provider, target, args.command, False)
             return 0
         if args.provider:
             if args.migrate_from:

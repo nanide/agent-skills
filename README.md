@@ -2,19 +2,30 @@
 
 Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or invoke a helper directly. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
-## Install a development checkout
+## Install once for your user
 
-Use Python 3.9 or newer and Git. From this repository, run:
+Use Python 3.9 or newer and Git. Keep one checkout at a permanent path. New users can start with:
+
+```sh
+git clone https://github.com/nanide/agent-skills.git "$HOME/.local/share/agent-skills/source"
+cd "$HOME/.local/share/agent-skills/source"
+```
+
+If you already have a checkout, use it instead. From that checkout, run:
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python scripts/skills.py validate
-.venv/bin/python scripts/skills.py install --provider <provider> --dry-run
-.venv/bin/python scripts/skills.py install --provider <provider>
+.venv/bin/python scripts/skills.py install --provider all --dry-run
+.venv/bin/python scripts/skills.py install --provider all
 ```
 
-Replace `<provider>` with `codex`, `cursor`, or `claude`. The installer links each skill into that application's discovery directory. All three use the same source files. Refresh discovery in a fresh session. Use `--target-dir` for a project installation. The [provider adapters](providers/README.md) contain discovery paths, invocation syntax, and native tool behavior.
+`--provider all` installs globally for the current user across every supported provider, including ones you may install later. It creates discovery links for Codex, Cursor, and Claude Code. It does not install those applications or copy the skills. All links use this checkout, so one source update reaches all three.
+
+The command checks every target before writing. Rerun it after adding skills or switching checkouts. Keep the checkout at its installed path. Start a fresh agent session to refresh discovery.
+
+For just one provider, replace `all` with `codex`, `cursor`, or `claude`. Use a single provider with `--target-dir` for a project installation. The [provider adapters](providers/README.md) contain discovery paths, invocation syntax, and native tool behavior.
 
 The installer checks for conflicting skill names and unmanaged destination paths. See [installation and recovery](docs/installation.md) for collision rules, migration, and recovery.
 
@@ -47,8 +58,8 @@ The installer rejects conflicting public skill names in checked discovery roots.
 Choose an exact commit or an existing release tag, then follow [release and rollback instructions](docs/releases.md). Installation from another checkout switches the managed links after collision checks. Uninstall with the currently installed checkout:
 
 ```sh
-.venv/bin/python scripts/skills.py uninstall --provider <provider> --dry-run
-.venv/bin/python scripts/skills.py uninstall --provider <provider>
+.venv/bin/python scripts/skills.py uninstall --provider all --dry-run
+.venv/bin/python scripts/skills.py uninstall --provider all
 ```
 
 Uninstall removes the managed discovery links. It retains source files, personal configuration, and migration backups.
