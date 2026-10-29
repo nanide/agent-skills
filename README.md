@@ -1,5 +1,7 @@
 # Agent skills
 
+Nanide is an independently maintained fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack), with credit to Lauren Tan and the upstream contributors.
+
 Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or invoke a helper directly. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install once for your user
@@ -77,4 +79,14 @@ Distributed copies must include the [MIT license](LICENSE) and its attribution.
 
 ## Shared workflows and provider support
 
-The original [pstack](https://github.com/cursor/plugins/tree/main/pstack) informs the skill, playbook, reference, and script structure. Shared skills contain workflow decisions. [Provider adapters](providers/README.md) contain host-specific behavior and metadata. The [review notes](docs/provider-neutral-review.md) explain the changes and validation limits.
+Shared skills contain workflow decisions. [Provider adapters](providers/README.md) contain host-specific behavior and metadata. The [review notes](docs/provider-neutral-review.md) explain the changes and validation limits.
+
+## Upstream attribution
+
+This collection derives from [pstack in cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack). Its skills, engineering principles, playbooks, and supporting tools provided the foundation for Nanide. Thank you to Lauren Tan and the upstream contributors for that work.
+
+Nanide adds its own skill namespace, provider-neutral workflows, provider adapters, a shared global installer, and changes to delegation and verification. Borys maintains this fork independently of upstream.
+
+[upstream.json](upstream.json) records the imported upstream revision and version. [import-receipt.json](import-receipt.json) records hashes of the customized sources used for the import. These records describe provenance, not a claim that this checkout is identical to upstream.
+
+The [MIT license](LICENSE) retains Lauren Tan's copyright notice for the upstream material and adds Borys's notice for Nanide modifications. Upstream attribution does not imply endorsement of this fork. Include the license and copyright notices when redistributing copies or substantial portions of the derived material. README credit supplements these notices; it does not replace them.
