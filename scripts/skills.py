@@ -140,24 +140,34 @@ def import_receipt(root: Path):
 def validate_skill_names(collection: Collection):
     mapping = read_json(collection.root / "skill-names.json")
     if not isinstance(mapping, dict) or not mapping:
-        raise Invalid("skill-names.json: expected the original-to-personal rename map")
-    for original, personal in mapping.items():
-        if (original, personal) == ("setup-pstack", "setup-nanide-skills"):
-            continue
-        if not isinstance(original, str) or not re.fullmatch(r"poteto-[a-z0-9]+(?:-[a-z0-9]+)*", original) or personal != ("audit" if original == "poteto-audit" else original.replace("poteto-", "nanide-", 1)):
-            raise Invalid(f"skill-names.json: invalid rename for {original}")
+        raise Invalid("skill-names.json: expected a source-to-public skill registry")
+    kebab = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+    for source, public in mapping.items():
+        if not isinstance(source, str) or not kebab.fullmatch(source) or not isinstance(public, str) or not kebab.fullmatch(public):
+            raise Invalid("skill-names.json: source and public IDs must be lowercase kebab-case")
+        if not public.startswith("nanide-") and public != "setup-nanide-skills":
+            raise Invalid(f"skill-names.json: public ID must use the Nanide namespace: {public}")
     names = {skill.name for skill in collection.skills}
-    if len(set(mapping.values())) != len(mapping) or not set(mapping.values()) <= names:
-        raise Invalid("skill-names.json: mapped skill names must be unique and present")
-    if set(mapping) & names:
-        raise Invalid("Personal collection retains a renamed source skill name")
-    original_names = "|".join(re.escape(name) for name in mapping)
-    original_reference = re.compile(rf"\$(?:{original_names})(?![\w-])|/(?:{original_names})/SKILL\.md")
-    for path in (collection.root / "skills").rglob("*"):
-        if path.suffix not in {".md", ".yaml"} or any(part in {"node_modules", ".git", ".pstack"} for part in path.relative_to(collection.root).parts):
+    if len(set(mapping.values())) != len(mapping) or set(mapping.values()) != names:
+        raise Invalid("skill-names.json: public IDs must be unique and exactly cover discovered skill names")
+    obsolete = (set(mapping) - names) | {"audit"}
+    identifiers = "|".join(re.escape(name) for name in sorted(obsolete, key=len, reverse=True))
+    selector = re.compile(rf"\$(?:{identifiers})(?![\w-])")
+    local_path = re.compile(rf"(?:(?:\.\./)+|(?<![\w/])skills/)(?:{identifiers})/|/(?:{identifiers})/(?:SKILL\.md|(?:references|scripts|agents)/)")
+    from markdown_it import MarkdownIt
+    parser = MarkdownIt()
+    documents = [collection.root / "README.md"]
+    for folder in ("skills", "docs", "agents"):
+        documents.extend((collection.root / folder).rglob("*"))
+    for path in documents:
+        if not path.is_file() or path.suffix not in {".md", ".yaml", ".sh", ".ts", ".mjs"} or any(part in {"node_modules", ".git", ".pstack"} for part in path.relative_to(collection.root).parts):
             continue
-        if path.is_file() and original_reference.search(path.read_text()):
-            raise Invalid(f"{path}: personal skill references the original namespace")
+        text = path.read_text()
+        selectable = text if path.suffix == ".yaml" else ""
+        if path.suffix == ".md":
+            selectable = "\n".join(token.content for token in parser.parse(text) if token.type == "inline" or token.type == "fence" and token.info.strip() in {"", "text", "md", "markdown"})
+        if local_path.search(text) or selector.search(selectable):
+            raise Invalid(f"{path}: obsolete local skill selector or path")
 
 
 def markdown_links(root: Path):
@@ -296,21 +306,9 @@ def check_collisions(collection: Collection, target: Path, excluded: set[Path], 
     if migration:
         roots.add(migration)
     wanted = {s.name for s in collection.skills}
-    renamed = read_json(collection.root / "skill-names.json")
-    baseline = {
-        codex_skills / relative: digest
-        for relative, digest in import_receipt(collection.root)["files"].items()
-        if Path(relative).name == "SKILL.md" and Path(relative).parent.name in wanted - set(renamed.values())
-    }
     for directory in sorted(roots):
         for skill in discovery_skills(directory, excluded):
             if skill.name in wanted:
-                digest = baseline.get(skill.source)
-                if digest and skill.source.parent.name == skill.name:
-                    relative = skill.source.relative_to(codex_skills)
-                    paths = [codex_skills.joinpath(*relative.parts[:i]) for i in range(1, len(relative.parts) + 1)]
-                    if not any(path.is_symlink() for path in paths) and hashlib.sha256(skill.source.read_bytes()).hexdigest() == digest:
-                        continue
                 raise Invalid(f"Skill name collision: {skill.name} at {skill.source}. Move or rename that skill before installing.")
 
 

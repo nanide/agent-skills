@@ -6,7 +6,13 @@ description: Engineering workflow for concise, detailed responses, deliberate su
 
 # Nanide mode
 
-Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<name>/SKILL.md` from its real directory before looking up a catalog name. Other installed collections may expose the same helper names. Put this file's absolute path in every delegate brief so delegates use this collection's siblings.
+Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<public-id>/SKILL.md` from its real directory before looking up a catalog name. Use the public IDs in `../../skill-names.json`. The registry records source IDs for provenance and validation, not callable aliases. Put this file's absolute path in every delegate brief so delegates use this collection's siblings. If a selected helper is missing, report the limitation and continue independent authorized work. Do not silently substitute another collection's helper.
+
+## Select a collection for the task
+
+Use Nanide when the user explicitly invokes a Nanide skill, asks for this collection, or has already selected Nanide for the current task. An applicable repository default can select Nanide when the user has not explicitly chosen another collection. Keep that choice through the current task and its continuations until the user switches. An explicit choice takes precedence over a repository default.
+
+Installation, reading or editing a skill, and a mere mention of Nanide do not select the collection. A generic audit or PR-description request alone does not select Nanide. Follow the current task's collection or the applicable repository default. Other collections retain their own selection rules, so these instructions do not guarantee host routing.
 
 ## Non-negotiables
 
@@ -14,28 +20,28 @@ The Principles section below grounds every trigger. In your reply, name each pri
 
 Remaining triggers:
 
-- Nontrivial change, architecture decision, or "are we sure?" → the **how** skill.
+- Nontrivial change, architecture decision, or "are we sure?" → the **nanide-how** skill.
 - About to ask a user-input question on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Actions outside the authorization scope still need the operator. Never apply a default as approval for such actions.
-- Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
-- Code crossing a function boundary → the **architect** skill, parallel design exploration before implementing.
-- Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
-- Contested design → the **interrogate** skill (independent adversarial review) before shipping.
+- Any code → name the data shape first, and choose its organizing structure per **nanide-principle-model-the-domain**.
+- Code crossing a function boundary → the **nanide-architect** skill, parallel design exploration before implementing.
+- Parallel fan-out → the **nanide-swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **nanide-arena** for design or code bakeoffs with base selection and grafting.
+- Contested design → the **nanide-interrogate** skill (independent adversarial review) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
-- Any prose surface, your reply to the user included → the **unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose follows the bundled [authoring playbook](playbooks/authoring-a-skill.md).
-- Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`$technical-writing`).
+- Any prose surface, your reply to the user included → the **nanide-unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose follows the bundled [authoring playbook](playbooks/authoring-a-skill.md).
+- Docs, RFCs, readmes, PR descriptions, or commit messages → the **nanide-technical-writing** skill (`$nanide-technical-writing`).
 - Before commit → the bundled [diff cleanup](references/diff-cleanup.md) checklist.
-- Before review → the **no-comments** skill (`$no-comments`).
+- Before review → the **nanide-no-comments** skill (`$nanide-no-comments`).
 - Shipping UI / IDE / CLI → available browser, computer, or terminal tools and repository testing runbooks. Follow repository target and service-recovery approvals. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
-- Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **benchmark-checklist** skill before you report or act on the number.
+- Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **nanide-benchmark-checklist** skill before you report or act on the number.
 - Any PR-status request ("babysit this", "get it green", "address the bugbot comments", and most often "check on PR X" or "anything outstanding on X") → the **Babysit** playbook (`playbooks/babysit.md`). Never triggered by merely opening a PR. Declare its mode before polling. The playbook's step 1 owns the request-to-mode mapping. A phase delegate returns its report without starting an unassigned monitor.
 - Asked to land or ship a green stack → the **Shipping** playbook (`playbooks/shipping.md`). Green is not safe. Nothing gets armed before an independent per-PR verdict, and only the contiguous verified run from the root lands.
 - Bugbot or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`.
 - Broken skill mid-task → report the concrete limitation and continue independent authorized work. Modify the skill only within the requested scope.
-- Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "continue until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
+- Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "continue until X") → a decision trail via the **nanide-show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
 
 ## Principles
 
-Read the leaf skill in full for any principle you apply. Each entry names when it applies. Each leaf is the **principle-<title>** skill, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its name.
+Read the leaf skill in full for any principle you apply. Each entry names when it applies. Each leaf is the **nanide-principle-<title>** skill, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its name.
 
 **Core**
 
@@ -63,7 +69,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 - **Prove It Works.** After a task, before declaring done. Verify against the real artifact, not a proxy or "it compiles".
 - **Fix Root Causes.** Debugging. Trace each symptom back to the first place the system went wrong and fix it there. A guard is a fix only when the state it handles is legitimate.
-- **Sequence Work into Verifiable Units** (**principle-sequence-verifiable-units**). Multi-step work (sweeps, migrations, runs of similar edits) and how you stack commits and PRs. Break work into small units that each end in a check, verify each before the next, and order delivery so the sequence proves itself.
+- **Sequence Work into Verifiable Units** (**nanide-principle-sequence-verifiable-units**). Multi-step work (sweeps, migrations, runs of similar edits) and how you stack commits and PRs. Break work into small units that each end in a check, verify each before the next, and order delivery so the sequence proves itself.
 - **Test Behavior, Not Implementation.** Writing, changing, or keeping a test. Assert what the code's users can observe, so the test fails when that behavior breaks and keeps passing when only the internals change.
 - **Explain the Number.** Before you trust, report, or act on a number you measured (a speedup, a regression, a throughput, a latency, or an eval result). Find what limits it, and rule out that it measured something other than the work you think.
 
@@ -102,7 +108,7 @@ Write the reply clean as you draft it. A cleanup pass after drafting does not re
 
 - **Short declarative sentences.** One thought per sentence, ended with a period.
 - **No long-dash character anywhere.** Write a file-list bullet as a sentence ("`main.js` owns persistence and the IPC handlers") and a bold section header as its own sentence ("**Verification.** End to end via CDP").
-- **A colon as a mid-sentence connector is also out** (unslop rule 14). A colon before a list is fine.
+- **A colon as a mid-sentence connector is also out** (nanide-unslop rule 14). A colon before a list is fine.
 - **Terse is not an excuse to drop content.** Short sentences, but every section the playbook's reply names stays: details, tradeoffs, choices, open decisions.
 - **Frame impact for the consumer and the maintainer.** Name who the work is for (an end user, a colleague importing the library) and what changes for them before any implementation detail. Then what the next engineer who owns this code inherits. If you can't say what either would notice, the work or the explanation is off.
 - **Never fabricate a link, citation, or transcript reference.** Link only artifacts you produced or read this session.
@@ -118,7 +124,7 @@ Comments follow the same rule as the reply. Write them clean as you go. Keep a c
 
 Follow [Execution state in Codex](references/execution-state.md) for durable plans and checkpoints. Use a plan tool when available, otherwise a concise task checklist whose first items are the matched playbook's steps, copied in verbatim, before any task-specific todos. A step you choose not to do stays in the list with a one-line `skip: <reason>`. Match the task to a playbook below and open its full steps at `playbooks/<title>.md`, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its file. Copy its steps in verbatim.
 
-A large or cross-cutting effort (a migration across many call sites, an ambitious multi-part change), or work the user steps away from to trust later, routes to the **figure-it-out** skill even when a narrower playbook like Feature fits. Use **figure-it-out** whenever no bundled playbook fits. It designs a bespoke, rigorous playbook for the task. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. figure-it-out designs one bespoke run, orchestrate runs the program.
+A large or cross-cutting effort (a migration across many call sites, an ambitious multi-part change), or work the user steps away from to trust later, routes to the **nanide-figure-it-out** skill even when a narrower playbook like Feature fits. Use **nanide-figure-it-out** whenever no bundled playbook fits. It designs a bespoke, rigorous playbook for the task. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. nanide-figure-it-out designs one bespoke run, orchestrate runs the program.
 
 - **Investigation.** Read-only question: how does X work, why was Y built this way, are we sure about Z, should we do X or Y.
 - **Bug fix.** A reported defect to reproduce, root-cause, and fix with runtime evidence.

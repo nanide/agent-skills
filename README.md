@@ -26,7 +26,7 @@ Invoke [`$nanide-mode`](skills/nanide-mode/SKILL.md) with a task and a check tha
 $nanide-mode investigate why retries create duplicate records. reproduce, fix, and verify.
 ```
 
-`$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. If another collection exposes the same helper name, select a direct helper by its source path. Duplicate catalog selectors establish no override precedence.
+`$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. All helper selectors use `nanide-`, such as `$nanide-how` and `$nanide-audit`. `$setup-nanide-skills` keeps its existing name. Old generic selectors have no Nanide aliases. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
 
 The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the available skills and playbooks.
 
@@ -38,7 +38,7 @@ Model roles default to `inherit-parent`, with two independent reviewers per pane
 
 Create a branch in this checkout with `git switch -c improve-skill-name`. Edit its linked source while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
 
-A project installation does not override a global installation. The installer refuses duplicate names outside its recorded collision exception. Use a separate test environment or uninstall the global bundle before trying another project target.
+A project installation does not override a global installation. The installer refuses every duplicate public skill name. Use a separate test environment or uninstall the global bundle before trying another project target.
 
 ## Install a stable version or roll back
 

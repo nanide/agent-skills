@@ -1,9 +1,11 @@
 ---
 name: nanide-pr-description
-description: Write or update PR descriptions with the main change first, evidence-backed details about behavior and output, and focused guidance for reviewers. Use when drafting, rewriting, or refreshing a pull request body. Does not cover title-only edits or PR status monitoring.
+description: "For tasks that selected Nanide, write or update PR descriptions with evidence-backed details and focused reviewer guidance. Use only for explicit invocation, an established current Nanide workflow, or an applicable repository default absent an explicit choice of another collection. Generic requests and installation alone do not select Nanide. Excludes title-only edits and PR monitoring."
 ---
 
 # PR descriptions
+
+Apply this skill only when Nanide is selected for the current task under [collection selection](../nanide-mode/SKILL.md#select-a-collection-for-the-task). An explicit choice of another collection takes precedence over a repository default. Installation, a generic request, or reading and editing this skill does not select Nanide.
 
 Write a briefing for a reviewer who has not seen the conversation. Lead with what the PR changes and why that matters. Explain the consequential details, effects on consumers and maintainers, and what deserves review. Adapt the length and sections to the change rather than filling a fixed template.
 

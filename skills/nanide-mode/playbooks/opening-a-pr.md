@@ -6,7 +6,7 @@ Use when opening a PR is within the requested task. Investigations and local-onl
 
 **Commits.** Commit each completed, reviewed, validated phase before starting the next. Preserve those phase commits unless the user requests history rewriting. Commit bodies don't restate the subject.
 
-**PRs.** Apply the bundled [diff cleanup](../references/diff-cleanup.md) before commit and `$no-comments` before review. Write every PR title, description, and commit body with `$technical-writing` (every layer except Diátaxis, and apply the STE vocabulary rules: one word per action, keep articles, a plain verb over `-ing` where one works), then apply `$unslop`.
+**PRs.** Apply the bundled [diff cleanup](../references/diff-cleanup.md) before commit and `$nanide-no-comments` before review. Write every PR title, description, and commit body with `$nanide-technical-writing` (every layer except Diátaxis, and apply the STE vocabulary rules: one word per action, keep articles, a plain verb over `-ing` where one works), then apply `$nanide-unslop`.
 
 **Titles.** Conventional Commits `type(scope): subject`, no trailing period. Type such as `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, or `perf`. Scope is the area, such as `skills` or `nanide-mode`. Subject is short, imperative, and names a real symbol when one carries the change, for example `fix(nanide-mode): retarget opening-a-pr babysit trigger`.
 
@@ -31,4 +31,4 @@ After the sections, attach videos or screenshots when they prove a claim. Full S
 
 **Babysit.** Opening a PR does not start a babysit. Post the URL and keep building. Finish the phase or stack first. Run a separate babysit pass only when the user asks for one after the whole stack exists. A babysit for each new PR stalls the build and spends checks on commits later waves restart. Push back when feedback drifts from intent.
 
-A subagent that opens a PR runs `interrogate`, the focused diff cleanup above, and `$no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.
+A subagent that opens a PR runs `nanide-interrogate`, the focused diff cleanup above, and `$nanide-no-comments`, and posts the URL. It returns to the parent without babysitting, unless it is an Autopilot-full or Autopilot-stack owner. That owner's brief assigns the babysit loop and is the ask `playbooks/babysit.md` waits for. The owner starts the loop after its code-ready report, reports merge-ready or STACK-READY per its playbook, and is exempt from the rules here and in `playbooks/babysit.md` that hold babysitting until a whole stack is built.

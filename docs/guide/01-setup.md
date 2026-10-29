@@ -12,9 +12,9 @@ Setup preserves existing overrides unless you ask to change them. Remove a role'
 
 ## Choose verification for your project
 
-Use the repository's existing verification tools first. If none can prove the changed behavior, `$create-verification-skill` can create a project skill with launch, control, evidence, and cleanup steps. It follows the repository's skill-directory convention. Personal skills belong under `~/.codex/skills`.
+Use the repository's existing verification tools first. If none can prove the changed behavior, `$nanide-create-verification-skill` can create a project skill with launch, control, evidence, and cleanup steps. It follows the repository's skill-directory convention. Personal skills belong under `~/.codex/skills`.
 
-Use `$create-formal-verification-skill` when one important property needs a model checker or another verifier. The result states the model, bounds, and limitations. Neither generator changes product code or creates schedules merely because you ran setup.
+Use `$nanide-create-formal-verification-skill` when one important property needs a model checker or another verifier. The result states the model, bounds, and limitations. Neither generator changes product code or creates schedules merely because you ran setup.
 
 ## Keep cost in check
 

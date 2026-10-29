@@ -6,13 +6,13 @@ Here's what you'll learn:
 
 1. [Set up Nanide skills](./01-setup.md). Install the plugin and pick your models.
 2. [Route work through `$nanide-mode`](./02-nanide-mode.md). Give it a goal and watch it pick a playbook.
-3. [Understand the code](./03-understand.md). A read-only investigation, then `$how`, `$why`, `$teach`, and `$recall` before you edit anything.
-4. [Design the change](./04-design.md). `$architect`, `$arena`, `$swarm`, `$interrogate`, prototypes, and plans before code locks in a shape.
-5. [Build and clean the change](./05-build-and-clean.md). The build playbooks, `$tdd`, `$unslop`, and `$no-comments`.
-6. [Verify and ship](./06-verify-and-ship.md). Prove behavior on the real app, formally verify what tests rarely reach, vet numbers with `$benchmark-checklist`, then open a focused PR and drive it to merged.
+3. [Understand the code](./03-understand.md). A read-only investigation, then `$nanide-how`, `$nanide-why`, `$nanide-teach`, and `$nanide-recall` before you edit anything.
+4. [Design the change](./04-design.md). `$nanide-architect`, `$nanide-arena`, `$nanide-swarm`, `$nanide-interrogate`, prototypes, and plans before code locks in a shape.
+5. [Build and clean the change](./05-build-and-clean.md). The build playbooks, `$nanide-tdd`, `$nanide-unslop`, and `$nanide-no-comments`.
+6. [Verify and ship](./06-verify-and-ship.md). Prove behavior on the real app, formally verify what tests rarely reach, vet numbers with `$nanide-benchmark-checklist`, then open a focused PR and drive it to merged.
 7. [Run work while you sleep](./07-overnight.md). Trust before loops, an overnight contract, a decision log you can audit, and Projects and automations that scale past one agent.
 8. [Steer with principle names](./08-principles.md). The 24 names that redirect an agent mid-task.
-9. [Make it yours](./09-make-it-yours.md). Your own mode, `$correct` for repeated mistakes, and how to test a skill change.
+9. [Make it yours](./09-make-it-yours.md). Your own mode, `$nanide-correct` for repeated mistakes, and how to test a skill change.
 10. [Recipes and pitfalls](./10-recipes-and-pitfalls.md). Prompts to copy and mistakes to skip.
 
 Read the pages in order the first time. After that, each page stands alone.

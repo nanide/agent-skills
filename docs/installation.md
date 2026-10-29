@@ -16,11 +16,23 @@ The installer checks the target directory, `~/.agents/skills`, `${CODEX_HOME:-$H
 
 Run the normal install command without a migration option to leave other collections in place. Each collection keeps its own model configuration. Save this collection's model choices in ignored `codex-config.local.json`.
 
-The collision exception covers helper IDs at exact `SKILL.md` locations under `${CODEX_HOME:-$HOME/.codex}/skills`, recorded in [the import receipt](../import-receipt.json). Their file hashes must match the receipt, and the paths cannot contain symlinks below that discovery root. Modified files and duplicate names at other paths stop installation.
+Each live public skill ID uses `nanide-`, except `$setup-nanide-skills`. For example, use `$nanide-how`, `$nanide-interrogate`, and `$nanide-audit` instead of the old generic Nanide selectors. Existing `$nanide-*` selectors keep their names. The [registry](../skill-names.json) records every source-to-public mapping and creates no runtime aliases. The old `how` selector belongs to other installed collections.
 
-`$nanide-mode` resolves its own sibling helpers. If another collection exposes the same helper name, select a direct helper by source path. Duplicate catalog selectors establish no override precedence.
+Any external skill with the same public ID stops installation, even when its bytes match this collection or it is reached through a symlink. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
 
 The discovery link is named `agent-skills`. The installer uses that identity when switching checkouts.
+
+## Choose a collection for the task
+
+Explicitly invoke a Nanide skill or ask to use Nanide to select it for the current task. Keep that collection through the task's continuations unless you explicitly switch. A repository default applies only when you have not explicitly chosen a collection. Installing Nanide or asking for a generic audit or PR description alone does not select it. Reading or editing a skill is not a choice to use its workflow.
+
+For an optional project default, add this to the project's `AGENTS.md`:
+
+```text
+When no collection has been explicitly selected for the current task, use Nanide for completion audits and PR descriptions. Use $nanide-audit and $nanide-pr-description. Keep an explicit collection choice through the current task unless the user switches.
+```
+
+The [selection guidance](../skills/nanide-mode/SKILL.md#select-a-collection-for-the-task) governs Nanide's helpers. Other installed collections retain their own descriptions and routing rules. This guidance does not promise deterministic host selection or suppress third-party skills. The installer stores no collection-selection state. Review [selection scenarios](collection-selection-scenarios.md) when changing these instructions.
 
 ## Migrate an installation
 
