@@ -2,7 +2,7 @@
 
 Nanide is an independently maintained fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack), with credit to Lauren Tan and the upstream contributors.
 
-Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or invoke a helper directly. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or request a named helper through that mode. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install once for your user
 
@@ -39,7 +39,7 @@ Invoke [`$nanide-mode`](skills/nanide-mode/SKILL.md) with a task and a check tha
 $nanide-mode investigate why retries create duplicate records. reproduce, fix, and verify.
 ```
 
-`$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. All helper selectors use `nanide-`, such as `$nanide-how` and `$nanide-audit`. `$setup-nanide-skills` keeps its existing name. Old generic selectors have no Nanide aliases. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
+`$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. All helper IDs use `nanide-`, such as `nanide-how` and `nanide-audit`. Provider installations expose only the [main entry points](providers/README.md#autocomplete-entry-points) in discovery. Ask `$nanide-mode` to use other helpers by name. `$setup-nanide-skills` keeps its existing name. Old generic selectors have no Nanide aliases. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
 
 Use [`$nanide-mode`](skills/nanide-mode/SKILL.md#work-on-a-pr) for PR writing, creation, review, metadata, status, CI, or shipping within the requested scope. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references.
 

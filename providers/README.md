@@ -10,6 +10,14 @@ Nanide keeps one canonical workflow in `skills/` and shared role defaults in [ag
 
 Run `python3 scripts/skills.py install --provider all --dry-run` to preview one global installation across all supported providers. Omit `--dry-run` to install. Use `codex`, `cursor`, or `claude` instead of `all` to select a single provider. Each installation links the same shared source. Read [installation](../docs/installation.md) for dependencies, project targets, conflicts, and recovery.
 
+## Autocomplete entry points
+
+The `entry_points` list in each provider’s `adapter.json` limits local discovery to `nanide-mode`, `nanide-goal`, `nanide-help`, `nanide-audit`, and `setup-nanide-skills`. The installer validates these names against the collection. An adapter without this optional list installs every skill.
+
+Run the provider install command again to remove previously managed helper links. The source files remain in the checkout. Main workflows resolve their real source paths and read sibling helpers directly. Helpers no longer have individual autocomplete entries. To request one, ask `nanide-mode` to use the named helper.
+
+This controls filesystem discovery, not a host visibility flag. A separately installed copy can still appear in autocomplete. Legacy bundle installations without `--provider` still expose the full collection. Follow the [legacy bundle conversion](../docs/installation.md#install-alongside-other-collections) before using this entry-point list.
+
 ## Configuration
 
 Resolve paths from this repository's real directory, following symlinks. Read `providers/<provider>/config.local.json` when present, otherwise `providers/<provider>/config.json` when present, otherwise [agent-config.json](../agent-config.json). Each file is a complete replacement, not a merge. Reject malformed configuration instead of falling back. Keep personal model IDs in the ignored provider-local file.

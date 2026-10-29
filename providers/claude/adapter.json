@@ -1,4 +1,11 @@
 {
+  "entry_points": [
+    "nanide-mode",
+    "nanide-goal",
+    "nanide-help",
+    "nanide-audit",
+    "setup-nanide-skills"
+  ],
   "discovery_directory": ".claude/skills",
   "additional_discovery_directories": [],
   "environment_discovery_directories": {}

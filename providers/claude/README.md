@@ -1,6 +1,8 @@
 # Claude Code adapter
 
-Install with `python3 scripts/skills.py install --provider claude`. Personal discovery uses `~/.claude/skills`. Use `--target-dir /path/to/project/.claude/skills` for a project. Start a fresh session and invoke `/nanide-mode` or another public skill ID. See the official [skills documentation](https://code.claude.com/docs/en/skills). This adapter targets filesystem-based Claude Code installations, not uploads to every Claude product.
+Install with `python3 scripts/skills.py install --provider claude`. Personal discovery uses `~/.claude/skills`. Use `--target-dir /path/to/project/.claude/skills` for a project. Start a fresh session and invoke `/nanide-mode` or another installed entry point. See the official [skills documentation](https://code.claude.com/docs/en/skills). This adapter targets filesystem-based Claude Code installations, not uploads to every Claude product.
+
+See [autocomplete entry points](../README.md#autocomplete-entry-points) for the installed list and helper access.
 
 ## Tools
 

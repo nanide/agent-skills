@@ -1,6 +1,8 @@
 # Cursor adapter
 
-Install with `python3 scripts/skills.py install --provider cursor`. Personal discovery uses `~/.cursor/skills`. Use `--target-dir /path/to/project/.cursor/skills` for a project. Start a fresh session and invoke `/nanide-mode` or another public skill ID. See the official [skills documentation](https://cursor.com/docs/skills).
+Install with `python3 scripts/skills.py install --provider cursor`. Personal discovery uses `~/.cursor/skills`. Use `--target-dir /path/to/project/.cursor/skills` for a project. Start a fresh session and invoke `/nanide-mode` or another installed entry point. See the official [skills documentation](https://cursor.com/docs/skills).
+
+See [autocomplete entry points](../README.md#autocomplete-entry-points) for the installed list and helper access.
 
 ## Tools
 

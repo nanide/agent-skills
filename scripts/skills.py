@@ -250,7 +250,10 @@ def validate(collection: Collection):
         if not isinstance(data, dict) or ("policy" in data and (not isinstance(data["policy"], dict) or ("allow_implicit_invocation" in data["policy"] and type(data["policy"]["allow_implicit_invocation"]) is not bool))):
             errors.append(f"{path}: policy.allow_implicit_invocation must be boolean")
     for provider in PROVIDERS:
-        adapter_config(root, provider)
+        adapter = adapter_config(root, provider)
+        unknown = set(adapter.get("entry_points", [])) - {skill.name for skill in collection.skills}
+        if unknown:
+            errors.append(f"{provider}: unknown entry_points: {', '.join(sorted(unknown))}")
     manifest = read_json(root / "plugin.json")
     try:
         from jsonschema import Draft202012Validator
@@ -509,8 +512,13 @@ def plan_uninstall(collection: Collection, target: Path):
 def adapter_config(root: Path, provider: str):
     path = root / "providers" / provider / "adapter.json"
     adapter = read_json(path)
-    if not isinstance(adapter, dict) or set(adapter) != {"discovery_directory", "additional_discovery_directories", "environment_discovery_directories"} or not isinstance(adapter["additional_discovery_directories"], list):
+    required = {"discovery_directory", "additional_discovery_directories", "environment_discovery_directories"}
+    if not isinstance(adapter, dict) or not required <= set(adapter) or set(adapter) - required - {"entry_points"} or not isinstance(adapter["additional_discovery_directories"], list):
         raise Invalid(f"Invalid provider adapter: {path}")
+    if "entry_points" in adapter:
+        entries = adapter["entry_points"]
+        if not isinstance(entries, list) or not entries or any(not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) for name in entries) or len(set(entries)) != len(entries):
+            raise Invalid(f"Invalid entry_points in {path}")
     environments = adapter["environment_discovery_directories"]
     if not isinstance(environments, dict) or any(not re.fullmatch(r"[A-Z_][A-Z_0-9]*", key) for key in environments):
         raise Invalid(f"Invalid provider environment directories: {path}")
@@ -563,7 +571,8 @@ def install_provider(collection: Collection, provider: str, target: Path, comman
         owned = previous.get("links", {}) if previous else {}
         if not isinstance(owned, dict) or any(not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) or not isinstance(source, str) for name, source in owned.items()):
             raise Invalid(f"Invalid installation record: {record}")
-        desired = {skill.name: str(skill.source) for skill in collection.skills} if command == "install" else {}
+        entries = set(adapter.get("entry_points", [skill.name for skill in collection.skills]))
+        desired = {skill.name: str(skill.source) for skill in collection.skills if skill.name in entries} if command == "install" else {}
         if command == "install":
             validate(collection)
         elif previous and previous.get("root") != str(collection.root):

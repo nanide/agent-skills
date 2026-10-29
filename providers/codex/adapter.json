@@ -1,4 +1,11 @@
 {
+  "entry_points": [
+    "nanide-mode",
+    "nanide-goal",
+    "nanide-help",
+    "nanide-audit",
+    "setup-nanide-skills"
+  ],
   "discovery_directory": ".agents/skills",
   "additional_discovery_directories": [
     ".codex/skills"
