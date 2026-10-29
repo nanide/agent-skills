@@ -42,6 +42,10 @@ class InstallerTests(unittest.TestCase):
         script = self.root / "skills/nanide-mode/scripts/check-plan.mjs"
         script.parent.mkdir()
         script.write_text("export {};\n")
+        for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
+            reference = self.root / "skills/nanide-mode/references" / name
+            reference.parent.mkdir(exist_ok=True)
+            reference.write_text("# PR instructions\n")
         self.write_json(self.root / "skill-names.json", mapping)
         self.populate_legacy()
         self.receipt = self.make_receipt()
@@ -59,7 +63,7 @@ class InstallerTests(unittest.TestCase):
     def populate_legacy(self):
         self.write_json(self.legacy / "pstack/codex-config.json", self.defaults)
         for name, public in json.loads((SOURCE / "skill-names.json").read_text()).items():
-            if name == public or name == "poteto-pr-description":
+            if name == public:
                 continue
             self.skill(self.legacy / "pstack/skills" / name, name)
         for name in cli.LEGACY[1:]:
@@ -102,7 +106,7 @@ class InstallerTests(unittest.TestCase):
         discovered = list(cli.discovery_skills(self.legacy, set())) + list(cli.discovery_skills(self.target, set()))
         names = [skill.name for skill in discovered]
         personal_names = {skill.name for skill in cli.load_collection(self.root).skills}
-        self.assertEqual(set(names), {source for source, public in mapping.items() if source != public} | personal_names | {"prepare-goal", "research-to-goal"})
+        self.assertEqual(set(names), {source for source, public in mapping.items() if source != public} | personal_names | {"poteto-pr-description", "prepare-goal", "research-to-goal"})
         self.assertEqual(len(names), len(set(names)))
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertEqual(self.make_receipt()["files"], baseline)
@@ -488,28 +492,53 @@ class InstallerTests(unittest.TestCase):
             "poteto-goal": "nanide-goal",
             "poteto-help": "nanide-help",
             "poteto-mode": "nanide-mode",
-            "poteto-pr-description": "nanide-pr",
             "setup-pstack": "setup-nanide-skills",
         }
         self.assertEqual({name: mapping[name] for name in original_brands}, original_brands)
         receipt = json.loads((SOURCE / "import-receipt.json").read_text())
         historical = {Path(path).parent.name for path in receipt["files"] if path.startswith("pstack/skills/") and Path(path).name == "SKILL.md"} | {"poteto-pr-description"}
-        self.assertEqual({source for source, public in mapping.items() if source != public}, historical)
+        self.assertIn("poteto-pr-description/SKILL.md", receipt["files"])
+        self.assertIn("poteto-pr-description", receipt["sources"])
+        self.assertNotIn("poteto-pr-description", mapping)
+        self.assertEqual({source for source, public in mapping.items() if source != public}, historical - {"poteto-pr-description"})
         self.assertTrue(all(public == "nanide-" + source for source, public in mapping.items() if source not in original_brands and source != public))
         self.assertEqual(set(mapping.values()), {skill.name for skill in cli.load_collection(SOURCE).skills})
-        self.assertFalse((SOURCE / "skills/nanide-pr-description").exists())
-        self.assertTrue((SOURCE / "skills/nanide-pr/SKILL.md").is_file())
+        for name in cli.RETIRED_SKILLS:
+            self.assertNotIn(name, mapping.values())
+            self.assertFalse((SOURCE / "skills" / name).exists())
         self.assertFalse((SOURCE / "skills/audit").exists())
         self.assertFalse((SOURCE / "skills/how").exists())
 
     def test_obsolete_selectors_and_paths_fail_but_shell_variables_do_not(self):
         path = self.root / "skills/nanide-mode/SKILL.md"
         original = path.read_text()
-        for reference in ("Use $nanide-pr-description.", "Read ../nanide-pr-description/SKILL.md.", "Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md.", "Use $how.", "Read ../how/SKILL.md.", "Use $audit.", "Read ../audit/SKILL.md.", "Read ../how/scripts/check.sh.", "Read skills/how/.", "Read ../audit/."):
+        for reference in ("Use $poteto-pr-description.", "Read ../poteto-pr-description/SKILL.md.", "Read skills/poteto-pr-description/references/descriptions.md.", "Use $nanide-pr.", "Read ../nanide-pr/SKILL.md.", "Read ../nanide-pr/references/titles.md.", "Use $nanide-pr-description.", "Read ../nanide-pr-description/SKILL.md.", "Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md.", "Use $how.", "Read ../how/SKILL.md.", "Use $audit.", "Read ../audit/SKILL.md.", "Read ../how/scripts/check.sh.", "Read skills/how/.", "Read ../audit/."):
             with self.subTest(reference=reference):
                 path.write_text(original + reference + "\n")
                 self.assertIn("obsolete local skill", self.command("validate", success=False).stderr)
         path.write_text(original + "Use $nanide-how and read ../nanide-how/SKILL.md.\n```sh\nhow=example\nprintf '%s' \"$how\"\n```\nExplain how this works and why.\n")
+        self.command("validate")
+
+    def test_registry_rejects_retired_skills_even_if_recreated(self):
+        path = self.root / "skill-names.json"
+        mapping = json.loads(path.read_text())
+        for source, public in (("poteto-pr-description", "nanide-new-pr"), ("nanide-pr-description", "nanide-pr-description"), ("nanide-pr", "nanide-pr")):
+            with self.subTest(source=source):
+                self.skill(self.root / "skills" / public, public)
+                self.write_json(path, {**mapping, source: public})
+                self.assertIn("retired skill", self.command("validate", success=False).stderr)
+                shutil.rmtree(self.root / "skills" / public)
+        self.write_json(path, mapping)
+        self.command("validate")
+
+    def test_required_pr_references_cannot_be_missing(self):
+        for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
+            path = self.root / "skills/nanide-mode/references" / name
+            original = path.read_text()
+            with self.subTest(reference=name):
+                path.unlink()
+                self.assertIn("Missing required reference " + str(path.relative_to(self.root)), self.command("validate", success=False).stderr)
+                path.write_text(original)
         self.command("validate")
 
     def test_renamed_sibling_paths_resolve_through_installed_symlink(self):
@@ -519,6 +548,16 @@ class InstallerTests(unittest.TestCase):
         entry = self.target / cli.BUNDLE / "nanide-mode/SKILL.md"
         real = entry.resolve()
         self.assertEqual(real, self.root / "skills/nanide-mode/SKILL.md")
+        discovered = list(cli.discovery_skills(self.target, set()))
+        names = [skill.name for skill in discovered]
+        self.assertEqual(len(names), len(set(names)))
+        self.assertEqual(set(names), set(json.loads((self.root / "skill-names.json").read_text()).values()))
+        self.assertFalse(set(names) & set(cli.RETIRED_SKILLS))
+        for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
+            reference = entry.parent / "references" / name
+            self.assertTrue(reference.is_file())
+            self.assertEqual(reference.resolve(), real.parent / "references" / name)
+        self.assertEqual(cli.markdown_links(self.root), [])
         for public in json.loads((self.root / "skill-names.json").read_text()).values():
             sibling = real.parent / ".." / public / "SKILL.md"
             self.assertTrue(sibling.is_file(), str(sibling))

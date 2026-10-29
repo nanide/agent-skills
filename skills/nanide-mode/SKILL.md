@@ -33,12 +33,29 @@ Remaining triggers:
 - Before review → the **nanide-no-comments** skill (`$nanide-no-comments`).
 - Shipping UI / IDE / CLI → available browser, computer, or terminal tools and repository testing runbooks. Follow repository target and service-recovery approvals. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
 - Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **nanide-benchmark-checklist** skill before you report or act on the number.
-- PR work, including bodies, titles, creation, review, and metadata → [nanide-pr](../nanide-pr/SKILL.md). Its routes preserve the requested scope. Editing the skill itself is skill authoring.
+- PR work, including bodies, titles, creation, review, and metadata → use [Work on a PR](#work-on-a-pr) below. Read only the instructions for the requested operation. Editing PR guidance itself is skill authoring.
 - Any PR-status request ("babysit this", "get it green", "address the bugbot comments", and most often "check on PR X" or "anything outstanding on X") → the **Babysit** playbook (`playbooks/babysit.md`). Never triggered by merely opening a PR. Declare its mode before polling. The playbook's step 1 owns the request-to-mode mapping. A phase delegate returns its report without starting an unassigned monitor.
 - Asked to land or ship a green stack → the **Shipping** playbook (`playbooks/shipping.md`). Green is not safe. Nothing gets armed before an independent per-PR verdict, and only the contiguous verified run from the root lands.
 - Bugbot or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`.
 - Broken skill mid-task → report the concrete limitation and continue independent authorized work. Modify the skill only within the requested scope.
 - Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "continue until X") → a decision trail via the **nanide-show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
+
+## Work on a PR
+
+Use these routes only when Nanide is selected under [collection selection](#select-a-collection-for-the-task). Establish the requested result and target PR or branch. Read applicable repository instructions and the current PR state before acting. Invoking this mode authorizes only the requested work. Preserve existing authorization and collection context through follow-ups.
+
+| Requested result | Instructions |
+|---|---|
+| Draft, rewrite, or review the body | [Write a PR description](references/pr-descriptions.md). Return a draft or save only as authorized. |
+| Draft or change only the title | [Write a PR title](references/pr-titles.md). |
+| Change labels, assignees, milestones, draft state, or similar metadata | [Change PR metadata](references/pr-metadata.md). |
+| Open a PR | [Opening a PR](playbooks/opening-a-pr.md). |
+| Review the code or diff | [Interrogate](../nanide-interrogate/SKILL.md). |
+| Audit instruction compliance | [Audit](../nanide-audit/SKILL.md). |
+
+A generic "review this PR" requests code review, not a body rewrite. For combined requests, follow each owner within the user's scope. Status and repair follow Babysit above. Landing follows Shipping above. Creating or editing a PR does not start monitoring. Repair does not authorize merging. Do not bypass Shipping because checks are green.
+
+Follow [Opening a PR's forge, tool, and attachment rules](playbooks/opening-a-pr.md) for PR operations. Report what changed or what you found, the evidence checked, and material gaps. Link an accessed or created PR.
 
 ## Principles
 

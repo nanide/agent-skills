@@ -1,6 +1,6 @@
 # Write a PR description
 
-Use these instructions only when Nanide is selected for the current task under [collection selection](../../nanide-mode/SKILL.md#select-a-collection-for-the-task). An explicit choice of another collection takes precedence over a repository default. Installation, a generic request, or reading and editing the PR skill does not select Nanide.
+Use these instructions only when Nanide is selected for the current task under [collection selection](../SKILL.md#select-a-collection-for-the-task). An explicit choice of another collection takes precedence over a repository default. Installation, a generic request, or reading and editing these instructions does not select Nanide.
 
 Write a briefing for a reviewer who has not seen the conversation. Lead with what the PR changes and why that matters. Explain the consequential details, effects on consumers and maintainers, and what deserves review. Adapt the length and sections to the change rather than filling a fixed template.
 
@@ -59,3 +59,5 @@ Use plain language, concrete verbs, and short paragraphs. Reuse the codebase's n
 If the user asks for a draft, return a draft without saving it. If the user authorizes updating the PR body, save it with an available connector or CLI and read it back to verify the saved text. Preserve the title, base, state, and other metadata. Do not create comments, change code, merge, or start monitoring as part of a description update.
 
 If the PR cannot be accessed, use available evidence to produce a clearly labeled draft and state what could not be verified or saved. Do not claim publication. Before saving, re-read the head and body. If either changed during the work, refresh affected evidence and reconcile the text without overwriting new user content. Read the saved body back and confirm that it reflects the reconciled head.
+
+For PR operations, follow [Opening a PR's forge, tool, and attachment rules](../playbooks/opening-a-pr.md). Apply only the requested writing operation.

@@ -5,7 +5,7 @@ Use these cases to review selection decisions against [Nanide's selection guidan
 | Current task and request | Expected decision |
 |---|---|
 | No collection selected. The user invokes `$nanide-audit` for completed changes. | Use Nanide's audit within the task's existing authorization. |
-| No collection selected. The user invokes `$nanide-pr` for a draft. | Use Nanide's description reference and return a draft without saving it. |
+| No collection selected. The user invokes `$nanide-mode` for a PR body draft. | Use Nanide's description reference and return a draft without saving it. |
 | The user selected Nanide earlier in this task, then asks for an audit or PR work. | Keep Nanide for the continuation. |
 | The user selected pstack earlier in this task, then asks for an audit or PR work. | Keep pstack. The generic follow-up does not switch collections. |
 | Both collections are installed. No task choice or repository default exists. The user asks for an audit or PR work. | Do not infer a Nanide choice from installation or the generic request. Follow applicable host and repository guidance. |

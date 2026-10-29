@@ -19,7 +19,7 @@ $nanide-interrogate review this pr.
 
 | skill | use it when |
 |---|---|
-| [`$nanide-mode`](../skills/nanide-mode/SKILL.md) | default entry point for any non-trivial task. |
+| [`$nanide-mode`](../skills/nanide-mode/SKILL.md) | default entry point for any non-trivial task, including PR writing, creation, review, metadata, status, CI, and shipping within the requested scope. |
 | [`$nanide-help`](../skills/nanide-help/SKILL.md) | you're new to the collection, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$nanide-help`. |
 | [`$nanide-in-your-own-words`](../skills/nanide-in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `$nanide-in-your-own-words`. |
 | [`$nanide-sharpen`](../skills/nanide-sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt and leaves your choices open. doesn't do the task. runs only when you type `$nanide-sharpen`. |
@@ -31,7 +31,6 @@ $nanide-interrogate review this pr.
 | [`$nanide-architect`](../skills/nanide-architect/SKILL.md) | you're about to write code that crosses a function boundary and want the caller's usage, types, and module shape settled first. |
 | [`$nanide-arena`](../skills/nanide-arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
 | [`$nanide-swarm`](../skills/nanide-swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
-| [`$nanide-pr`](../skills/nanide-pr/SKILL.md) | you want PR writing, creation, review, metadata, status, CI, or shipping routed to the right workflow within your requested scope. |
 | [`$nanide-audit`](../skills/nanide-audit/SKILL.md) | you want completed task changes checked against applicable skills and instructions, with corrections within the existing task authorization. |
 | [`$nanide-interrogate`](../skills/nanide-interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
 | [`$nanide-automate-me`](../skills/nanide-automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |

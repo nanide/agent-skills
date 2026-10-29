@@ -131,7 +131,7 @@ When the code already has a TLA+ spec, the skill can audit the code against it. 
 
 ## Open the PR
 
-Use [`$nanide-pr`](../../skills/nanide-pr/SKILL.md) for PR work. It routes body and title edits to shared writing instructions, creation to Opening a PR, code review to Interrogate, status and repair to Babysit, and landing to Shipping. Requesting one action does not authorize the others. The former `nanide-pr-description` selector is renamed without an alias.
+Use [`$nanide-mode`](../../skills/nanide-mode/SKILL.md#work-on-a-pr) for PR work. It routes body and title edits to shared writing instructions, creation to Opening a PR, code review to Interrogate, status and repair to Babysit, and landing to Shipping. Requesting one action does not authorize the others. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases.
 
 ```text
 $nanide-mode open the pr. small ordered commits, evidence in the description.
