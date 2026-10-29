@@ -7,7 +7,7 @@ description: "Use for \"automate me\", \"create/update/refresh my -mode skill\",
 
 A guided flow for turning the user's working conventions into a skill agents will follow. The output is one `-mode` skill tailored to them (e.g. `jay-mode`, `priya-mode`).
 
-This workflow combines the inline mining pass in step 1, [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md), and the bundled **unslop** skill.
+This workflow combines the inline mining pass in step 1, [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md), and the bundled **unslop** skill.
 
 Resolve this skill directory through symlinks. Read `../../codex-config.local.json` if it exists, otherwise `../../codex-config.json`. The local file replaces the defaults. Reject an invalid local file rather than falling back.
 
@@ -61,11 +61,11 @@ Group the combined signals into sections. Common ones (use only what applies):
 - **Process**: git worktrees, commits, PRs, review/merge tooling.
 - **Skills**: skill-authoring habits, fix-the-skill-first, proposing new skills.
 
-The **poteto-mode** skill shows the shape. Read it for granularity. Don't copy its content. The user's rules are not the same as poteto-mode's.
+The **nanide-mode** skill shows the shape. Read it for granularity. Don't copy its content. The user's rules are not the same as nanide-mode's.
 
 ### 4. Draft the skill
 
-Follow [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md) to author the skill. Placement:
+Follow [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md) to author the skill. Placement:
 
 - Path: preserve an existing mode skill's category. For a new mode, use `$CODEX_HOME/skills/<handle>-mode/SKILL.md` for a new personal Codex mode, normally `~/.codex/skills/<handle>-mode/SKILL.md`. Use a repository location only when requested, following its conventions.
 - Handle: the user's first name or chosen identifier.
@@ -100,5 +100,5 @@ Run a description-optimization loop only if the skill's trigger accuracy turns o
 
 ## When not to use
 
-- User wants a task-specific skill (not working conventions): [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md), no mining required.
+- User wants a task-specific skill (not working conventions): [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md), no mining required.
 - User wants to capture one narrow workflow (e.g. "how I write commit messages"). That's a regular skill, not a mode skill.

@@ -1,4 +1,4 @@
-# Install and migrate the collection
+# Install the personal collection alongside pstack
 
 Run `scripts/skills.py` with the Python environment prepared in the [README](../README.md). Keep the source checkout at its installed path. Moving or deleting it breaks the discovery link.
 
@@ -12,18 +12,23 @@ Review the printed source, discovery directory, and actions. A dry run writes no
 
 The installer checks the target directory, `~/.agents/skills`, `${CODEX_HOME:-$HOME/.codex}/skills`, and the explicit migration directory for conflicting skill names. It does not infer other clients' search paths. Check those paths separately if you configured additional discovery roots.
 
-## Migrate the customized global sources
+## Keep the original baseline installed
 
-Migration supports only the imported `pstack`, `poteto-pr-description`, `prepare-goal`, and `research-to-goal` directories. It verifies every recorded source file against [the import receipt](../import-receipt.json) before moving anything. A source change stops migration so you can import or preserve that change deliberately.
+Run the normal install command without a migration option. Only five `poteto-*` skill IDs become `nanide-*`. The other 57 helper names stay unchanged. Installation and uninstall leave the original `pstack`, `poteto-pr-description`, `prepare-goal`, and `research-to-goal` directories in place. Each collection keeps its own model configuration. Personal choices live in this checkout's ignored `codex-config.local.json`.
 
-```sh
-.venv/bin/python scripts/skills.py install --migrate-from "$HOME/.codex/skills" --dry-run
-.venv/bin/python scripts/skills.py install --migrate-from "$HOME/.codex/skills"
-```
+The collision exception covers only unchanged helper IDs at their exact original `SKILL.md` locations under `${CODEX_HOME:-$HOME/.codex}/skills`, recorded in [the import receipt](../import-receipt.json). Their file hashes must match the receipt, and the paths cannot contain symlinks below that discovery root. Modified baseline helpers and duplicates at other paths stop installation.
 
-The installer copies the former `pstack/codex-config.json` verbatim to ignored `codex-config.local.json`. A differing local override stops migration. Reconcile both files before retrying.
+Use the unique `$nanide-mode` or `$poteto-mode` entrypoint. Each resolves its own sibling helpers. Shared helpers such as `$how`, `$setup-pstack`, `$prepare-goal`, and `$research-to-goal` appear twice in discovery. Select a direct helper by source path. This installation establishes no override precedence.
 
-The plan prints a unique backup path for each original directory. Backups include runtime data and dependencies. They live beside the discovery directory under `.agent-skills/<discovery-directory-name>/backups/`, outside the skill discovery directory. The installer never deletes them or moves unrelated siblings.
+The installed bundle remains named `agent-skills`. Its discovery link and installer state keep the same identity when you upgrade this checkout.
+
+## Legacy migration recovery
+
+The explicit `--migrate-from` option remains for the former workflow that moved the customized global sources into this repository. It is not needed for side-by-side installation. Do not use it against a baseline you want to keep installed.
+
+That legacy workflow accepts only the original `pstack`, `poteto-pr-description`, `prepare-goal`, and `research-to-goal` directory names. It verifies every recorded file against [the historical import receipt](../import-receipt.json) before moving anything. A source change stops migration. It copies `pstack/codex-config.json` to ignored `codex-config.local.json`. A differing personal override stops migration.
+
+Legacy backups include runtime data and dependencies. They live beside the discovery directory under `.agent-skills/<discovery-directory-name>/backups/`, outside skill discovery. The installer retains those backups and unrelated siblings.
 
 ## Recover an interrupted migration
 

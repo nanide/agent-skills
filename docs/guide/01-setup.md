@@ -23,11 +23,11 @@ Use fewer reviewers when independent coverage does not need more. Choose support
 ## Run your first task
 
 ```text
-$poteto-mode add a --json flag to this command. text output stays byte-identical. verify both.
+$nanide-mode add a --json flag to this command. text output stays byte-identical. verify both.
 ```
 
 The mode selects a playbook and tracks its steps in the available plan tool or a concise checklist. Follow-ups retain the current task's scope. Start a fresh chat to check discovery after installing or editing skills. If discovery has not refreshed, attach the installed `SKILL.md` by its absolute path.
 
 The bundled `agents/openai.yaml` files preserve the imported invocation policies. Invoking the mode can load sibling skills needed for the task. It does not change unrelated chats or install a persistent application mode.
 
-Next: [Route work through `$poteto-mode`](./02-poteto-mode.md).
+Next: [Route work through `$nanide-mode`](./02-nanide-mode.md).

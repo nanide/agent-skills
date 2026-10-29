@@ -7,7 +7,7 @@ description: "Keep a reviewable decision trail for long-running or unattended wo
 
 Keep one canonical log.
 
-Use [Execution state](../poteto-mode/references/execution-state.md) to link this trail from the durable task checkpoint. The trail records decisions; the checkpoint records current work and the next action. Native Goals require an explicit request and do not store either artifact.
+Use [Execution state](../nanide-mode/references/execution-state.md) to link this trail from the durable task checkpoint. The trail records decisions; the checkpoint records current work and the next action. Native Goals require an explicit request and do not store either artifact.
 
 ## The format
 
@@ -51,7 +51,7 @@ Commit it only when the work is ambitious enough that a reviewer needs the trail
 ## Rules
 
 - Append-only. A wrong call gets a new row that supersedes it. Never edit or delete history.
-- Prefer evidence produced by committed scripts over hand-made one-offs (the **encode-lessons-in-structure** principle skill).
+- Prefer evidence produced by committed scripts over hand-made one-offs (the **principle-encode-lessons-in-structure** principle skill).
 
 ## Audit the log against the transcript
 

@@ -1,6 +1,6 @@
 ---
 name: research-to-goal
-description: Turn completed research, including poteto-mode investigations, into a self-contained handoff and a Codex Goal launch prompt for a fresh chat. Use when preparing a large task for later execution; does not start implementation or activate a Goal in the research chat.
+description: Turn completed research, including nanide-mode investigations, into a self-contained handoff and a Codex Goal launch prompt for a fresh chat. Use when preparing a large task for later execution; does not start implementation or activate a Goal in the research chat.
 ---
 
 # Research to Goal
@@ -46,25 +46,25 @@ Seed it with the actual state at handoff:
 - Decisions made since the handoff; failed approaches worth avoiding.
 - Blockers, pending questions, and active processes or jobs with their identifiers.
 
-Keep this file short and current. Reuse an existing decision log from poteto-mode/show-me-your-work where practical, linking to it rather than duplicating the history. HANDOFF.md holds the research contract; TASK_STATE.md holds execution progress.
+Keep this file short and current. Reuse an existing decision log from nanide-mode/show-me-your-work where practical, linking to it rather than duplicating the history. HANDOFF.md holds the research contract; TASK_STATE.md holds execution progress.
 
 ### START_PROMPT.md — paste into a fresh chat
 
 Generate a fully populated prompt, not unresolved template placeholders. Use this structure:
 
 ```text
-Read <absolute HANDOFF.md path> and <absolute TASK_STATE.md path>, then the applicable repository instructions. Resolve referenced skills from this environment; use poteto-mode at <verified path> to route the remaining work. If an essential artifact or skill is unavailable, report that before dependent work.
+Read <absolute HANDOFF.md path> and <absolute TASK_STATE.md path>, then the applicable repository instructions. Resolve referenced skills from this environment; use nanide-mode at <verified path> to route the remaining work. If an essential artifact or skill is unavailable, report that before dependent work.
 
 Establish a Codex Goal: <desired end state>, verified by <specific evidence>, while preserving <constraints>. Work within <scope and authorization boundaries>. <Include a token budget only if the user explicitly supplied one.>
 
-Begin with <first action or unresolved prerequisite>. Continue through the milestones while the Goal remains active and within its limits. Let poteto-mode select the appropriate playbook; use Codex's native Goal continuation instead of requiring Cursor /loop or inventing an equivalent tool. Adapt unavailable platform mechanisms without dropping required verification or authorization boundaries.
+Begin with <first action or unresolved prerequisite>. Continue through the milestones while the Goal remains active and within its limits. Let nanide-mode select the appropriate playbook; use Codex's native Goal continuation instead of requiring Cursor /loop or inventing an equivalent tool. Adapt unavailable platform mechanisms without dropping required verification or authorization boundaries.
 
 Update TASK_STATE.md after meaningful milestones, failed approaches that affect the plan, and before handoff or compaction when possible. Record decisions and evidence, not a transcript. After compaction or resumption, reread the Goal, HANDOFF.md, and TASK_STATE.md; reconcile them with the current branch, diff, and active jobs. Preserve completed work and rerun checks only when changes, stale evidence, or uncertainty justify it.
 
 Complete only when the acceptance evidence supports the Goal. At a stopping condition, leave an accurate checkpoint and report completed work, validation, remaining work, blockers, and the next useful action. Follow the runtime's Goal lifecycle rules. If native Goals are unavailable, say so rather than claiming automatic continuation is enabled.
 ```
 
-The budget clause is omitted entirely when none was requested. If poteto-mode is not installed, resolve its location from the user or clearly mark the dependency as unavailable; do not claim compatibility with an unread installation. Do not prescribe a chain of pstack skills in place of its router.
+The budget clause is omitted entirely when none was requested. If nanide-mode is not installed, resolve its location from the user or clearly mark the dependency as unavailable; do not claim compatibility with an unread installation. Do not prescribe a chain of pstack skills in place of its router.
 
 ## Check the handoff and deliver
 

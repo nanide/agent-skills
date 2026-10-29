@@ -1,8 +1,10 @@
 # Skill catalog
 
+Only `poteto-audit`, `poteto-goal`, `poteto-help`, `poteto-mode`, and `poteto-pr-description` become `nanide-*`. All other names stay unchanged. When both collections are installed, select shared helpers such as `$how` by this checkout's source path. `$nanide-mode` resolves its own sibling helpers. Duplicate catalog selectors establish no override precedence.
+
 ## skills
 
-[`$poteto-mode`](../skills/poteto-mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). the table below is for when you want one directly:
+[`$nanide-mode`](../skills/nanide-mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). the table below is for when you want one directly:
 
 ```
 $how do we cancel runs? do we have an n+1 when we look up every run to cancel?
@@ -17,8 +19,8 @@ $interrogate review this pr.
 
 | skill | use it when |
 |---|---|
-| [`$poteto-mode`](../skills/poteto-mode/SKILL.md) | default entry point for any non-trivial task. |
-| [`$poteto-help`](../skills/poteto-help/SKILL.md) | you're new to pstack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$poteto-help`. |
+| [`$nanide-mode`](../skills/nanide-mode/SKILL.md) | default entry point for any non-trivial task. |
+| [`$nanide-help`](../skills/nanide-help/SKILL.md) | you're new to pstack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$nanide-help`. |
 | [`$in-your-own-words`](../skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `$in-your-own-words`. |
 | [`$sharpen`](../skills/sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt and leaves your choices open. doesn't do the task. runs only when you type `$sharpen`. |
 | [`$how`](../skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
@@ -57,28 +59,28 @@ $interrogate review this pr.
 
 ### examples
 
-mostly i type [`$poteto-mode`](../skills/poteto-mode/SKILL.md) at the start of a task and let it route to a playbook. the other skills fire as the steps need them. a few i reach for directly.
+mostly i type [`$nanide-mode`](../skills/nanide-mode/SKILL.md) at the start of a task and let it route to a playbook. the other skills fire as the steps need them. a few i reach for directly.
 
 
 <details>
 <summary>all the examples</summary>
 
 ```
-bug fix:           $poteto-mode this pr has a subtle bug where the scroll drifts every 750ms even
+bug fix:           $nanide-mode this pr has a subtle bug where the scroll drifts every 750ms even
                    when idle. repro first, then fix and verify.
-perf:              $poteto-mode a big list takes a second or two to load even though we virtualize.
+perf:              $nanide-mode a big list takes a second or two to load even though we virtualize.
                    run a cpu trace and tell me why.
-feature:           $poteto-mode build a small feature behind a feature flag. verify it really works.
-prototype:         $poteto-mode build two prototypes of the markdown renderer so we can compare.
+feature:           $nanide-mode build a small feature behind a feature flag. verify it really works.
+prototype:         $nanide-mode build two prototypes of the markdown renderer so we can compare.
                    spawn an agent for each.
-multi-phase:       $poteto-mode open source these skills as a plugin. nothing internal leaks, work
+multi-phase:       $nanide-mode open source these skills as a plugin. nothing internal leaks, work
                    in a temp dir, show me the dependency graph first.
-overnight run:     $poteto-mode i'm going to bed. land the stack only after required checks pass. i want
+overnight run:     $nanide-mode i'm going to bed. land the stack only after required checks pass. i want
                    everything merged by morning.
-babysit:           $poteto-mode check on pr 123. anything outstanding?
-visual parity:     $poteto-mode the row spacing is too tall when this flag is on. the second image
+babysit:           $nanide-mode check on pr 123. anything outstanding?
+visual parity:     $nanide-mode the row spacing is too tall when this flag is on. the second image
                    is correct. repro and fix until it matches.
-figure it out:     $poteto-mode i'm stepping away. migrate every caller from the synchronous store
+figure it out:     $nanide-mode i'm stepping away. migrate every caller from the synchronous store
                    to the new async one, keeping behavior identical. i want to trust it was done
                    right when i'm back.
 how:               $how do we cancel runs? do we have an n+1 when we look up every run to cancel?
@@ -97,20 +99,20 @@ reflect:           $reflect that took too long. capture what we learned so the n
 correct:           $correct
 show-me-your-work: $show-me-your-work keep a decision trail i can review when i'm back.
 automate-me:       $automate-me
-help:              $poteto-help which skill should i use to review this branch?
+help:              $nanide-help which skill should i use to review this branch?
 ```
 
 </details>
 
 ## Delegate with Codex subagents
 
-The parent owns the playbook and reviews delegated work. [poteto-agent](../agents/poteto-agent.md) and [Comment Sicko](../agents/comment-sicko.md) are prompt templates, not registered agent types. Use an available Codex role and include the relevant absolute skill paths in its brief.
+The parent owns the playbook and reviews delegated work. [nanide-agent](../agents/nanide-agent.md) and [Comment Sicko](../agents/comment-sicko.md) are prompt templates, not registered agent types. Use an available Codex role and include the relevant absolute skill paths in its brief.
 
 Assign file ownership. Use separate worktrees for competing implementations. Respect the concurrency limit and queue required coverage. Independent reviewers inherit the parent model unless the role configuration provides a supported override. Reports name the models that actually ran.
 
 ## principles
 
-twenty-four short skills, one principle each. `poteto-mode` indexes them inline and reads that index at task start. the standalone files are there so other skills can reference a principle by name, and so the index can point at the full rule for each.
+twenty-four short skills, one principle each. `nanide-mode` indexes them inline and reads that index at task start. the standalone files are there so other skills can reference a principle by name, and so the index can point at the full rule for each.
 
 <details>
 <summary>all twenty-four principles</summary>
@@ -146,11 +148,9 @@ twenty-four short skills, one principle each. `poteto-mode` indexes them inline 
 
 ## Host capabilities
 
-Use the bundled [authoring playbook](../skills/poteto-mode/playbooks/authoring-a-skill.md) for skill authoring and [diff cleanup](../skills/poteto-mode/references/diff-cleanup.md) before committing. Browser and terminal checks use the available tools and repository runbooks. A build alone does not prove UI behavior.
+Use the bundled [authoring playbook](../skills/nanide-mode/playbooks/authoring-a-skill.md) for skill authoring and [diff cleanup](../skills/nanide-mode/references/diff-cleanup.md) before committing. Browser and terminal checks use the available tools and repository runbooks. A build alone does not prove UI behavior.
 
 Conversation recall uses scoped Codex chat tools and supplied evidence. Summaries are not complete transcripts. Scheduled follow-ups use the available Codex automation tool only when requested. An ordinary chat does not promise later execution.
-
-The dormant [Benny automation pack](../automations/benny/README.md) can be configured for an authorized repository and connected issue source. Its [setup brief](../automations/benny/FOR_AGENTS.md) describes the required capabilities and scheduling boundaries.
 
 ## Maintain the local edition
 

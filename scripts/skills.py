@@ -136,6 +136,27 @@ def import_receipt(root: Path):
     return receipt
 
 
+def validate_skill_names(collection: Collection):
+    mapping = read_json(collection.root / "skill-names.json")
+    if not isinstance(mapping, dict) or not mapping:
+        raise Invalid("skill-names.json: expected the original-to-personal rename map")
+    for original, personal in mapping.items():
+        if not isinstance(original, str) or not re.fullmatch(r"poteto-[a-z0-9]+(?:-[a-z0-9]+)*", original) or personal != original.replace("poteto-", "nanide-", 1):
+            raise Invalid(f"skill-names.json: invalid rename for {original}")
+    names = {skill.name for skill in collection.skills}
+    if len(set(mapping.values())) != len(mapping) or not set(mapping.values()) <= names:
+        raise Invalid("skill-names.json: mapped skill names must be unique and present")
+    if set(mapping) & names:
+        raise Invalid("Personal collection retains a renamed poteto skill name")
+    original_names = "|".join(re.escape(name) for name in mapping)
+    original_reference = re.compile(rf"\$(?:{original_names})(?![\w-])|/(?:{original_names})/SKILL\.md")
+    for path in (collection.root / "skills").rglob("*"):
+        if path.suffix not in {".md", ".yaml"} or any(part in {"node_modules", ".git", ".pstack"} for part in path.relative_to(collection.root).parts):
+            continue
+        if path.is_file() and original_reference.search(path.read_text()):
+            raise Invalid(f"{path}: personal skill references the original namespace")
+
+
 def markdown_links(root: Path):
     try:
         from markdown_it import MarkdownIt
@@ -179,9 +200,8 @@ def validate(collection: Collection):
     import yaml
     root = collection.root
     errors = markdown_links(root)
-    for directory in (root / "skills", root / "automations"):
-        for path in directory.rglob("SKILL.md"):
-            frontmatter(path)
+    for path in (root / "skills").rglob("SKILL.md"):
+        frontmatter(path)
     for path in (root / "skills").glob("*/agents/openai.yaml"):
         try:
             data = yaml.safe_load(path.read_text())
@@ -202,7 +222,8 @@ def validate(collection: Collection):
     if not isinstance(provenance, dict) or not isinstance(provenance.get("source"), str) or not provenance["source"].startswith("https://") or not re.fullmatch(r"[a-f0-9]{40}", provenance.get("commit", "")):
         errors.append("codex-port.json: source URL and pinned upstream commit are required")
     import_receipt(root)
-    required = ("skills/poteto-pr-description/SKILL.md", "skills/poteto-mode/SKILL.md", "skills/research-to-goal/SKILL.md", "skills/poteto-mode/scripts/check-plan.mjs")
+    validate_skill_names(collection)
+    required = ("skills/nanide-pr-description/SKILL.md", "skills/nanide-mode/SKILL.md", "skills/prepare-goal/SKILL.md", "skills/research-to-goal/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs")
     for name in required:
         if not (root / name).is_file():
             errors.append(f"Missing required reference {name}")
@@ -267,13 +288,26 @@ def verify_legacy(collection: Collection, source: Path, name: str):
 
 
 def check_collisions(collection: Collection, target: Path, excluded: set[Path], migration: Path | None):
-    roots = {target, absolute(Path.home() / ".agents/skills"), absolute(Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "skills")}
+    codex_skills = absolute(Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "skills")
+    roots = {target, absolute(Path.home() / ".agents/skills"), codex_skills}
     if migration:
         roots.add(migration)
     wanted = {s.name for s in collection.skills}
+    renamed = read_json(collection.root / "skill-names.json")
+    baseline = {
+        codex_skills / relative: digest
+        for relative, digest in import_receipt(collection.root)["files"].items()
+        if Path(relative).name == "SKILL.md" and Path(relative).parent.name in wanted - set(renamed.values())
+    }
     for directory in sorted(roots):
         for skill in discovery_skills(directory, excluded):
             if skill.name in wanted:
+                digest = baseline.get(skill.source)
+                if digest and skill.source.parent.name == skill.name:
+                    relative = skill.source.relative_to(codex_skills)
+                    paths = [codex_skills.joinpath(*relative.parts[:i]) for i in range(1, len(relative.parts) + 1)]
+                    if not any(path.is_symlink() for path in paths) and hashlib.sha256(skill.source.read_bytes()).hexdigest() == digest:
+                        continue
                 raise Invalid(f"Skill name collision: {skill.name} at {skill.source}. Move or rename that skill before installing.")
 
 

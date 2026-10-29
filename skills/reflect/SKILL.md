@@ -33,7 +33,7 @@ Spawn one independent read-only synthesizer using `reflect judgment, divergent, 
 
 ## 4. Structural enforcement check
 
-Move any Accepted item that a lint rule, script, metadata flag, or runtime check would enforce more reliably to Backlog. See the **encode-lessons-in-structure** principle skill.
+Move any Accepted item that a lint rule, script, metadata flag, or runtime check would enforce more reliably to Backlog. See the **principle-encode-lessons-in-structure** principle skill.
 
 ## 5. Apply
 
@@ -44,9 +44,9 @@ Keep Backlog items in the report. File them externally only when the user author
 Follow each approved row's Routing exactly:
 
 - Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): the parent does it directly.
-- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): follow [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md), including its validation checks.
-- `tune description: <skill path>` (the skill exists but didn't trigger when it should have): follow [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md) and validate that its description matches the intended requests.
-- `new skill: <kebab-name>`: follow [Authoring a skill](../poteto-mode/playbooks/authoring-a-skill.md).
+- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): follow [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md), including its validation checks.
+- `tune description: <skill path>` (the skill exists but didn't trigger when it should have): follow [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md) and validate that its description matches the intended requests.
+- `new skill: <kebab-name>`: follow [Authoring a skill](../nanide-mode/playbooks/authoring-a-skill.md).
 
 If your environment ships a SKILL.md validator, run it on every touched skill before declaring done.
 

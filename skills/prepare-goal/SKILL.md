@@ -1,6 +1,6 @@
 ---
 name: prepare-goal
-description: Research a proposed task with poteto-mode, then automatically use research-to-goal to deliver a handoff and a paste-ready Codex Goal prompt for execution in a new chat. Use when the user wants investigation and preparation in one request, before implementation.
+description: Research a proposed task with nanide-mode, then automatically use research-to-goal to deliver a handoff and a paste-ready Codex Goal prompt for execution in a new chat. Use when the user wants investigation and preparation in one request, before implementation.
 ---
 
 # Prepare Goal
@@ -9,17 +9,17 @@ Own the sequence from a task idea to a research-backed launch prompt for a fresh
 
 ## Resolve the two skills
 
-Read the installed `poteto-mode` and `research-to-goal` skills. Use their catalog paths when available. Otherwise resolve this skill directory through symlinks and read `../poteto-mode/SKILL.md` and `../research-to-goal/SKILL.md`. Record the resolved paths for the handoff.
+Resolve this skill directory through symlinks and read its own `../nanide-mode/SKILL.md` and `../research-to-goal/SKILL.md` siblings first. If a sibling is absent, use an unambiguous catalog path for that dependency. Shared catalog names alone do not identify this collection's copy. Record the resolved paths for the handoff.
 
 If a dependency is missing, report which one and complete independent preparation where useful. Do not claim its workflow ran or silently replace it. Do not install dependencies without a request to do so.
 
-## Research with poteto-mode
+## Research with nanide-mode
 
-Pass poteto-mode this task brief, populated from the user's request:
+Pass nanide-mode this task brief, populated from the user's request:
 
 > Investigate the proposed task and prepare the evidence needed for a future implementation Goal. Establish the current behavior, relevant architecture, constraints, plausible approaches and tradeoffs, verification strategy, unknowns, and recommended first implementation step. This phase is research-only. Its deliverable feeds research-to-goal automatically in this chat. Do not implement, activate a Goal, open a PR, or switch into execution when the investigation finishes.
 
-Let poteto-mode route the research and select its supporting skills. Keep the research-only boundary even when the eventual task is large or involves a bug, migration, or performance work. Reuse research already present in the conversation. Delegate only as permitted by the active harness and applicable skill instructions; pass the same research-only scope to delegates.
+Let nanide-mode route the research and select its supporting skills. Keep the research-only boundary even when the eventual task is large or involves a bug, migration, or performance work. Reuse research already present in the conversation. Delegate only as permitted by the active harness and applicable skill instructions; pass the same research-only scope to delegates.
 
 Resolve factual questions from evidence. Ask about product choices or constraints only when the answer materially changes the task, while continuing independent research. Do not invent measurable targets when the user has supplied only a direction. Recommend a target with its basis or make baseline measurement and target selection an explicit prerequisite.
 

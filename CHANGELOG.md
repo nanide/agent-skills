@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- Rename `poteto-audit`, `poteto-goal`, `poteto-help`, `poteto-mode`, and `poteto-pr-description` to `nanide-*`. Keep the other 57 skill names unchanged.
+- Allow unchanged helpers at their recorded global baseline paths alongside this collection. Resolve mode helpers by sibling source path when catalog selectors are duplicated.
+- Rename the delegate template and update personal routing, prompts, and installation instructions.
+- Preserve original attribution, import provenance, model role keys, and runtime stores.
+
 ## 0.1.0
 
 - Import the customized pstack collection and three standalone skills with source hashes and upstream attribution.

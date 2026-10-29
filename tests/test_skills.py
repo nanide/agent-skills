@@ -36,11 +36,13 @@ class InstallerTests(unittest.TestCase):
         self.write_json(self.root / "codex-config.json", self.defaults)
         self.write_json(self.root / "plugin.json", json.loads((SOURCE / "plugin.json").read_text()))
         shutil.copy2(SOURCE / "codex-port.json", self.root / "codex-port.json")
-        for name in ("poteto-mode", "poteto-pr-description", "prepare-goal", "research-to-goal"):
+        mapping = json.loads((SOURCE / "skill-names.json").read_text())
+        for name in (*mapping.values(), "prepare-goal", "research-to-goal", "how", "setup-pstack"):
             self.skill(self.root / "skills" / name, name)
-        script = self.root / "skills/poteto-mode/scripts/check-plan.mjs"
+        script = self.root / "skills/nanide-mode/scripts/check-plan.mjs"
         script.parent.mkdir()
         script.write_text("export {};\n")
+        self.write_json(self.root / "skill-names.json", mapping)
         self.populate_legacy()
         self.receipt = self.make_receipt()
         self.write_json(self.root / "import-receipt.json", self.receipt)
@@ -56,7 +58,8 @@ class InstallerTests(unittest.TestCase):
 
     def populate_legacy(self):
         self.write_json(self.legacy / "pstack/codex-config.json", self.defaults)
-        self.skill(self.legacy / "pstack/skills/poteto-mode", "poteto-mode")
+        for name in ("poteto-mode", "poteto-help", "poteto-audit", "poteto-goal", "how", "setup-pstack"):
+            self.skill(self.legacy / "pstack/skills" / name, name)
         for name in cli.LEGACY[1:]:
             self.skill(self.legacy / name, name)
 
@@ -81,7 +84,26 @@ class InstallerTests(unittest.TestCase):
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertFalse((self.target / cli.BUNDLE).is_symlink())
         self.assertTrue((self.target / "other/SKILL.md").is_file())
-        self.assertTrue((self.root / "skills/poteto-mode/SKILL.md").is_file())
+        self.assertTrue((self.root / "skills/nanide-mode/SKILL.md").is_file())
+
+    def test_normal_install_coexists_with_known_baseline_without_changing_it(self):
+        self.populate_legacy()
+        mapping = json.loads((SOURCE / "skill-names.json").read_text())
+        baseline = self.make_receipt()["files"]
+        personal_config = dict(self.defaults, panel_size=3)
+        self.write_json(self.root / "codex-config.local.json", personal_config)
+        self.install()
+        self.install()
+        self.assertEqual(self.make_receipt()["files"], baseline)
+        self.assertEqual(json.loads((self.root / "codex-config.local.json").read_text()), personal_config)
+        self.assertFalse((cli.state_dir(self.target) / "backups").exists())
+        discovered = list(cli.discovery_skills(self.legacy, set())) + list(cli.discovery_skills(self.target, set()))
+        names = [skill.name for skill in discovered]
+        personal_names = {skill.name for skill in cli.load_collection(self.root).skills}
+        self.assertEqual(set(names), set(mapping) | personal_names)
+        self.assertEqual({name for name in names if names.count(name) == 2}, {"how", "setup-pstack", "prepare-goal", "research-to-goal"})
+        self.command("uninstall", "--target-dir", str(self.target))
+        self.assertEqual(self.make_receipt()["files"], baseline)
 
     def test_dry_run_has_no_filesystem_effect(self):
         self.populate_legacy()
@@ -112,7 +134,7 @@ class InstallerTests(unittest.TestCase):
     def test_duplicate_name_in_target_or_global_root_stops_install(self):
         for location in (self.target / "custom-name", self.legacy / "custom-name"):
             with self.subTest(location=location):
-                self.skill(location, "poteto-mode")
+                self.skill(location, "nanide-mode")
                 result = self.install(success=False)
                 self.assertIn("Skill name collision", result.stderr)
                 self.assertFalse(cli.exists(self.target / cli.BUNDLE))
@@ -127,11 +149,35 @@ class InstallerTests(unittest.TestCase):
 
     def test_duplicate_name_behind_bundle_symlink_stops_install(self):
         alias = self.base / "alias"
-        self.skill(alias / "nested", "poteto-mode")
+        self.skill(alias / "nested", "nanide-mode")
         self.target.mkdir(parents=True)
         (self.target / "alias").symlink_to(alias)
         self.install(success=False)
         self.assertFalse(cli.exists(self.target / cli.BUNDLE))
+
+    def test_generic_helpers_reject_unrelated_duplicates_and_baseline_aliases(self):
+        self.populate_legacy()
+        for location in (self.target / "custom-how", self.legacy / "custom-how"):
+            with self.subTest(location=location):
+                self.skill(location, "how")
+                self.assertIn("Skill name collision", self.install(success=False).stderr)
+                shutil.rmtree(location)
+        self.target.mkdir(parents=True, exist_ok=True)
+        (self.target / "baseline-alias").symlink_to(self.legacy / "pstack")
+        self.assertIn("Skill name collision", self.install(success=False).stderr)
+        self.assertFalse(cli.exists(self.target / cli.BUNDLE))
+
+    def test_known_baseline_helper_requires_recorded_hash_and_real_path(self):
+        self.populate_legacy()
+        path = self.legacy / "pstack/skills/how/SKILL.md"
+        original = path.read_text()
+        path.write_text(original + "A local change.\n")
+        self.assertIn("Skill name collision", self.install(success=False).stderr)
+        path.unlink()
+        copy = self.base / "how.md"
+        copy.write_text(original)
+        path.symlink_to(copy)
+        self.assertIn("Skill name collision", self.install(success=False).stderr)
 
     def test_switch_and_rollback_require_managed_link(self):
         other = self.base / "release"
@@ -313,7 +359,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_validator_checks_yaml_names_and_links_but_skips_code_examples(self):
         self.command("validate")
-        path = self.root / "skills/poteto-mode/SKILL.md"
+        path = self.root / "skills/nanide-mode/SKILL.md"
         original = path.read_text()
         path.write_text(original + "\n```md\n[example](missing.md)\n```\n`[example](missing.md)`\n")
         self.command("validate")
@@ -321,7 +367,7 @@ class InstallerTests(unittest.TestCase):
         self.command("validate", success=False)
         path.write_text(original.replace("description: A test skill.", "description: invalid: scalar"))
         self.command("validate", success=False)
-        path.write_text(original.replace("name: poteto-mode", "name: prepare-goal"))
+        path.write_text(original.replace("name: nanide-mode", "name: prepare-goal"))
         self.command("validate", success=False)
 
     def test_manifest_schema_rejects_invalid_fields_and_allows_new_versions(self):
@@ -339,7 +385,7 @@ class InstallerTests(unittest.TestCase):
         self.command("validate", success=False)
 
     def test_validator_checks_anchors_and_optional_invocation_policy(self):
-        path = self.root / "skills/poteto-mode/SKILL.md"
+        path = self.root / "skills/nanide-mode/SKILL.md"
         path.write_text(path.read_text() + "\n[valid](#example)\n")
         metadata = path.parent / "agents/openai.yaml"
         metadata.parent.mkdir()
@@ -351,6 +397,41 @@ class InstallerTests(unittest.TestCase):
         self.command("validate")
         path.write_text(path.read_text() + "\n[invalid](#absent)\n")
         self.command("validate", success=False)
+
+    def test_rename_map_preserves_mapped_names_and_allows_new_personal_skills(self):
+        self.skill(self.root / "skills/nanide-new-workflow", "nanide-new-workflow")
+        self.command("validate")
+        self.skill(self.root / "skills/unprefixed", "unprefixed")
+        self.command("validate")
+        shutil.rmtree(self.root / "skills/nanide-help")
+        result = self.command("validate", success=False)
+        self.assertIn("mapped skill names must be unique and present", result.stderr)
+
+    def test_collection_changes_only_the_five_poteto_names(self):
+        receipt = json.loads((SOURCE / "import-receipt.json").read_text())
+        originals = {Path(path).parent.name for path in receipt["files"] if Path(path).name == "SKILL.md" and (path.startswith("pstack/skills/") or len(Path(path).parts) == 2)}
+        mapping = json.loads((SOURCE / "skill-names.json").read_text())
+        expected_mapping = {name: name.replace("poteto-", "nanide-", 1) for name in originals if name.startswith("poteto-")}
+        self.assertEqual(len(expected_mapping), 5)
+        self.assertEqual(mapping, expected_mapping)
+        generic = originals - mapping.keys()
+        self.assertEqual(len(generic), 57)
+        skills = cli.load_collection(SOURCE).skills
+        self.assertEqual({skill.name for skill in skills}, generic | set(mapping.values()))
+        self.assertTrue(all((SOURCE / "skills" / name / "SKILL.md").is_file() for name in generic))
+        path = self.root / "skill-names.json"
+        self.write_json(path, {**mapping, "how": "nanide-how"})
+        self.assertIn("invalid rename for how", self.command("validate", success=False).stderr)
+
+    def test_personal_skill_cannot_route_to_original_namespace(self):
+        path = self.root / "skills/nanide-mode/SKILL.md"
+        original = path.read_text()
+        for reference in ("Use $poteto-mode.", "Read ../poteto-mode/SKILL.md."):
+            path.write_text(original + reference + "\n")
+            result = self.command("validate", success=False)
+            self.assertIn("personal skill references the original namespace", result.stderr)
+        path.write_text(original + "Use $nanide-mode and read ../nanide-mode/SKILL.md.\n")
+        self.command("validate")
 
 
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ Output exactly the format below. No preamble, no narration. One sentence per cel
 |---|---|---|
 | <failure mode in a skill the parent used> | <change to that skill's body> | <skill path + section> |
 | <skill existed but didn't trigger> | <tune the skill's description so it fires next time> | <tune description: <skill path>> |
-| <new pattern, no existing skill is a real home> | <draft with the [bundled authoring playbook](../../poteto-mode/playbooks/authoring-a-skill.md)> | <new skill: <kebab-name>> |
+| <new pattern, no existing skill is a real home> | <draft with the [bundled authoring playbook](../../nanide-mode/playbooks/authoring-a-skill.md)> | <new skill: <kebab-name>> |
 
 One row per finding. Existing user authorization determines which edits the parent may apply; otherwise the user approves concrete rows.
 
