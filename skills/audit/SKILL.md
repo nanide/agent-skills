@@ -40,6 +40,8 @@ Map applicable requirements to the changed artifacts and proof. For substantial 
 
 Check intent, behavior, architecture, naming, tests, comments, and configuration under their owning guidance. Include integration points and affected callers. Reject tests that merely repeat declarations when the repository requires meaningful behavioral proof.
 
+For structural checks, follow each changed concept through its name, owning module, public interface, callers, and related configuration, tests, and documentation. Apply [Model the Domain](../principle-model-the-domain/SKILL.md) to ownership and dependencies, and [Minimize Reader Load](../principle-minimize-reader-load/SKILL.md) to naming and references. Identify concrete contradictions or maintenance costs. Do not impose a uniform folder layout or consolidate distinct concepts merely because they look similar.
+
 Inspect actual commands, configuration, and execution order behind documentation claims. Check that prerequisites and required approvals precede dependent actions. Structural validation and reviewer agreement do not prove operational correctness.
 
 Reuse existing review and verification only when their scope and artifact state cover the current work. Use [interrogate](../interrogate/SKILL.md) for required independent review. Include the applicable requirements and preservation concerns in its brief. Use [swarm](../swarm/SKILL.md) for delegated verification when useful or required. Repository verification skills own commands, target approvals, and shared resources. Do not create a second review panel or test run merely because this skill was invoked.

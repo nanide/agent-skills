@@ -1,6 +1,6 @@
 ---
 name: principle-minimize-reader-load
-description: "Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope."
+description: "Apply when reviewing naming, references, or code that's hard to trace. Reduce ambiguous names, indirection, and hidden state."
 ---
 
 # Minimize Reader Load
@@ -12,6 +12,8 @@ Maintainability is the work a reader must do to understand code. Track two axes:
 - **Demand interface compression.** A broad interface that hides little complexity makes readers learn both the surface and the implementation. Prefer boundaries that hide meaningful decisions.
 - **Shrink state scope:** prefer pure functions (returns over mutations), locals over fields, fields over module state, and module state over globals. Derive instead of sync.
 - **Name the invariant at the boundary,** not in every consumer, so the reader learns it once.
+- **Name the responsibility.** Use domain terms consistently within their context. Preserve distinct names for distinct concepts. Rename when the current name obscures meaning, not merely to make spelling uniform.
+- **Keep references direct.** Point readers to the authoritative definition. Check that the target still means what the reference claims, not just that the path resolves. Remove forwarding steps only when they serve no public contract or useful boundary.
 - Before adding a layer or a piece of state, ask: does it reduce reader load elsewhere by at least as much?
 
 **The test:** can a new reader answer "where does X come from?" and "what can change X?" in under 30 seconds? If not, cut layers or cut state.

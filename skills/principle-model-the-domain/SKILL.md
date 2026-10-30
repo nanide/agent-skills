@@ -1,6 +1,6 @@
 ---
 name: principle-model-the-domain
-description: "Apply when writing stateful logic, or when code branches a lot or repeats a shape assumption across files."
+description: "Apply when writing stateful logic, choosing module ownership or dependency direction, or reviewing scattered branches and repeated shape assumptions."
 ---
 
 # Model the Domain
@@ -17,6 +17,8 @@ Reach for:
 - A small module boundary that gathers repeated behavior, ownership, or invariants.
 - A queue, cache, index, graph, tree, or normalized collection where the access pattern calls for it.
 - Any other structure that fits. When none fits, work out what the code must never allow and how the data gets read, then find the structure that encodes exactly that.
+
+Give each domain decision an authoritative owner. Keep changes to that decision local and make dependency direction explicit. Shared code must not depend on the feature policy it supports. Similar code can belong to different owners when it represents different domain decisions.
 
 Do not force an abstraction. Prefer boring code if the current shape is already clear, local, and unlikely to grow. Be skeptical of an abstraction that adds indirection without removing branches, duplicated rules, invalid states, or lifecycle risk.
 
