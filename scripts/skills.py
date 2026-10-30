@@ -131,6 +131,57 @@ def load_collection(root: Path) -> Collection:
     return Collection(root, tuple(skills))
 
 
+def source_adapter_files(collection: Collection) -> dict[Path, bytes]:
+    import yaml
+
+    files = {}
+    for skill in collection.skills:
+        metadata = frontmatter(skill.source / "SKILL.md")
+        name = "nanide-" + skill.name
+        metadata["name"] = name
+        header = yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True).rstrip()
+        body = (
+            "Resolve this SKILL.md file through symlinks to its real absolute path. "
+            f"From its real directory, read ../../../skills/{skill.name}/SKILL.md in full. "
+            "Follow that canonical skill's instructions for the user's task. "
+            "Use the canonical skill's absolute path as the context for all relative references "
+            "and in every delegate brief.\n"
+        )
+        files[Path(name) / "SKILL.md"] = f"---\n{header}\n---\n\n{body}".encode()
+        agents = skill.source / "agents"
+        if agents.is_dir():
+            for item in sorted(agents.rglob("*")):
+                if item.is_file():
+                    files[Path(name) / "agents" / item.relative_to(agents)] = item.read_bytes()
+    return files
+
+
+def generate_source_adapters(collection: Collection, *, check: bool = False) -> None:
+    directory = collection.root / "providers/prefixed-skills"
+    if directory.is_symlink():
+        raise Invalid(f"Source adapter directory must not be a symlink: {directory}")
+    expected = source_adapter_files(collection)
+    actual = {path.relative_to(directory): path for path in directory.rglob("*") if path.is_file() or path.is_symlink()} if directory.exists() else {}
+    stale = set(actual) != set(expected) or any(path.is_symlink() or path.read_bytes() != expected[name] for name, path in actual.items() if name in expected)
+    if check:
+        if stale:
+            raise Invalid("Source adapters are stale. Run python3 scripts/skills.py generate-source-adapters")
+        return
+    for name, path in actual.items():
+        if name not in expected:
+            path.unlink()
+    for name, contents in expected.items():
+        path = directory / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.is_symlink():
+            path.unlink()
+        path.write_bytes(contents)
+    if directory.exists():
+        for path in sorted(directory.rglob("*"), key=lambda item: len(item.parts), reverse=True):
+            if path.is_dir() and not any(path.iterdir()):
+                path.rmdir()
+
+
 def import_receipt(root: Path):
     receipt = read_json(root / "import-receipt.json")
     if not isinstance(receipt, dict) or receipt.get("format") != 1 or receipt.get("sources") != list(LEGACY) or not isinstance(receipt.get("files"), dict):
@@ -274,6 +325,7 @@ def validate(collection: Collection):
             errors.append(f"Missing required reference {name}")
     if errors:
         raise Invalid("\n".join(errors))
+    generate_source_adapters(collection, check=True)
 
 
 def absolute(path: Path) -> Path:
@@ -514,8 +566,10 @@ def adapter_config(root: Path, provider: str):
     path = root / "providers" / provider / "adapter.json"
     adapter = read_json(path)
     required = {"discovery_directory", "additional_discovery_directories", "environment_discovery_directories"}
-    if not isinstance(adapter, dict) or not required <= set(adapter) or set(adapter) - required - {"entry_points"} or not isinstance(adapter["additional_discovery_directories"], list):
+    if not isinstance(adapter, dict) or not required <= set(adapter) or set(adapter) - required - {"entry_points", "skill_name_prefix"} or not isinstance(adapter["additional_discovery_directories"], list):
         raise Invalid(f"Invalid provider adapter: {path}")
+    if "skill_name_prefix" in adapter and adapter["skill_name_prefix"] != "nanide-":
+        raise Invalid(f"Invalid skill_name_prefix in {path}: expected nanide-")
     if "entry_points" in adapter:
         entries = adapter["entry_points"]
         if not isinstance(entries, list) or not entries or any(not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) for name in entries) or len(set(entries)) != len(entries):
@@ -573,7 +627,8 @@ def install_provider(collection: Collection, provider: str, target: Path, comman
         if not isinstance(owned, dict) or any(not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) or not isinstance(source, str) for name, source in owned.items()):
             raise Invalid(f"Invalid installation record: {record}")
         entries = set(adapter.get("entry_points", [skill.name for skill in collection.skills]))
-        desired = {skill.name: str(skill.source) for skill in collection.skills if skill.name in entries} if command == "install" else {}
+        prefix = adapter.get("skill_name_prefix", "")
+        desired = {prefix + skill.name: str(collection.root / "providers/prefixed-skills" / (prefix + skill.name) if prefix else skill.source) for skill in collection.skills if skill.name in entries} if command == "install" else {}
         if command == "install":
             validate(collection)
         elif previous and previous.get("root") != str(collection.root):
@@ -629,7 +684,7 @@ def install_provider(collection: Collection, provider: str, target: Path, comman
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("validate", "install", "uninstall", "migrate-config"))
+    parser.add_argument("command", choices=("validate", "install", "uninstall", "migrate-config", "generate-source-adapters"))
     parser.add_argument("--provider", choices=(*PROVIDERS, "all"))
     parser.add_argument("--target-dir", type=Path)
     parser.add_argument("--dry-run", action="store_true")
@@ -646,6 +701,12 @@ def main(argv=None):
         if args.provider == "all" and (args.command not in {"install", "uninstall"} or args.target_dir or args.migrate_from):
             raise Invalid("--provider all supports global install or uninstall without --target-dir or --migrate-from")
         collection = Collection(ROOT, ()) if args.command == "uninstall" else load_collection(ROOT)
+        if args.command == "generate-source-adapters":
+            if args.provider or args.target_dir or args.dry_run:
+                raise Invalid("generate-source-adapters operates on this checkout without install options")
+            generate_source_adapters(collection)
+            print(f"Generated {len(collection.skills)} source adapters")
+            return 0
         if args.command == "validate":
             validate(collection)
             print(f"Validated {len(collection.skills)} skills in {collection.root}")

@@ -62,6 +62,8 @@ class PackageTests(unittest.TestCase):
             })
         for name in ("package_plugin.py", "skills.py", "plugin.schema.json"):
             self.write(f"scripts/{name}", (SOURCE / "scripts" / name).read_text())
+        result = subprocess.run([sys.executable, str(self.root / "scripts/skills.py"), "generate-source-adapters"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.git("add", ".")
 
     def git(self, *args):
@@ -263,6 +265,9 @@ class PackageTests(unittest.TestCase):
         native = relocated / "skills/mode/SKILL.md"
         self.assertIn("name: mode\n", native.read_text())
         self.assertFalse((relocated / "skills/nanide-mode").exists())
+        router = relocated / "providers/prefixed-skills/nanide-mode/SKILL.md"
+        self.assertIn("name: nanide-mode\n", router.read_text())
+        self.assertEqual((router.parent / "../../../skills/mode/SKILL.md").resolve(), native.resolve())
         self.assertIn("[Helper](references/pr-titles.md)", native.read_text())
         self.assertTrue((native.parent / "references/pr-titles.md").is_file())
 

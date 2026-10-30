@@ -14,9 +14,9 @@ Run `python3 scripts/skills.py install --provider all --dry-run` to preview one 
 
 ## Autocomplete entry points
 
-For source installations, the `entry_points` list in each provider’s `adapter.json` limits local discovery to `mode`, `goal`, `help`, `audit`, and `setup`. The installer validates these names against the canonical collection. An adapter without this optional list installs every skill.
+For source installations, the `entry_points` list in each provider’s `adapter.json` limits local discovery to `mode`, `goal`, `help`, `audit`, and `setup`. The installer validates these names against the canonical collection. Codex links those short names directly. Cursor and Claude set `skill_name_prefix` to `nanide-`, exposing `nanide-mode`, `nanide-goal`, `nanide-help`, `nanide-audit`, and `nanide-setup`. Their generated entry points load the canonical skill before following relative references. An adapter without this optional list installs every skill.
 
-Run the provider install command again to remove previously managed helper links. The source files remain in the checkout. Main workflows resolve their canonical paths and read sibling helpers directly. Helpers no longer have individual autocomplete entries. To request one, ask Nanide mode to use the named helper.
+Run the provider install command again to remove previously managed helper links. The source files remain in the checkout. Prefixed entry points first read their canonical skill. Main workflows resolve their canonical paths and read sibling helpers directly. Helpers no longer have individual autocomplete entries. To request one, ask Nanide mode to use the named helper.
 
 This controls filesystem discovery, not a host visibility flag. A separately installed copy can still appear in autocomplete. Legacy bundle installations without `--provider` still expose the full collection. Follow the [legacy bundle conversion](../docs/installation.md#install-alongside-other-collections) before using this entry-point list.
 

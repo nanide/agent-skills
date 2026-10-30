@@ -55,7 +55,7 @@ The plugin identifier changed from `agent-skills` to `nanide`. Save any provider
 
 If Nanide is already installed through `scripts/skills.py`, uninstall its discovery links from that checkout before enabling the plugin. Follow [uninstall instructions](installation.md#switch-checkouts-and-uninstall). Keep the checkout and personal configuration until you have verified the plugin.
 
-Plugin discovery can expose all helpers in `skills/`. The source installer exposes five main entry points. Plugin skills use short names such as `nanide:mode` and `nanide:help`. Source installations expose the same short-named skills. Rerun the source installer after upgrading to replace prefixed links. Host-specific invocation syntax and available tools still differ.
+Plugin discovery can expose all helpers in `skills/`. The source installer exposes five main entry points. Plugin skills use short names such as `nanide:mode` and `nanide:help`. Codex source installations use short names. Cursor and Claude source installations use prefixed commands such as `/nanide-mode`. Rerun the source installer after upgrading to refresh managed links. Host-specific invocation syntax and available tools still differ.
 
 ## Configure and update
 

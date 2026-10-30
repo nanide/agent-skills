@@ -21,7 +21,7 @@ The installer checks the selected target and the selected provider's personal di
 
 Run the normal install command without a migration option to leave other collections in place. Each collection keeps its own model configuration. Save this collection's model choices in ignored `providers/<provider>/config.local.json`.
 
-Native plugin skills use short IDs such as `mode`, `help`, and `setup` within the `nanide` namespace. Source installations link directly to the same canonical short-named skills. Rerun the installer after upgrading to replace the old managed prefixed links. Ask mode to use helpers by their short names, such as `how` or `interrogate`. The [registry](../skill-names.json) maps upstream IDs to canonical short IDs. Other installed collections can also have short names, so resolve Nanide helpers through local files.
+Native plugin skills use short IDs such as `mode`, `help`, and `setup` within the `nanide` namespace. Codex source installations use the short names. Cursor and Claude source installations use prefixed entry points such as `/nanide-mode` that read the canonical skills. Rerun the installer after upgrading to replace managed links with the provider's naming style. Ask mode to use helpers by their short names, such as `how` or `interrogate`. The [registry](../skill-names.json) maps upstream IDs to canonical short IDs. Other installed collections can also have short names, so resolve Nanide helpers through local files.
 
 An unmanaged entry with the same public ID stops installation. Managed provider installations can point to the same canonical source. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
 

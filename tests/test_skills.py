@@ -52,6 +52,7 @@ class InstallerTests(unittest.TestCase):
         self.receipt = self.make_receipt()
         self.write_json(self.root / "import-receipt.json", self.receipt)
         shutil.rmtree(self.legacy)
+        cli.generate_source_adapters(cli.load_collection(self.root))
 
     def write_json(self, path, value):
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -80,17 +81,23 @@ class InstallerTests(unittest.TestCase):
     def install(self, *args, **kwargs):
         return self.command("install", "--target-dir", str(self.target), *args, **kwargs)
 
+    def provider_sources(self, provider, root=None):
+        root = root or self.root
+        adapter = json.loads((root / "providers" / provider / "adapter.json").read_text())
+        names = adapter.get("entry_points", json.loads((root / "skill-names.json").read_text()).values())
+        prefix = adapter.get("skill_name_prefix", "")
+        return {prefix + name: root / "providers/prefixed-skills" / (prefix + name) if prefix else root / "skills" / name for name in names}
+
     def test_each_provider_installs_its_discovery_set_without_copying(self):
         for provider in cli.PROVIDERS:
             target = self.home / {"codex": ".agents", "cursor": ".cursor", "claude": ".claude"}[provider] / "skills"
             for _ in range(2):
                 self.command("install", "--provider", provider)
-            adapter = json.loads((self.root / "providers" / provider / "adapter.json").read_text())
-            expected = set(adapter.get("entry_points", json.loads((self.root / "skill-names.json").read_text()).values()))
-            self.assertEqual({p.name for p in target.iterdir()}, expected)
+            expected = self.provider_sources(provider)
+            self.assertEqual({p.name for p in target.iterdir()}, set(expected))
             for name in expected:
                 self.assertTrue((target / name).is_symlink())
-                self.assertEqual((target / name / "SKILL.md").resolve(), self.root / "skills" / name / "SKILL.md")
+                self.assertEqual((target / name / "SKILL.md").resolve(), expected[name] / "SKILL.md")
             self.command("uninstall", "--provider", provider)
             self.command("uninstall", "--provider", provider)
             self.assertEqual(list(target.iterdir()), [])
@@ -103,10 +110,10 @@ class InstallerTests(unittest.TestCase):
             self.command("install", "--provider", "all")
         for provider, directory in zip(cli.PROVIDERS, (".agents", ".cursor", ".claude")):
             target = self.home / directory / "skills"
-            expected = set(json.loads((self.root / "providers" / provider / "adapter.json").read_text())["entry_points"])
-            self.assertEqual({path.name for path in target.iterdir()}, expected)
+            expected = self.provider_sources(provider)
+            self.assertEqual({path.name for path in target.iterdir()}, set(expected))
             for name in expected:
-                self.assertEqual((target / name / "SKILL.md").resolve(), self.root / "skills" / name / "SKILL.md")
+                self.assertEqual((target / name / "SKILL.md").resolve(), expected[name] / "SKILL.md")
         self.command("uninstall", "--provider", "all", "--dry-run")
         self.assertTrue((self.target / "mode").is_symlink())
         for _ in range(2):
@@ -121,7 +128,8 @@ class InstallerTests(unittest.TestCase):
             adapter = json.loads(path.read_text())
             self.write_json(path, {key: value for key, value in adapter.items() if key != "entry_points"})
             self.command("install", "--provider", provider)
-            self.assertTrue((target / "how").is_symlink())
+            prefix = adapter.get("skill_name_prefix", "")
+            self.assertTrue((target / (prefix + "how")).is_symlink())
             self.skill(target / "unrelated", "unrelated")
             self.write_json(path, adapter)
             before = sorted(target.iterdir())
@@ -129,12 +137,12 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual(sorted(target.iterdir()), before)
             for _ in range(2):
                 self.command("install", "--provider", provider)
-            self.assertEqual({skill.name for skill in cli.discovery_skills(target, set())}, set(adapter["entry_points"]) | {"unrelated"})
-            mode = (target / "mode/SKILL.md").resolve()
-            self.assertTrue((mode.parent.parent / "how/SKILL.md").is_file())
-            self.assertTrue((mode.parent.parent / "principle-prove-it-works/SKILL.md").is_file())
+            self.assertEqual({skill.name for skill in cli.discovery_skills(target, set())}, set(self.provider_sources(provider)) | {"unrelated"})
+            mode = (target / (prefix + "mode") / "SKILL.md").resolve()
+            self.assertTrue((self.root / "skills/how/SKILL.md").is_file())
+            self.assertTrue((self.root / "skills/principle-prove-it-works/SKILL.md").is_file())
             receipt = json.loads((cli.state_dir(target) / "provider-install.json").read_text())
-            self.assertEqual(set(receipt["links"]), set(adapter["entry_points"]))
+            self.assertEqual(set(receipt["links"]), set(self.provider_sources(provider)))
             self.command("uninstall", "--provider", provider)
             self.assertTrue((target / "unrelated/SKILL.md").is_file())
             self.assertTrue(mode.is_file())
@@ -149,8 +157,8 @@ class InstallerTests(unittest.TestCase):
                 self.assertFalse(self.target.exists())
 
     def test_all_provider_preflight_rejects_last_host_collision_before_writes(self):
-        collision = self.home / ".claude/skills/mode"
-        self.skill(collision, "mode")
+        collision = self.home / ".claude/skills/nanide-mode"
+        self.skill(collision, "nanide-mode")
         self.assertIn("unmanaged", self.command("install", "--provider", "all", success=False).stderr)
         self.assertFalse((self.home / ".agents").exists())
         self.assertFalse((self.home / ".cursor").exists())
@@ -159,12 +167,12 @@ class InstallerTests(unittest.TestCase):
 
     def test_all_provider_uninstall_preflight_preserves_other_hosts(self):
         self.command("install", "--provider", "all")
-        target = self.home / ".claude/skills/mode"
+        target = self.home / ".claude/skills/nanide-mode"
         target.unlink()
         target.symlink_to(self.base / "other")
         self.assertIn("Managed link changed", self.command("uninstall", "--provider", "all", success=False).stderr)
         self.assertTrue((self.home / ".agents/skills/mode").is_symlink())
-        self.assertTrue((self.home / ".cursor/skills/mode").is_symlink())
+        self.assertTrue((self.home / ".cursor/skills/nanide-mode").is_symlink())
         self.assertEqual(target.readlink(), self.base / "other")
 
     def test_all_provider_rejects_non_global_options(self):
@@ -198,10 +206,8 @@ class InstallerTests(unittest.TestCase):
             with self.assertRaises(cli.Invalid):
                 cli.install_provider(collection, "claude", self.target, "install", False)
             cli.install_provider(replacement, "claude", self.target, "install", False)
-            for skill in replacement.skills:
-                if skill.name not in cli.adapter_config(other, "claude")["entry_points"]:
-                    continue
-                self.assertEqual((self.target / skill.name).resolve(), skill.source)
+            for name, source in self.provider_sources("claude", other).items():
+                self.assertEqual((self.target / name).resolve(), source)
             with self.assertRaises(cli.Invalid):
                 cli.install_provider(collection, "claude", self.target, "uninstall", False)
             cli.install_provider(replacement, "claude", self.target, "uninstall", False)
@@ -212,14 +218,15 @@ class InstallerTests(unittest.TestCase):
             target = self.base / provider / "skills"
             self.command("install", "--provider", provider, "--target-dir", str(target), "--dry-run")
             self.assertFalse(target.parent.exists())
-            self.skill(target / "mode", "mode")
+            name = "mode" if provider == "codex" else "nanide-mode"
+            self.skill(target / name, name)
             result = self.command("install", "--provider", provider, "--target-dir", str(target), success=False)
             self.assertIn("unmanaged", result.stderr)
-            self.assertTrue((target / "mode/SKILL.md").is_file())
+            self.assertTrue((target / name / "SKILL.md").is_file())
 
     def test_provider_install_preserves_tampered_links(self):
         self.command("install", "--provider", "claude")
-        target = self.home / ".claude/skills/mode"
+        target = self.home / ".claude/skills/nanide-mode"
         target.unlink()
         target.symlink_to(self.base / "other")
         self.assertIn("Managed link changed", self.command("uninstall", "--provider", "claude", success=False).stderr)
@@ -247,7 +254,7 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("Skill name collision", self.command("install", "--provider", "codex", success=False).stderr)
         self.command("install", "--provider", "cursor")
         self.command("install", "--provider", "claude")
-        self.skill(self.home / ".cursor/skills/duplicate", "mode")
+        self.skill(self.home / ".cursor/skills/duplicate", "nanide-mode")
         self.command("install", "--provider", "cursor", "--target-dir", str(self.base / "project/skills"), success=False)
 
     def test_old_pending_migration_config_destination_can_resume(self):
@@ -625,10 +632,12 @@ class InstallerTests(unittest.TestCase):
         metadata = path.parent / "agents/openai.yaml"
         metadata.parent.mkdir()
         metadata.write_text("interface:\n  display_name: Example\n")
+        self.command("generate-source-adapters")
         self.command("validate")
         metadata.write_text("policy:\n  allow_implicit_invocation: 'false'\n")
         self.command("validate", success=False)
         metadata.write_text("policy:\n  allow_implicit_invocation: false\n")
+        self.command("generate-source-adapters")
         self.command("validate")
         path.write_text(path.read_text() + "\n[invalid](#absent)\n")
         self.command("validate", success=False)
@@ -639,6 +648,7 @@ class InstallerTests(unittest.TestCase):
         self.skill(self.root / "skills/new-workflow", "new-workflow")
         self.assertIn("exactly cover", self.command("validate", success=False).stderr)
         self.write_json(path, {**mapping, "new-workflow": "new-workflow"})
+        self.command("generate-source-adapters")
         self.command("validate")
         self.install()
 
@@ -767,6 +777,7 @@ class InstallerTests(unittest.TestCase):
         metadata = canonical.parent / "agents/openai.yaml"
         metadata.parent.mkdir()
         metadata.write_text("policy:\n  allow_implicit_invocation: false\n")
+        self.command("generate-source-adapters")
         self.command("install", "--provider", "codex")
         installed = self.target / "mode/SKILL.md"
         self.assertEqual(installed.resolve(), canonical)
@@ -802,6 +813,81 @@ class InstallerTests(unittest.TestCase):
         destination.symlink_to(interim, target_is_directory=True)
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertFalse(destination.is_symlink())
+
+    def test_prefixed_source_adapter_preserves_metadata_and_canonical_context(self):
+        canonical = self.root / "skills/mode/SKILL.md"
+        canonical.write_text(canonical.read_text().replace("description: A test skill.", "description: Routing example.\nuser-invocable: false\nallowed-tools: Read"))
+        metadata = canonical.parent / "agents/openai.yaml"
+        metadata.parent.mkdir()
+        metadata.write_text("policy:\n  allow_implicit_invocation: false\n")
+        self.command("generate-source-adapters")
+        router = self.root / "providers/prefixed-skills/nanide-mode/SKILL.md"
+        expected = cli.frontmatter(canonical)
+        expected["name"] = "nanide-mode"
+        self.assertEqual(cli.frontmatter(router), expected)
+        self.assertEqual((router.parent / "agents/openai.yaml").read_bytes(), metadata.read_bytes())
+        for provider in ("cursor", "claude"):
+            target = self.home / ("." + provider) / "skills"
+            self.command("install", "--provider", provider)
+            installed = (target / "nanide-mode/SKILL.md").resolve()
+            self.assertEqual(installed, router)
+            self.assertEqual((installed.parent / "../../../skills/mode/SKILL.md").resolve(), canonical)
+            self.assertIn("canonical skill's absolute path", installed.read_text())
+            self.assertTrue((target / "nanide-setup/SKILL.md").is_file())
+        canonical.write_text(canonical.read_text() + "A live workflow edit.\n")
+        self.assertIn("A live workflow edit.", (router.parent / "../../../skills/mode/SKILL.md").read_text())
+        self.command("validate")
+        relocated = self.base / "relocated"
+        shutil.copytree(self.root, relocated, symlinks=True)
+        moved = relocated / router.relative_to(self.root)
+        self.assertEqual((moved.parent / "../../../skills/mode/SKILL.md").resolve(), relocated / "skills/mode/SKILL.md")
+
+    def test_source_adapter_generation_rejects_stale_missing_and_extra_files(self):
+        directory = self.root / "providers/prefixed-skills"
+        router = directory / "nanide-mode/SKILL.md"
+        original = router.read_bytes()
+        for change in ("stale", "missing", "extra"):
+            with self.subTest(change=change):
+                if change == "stale":
+                    router.write_bytes(original + b"Stale.\n")
+                elif change == "missing":
+                    router.unlink()
+                else:
+                    (directory / "extra.txt").write_text("unexpected")
+                self.assertIn("Source adapters are stale", self.command("validate", success=False).stderr)
+                self.command("generate-source-adapters")
+                self.command("validate")
+                self.assertEqual(router.read_bytes(), original)
+                self.assertFalse((directory / "extra.txt").exists())
+        names = {cli.frontmatter(path)["name"] for path in directory.glob("*/SKILL.md")}
+        self.assertEqual(names, {"nanide-" + skill.name for skill in cli.load_collection(self.root).skills})
+
+    def test_prefixed_provider_upgrade_replaces_owned_short_links(self):
+        for provider in ("cursor", "claude"):
+            path = self.root / "providers" / provider / "adapter.json"
+            adapter = json.loads(path.read_text())
+            self.write_json(path, {key: value for key, value in adapter.items() if key != "skill_name_prefix"})
+            self.command("install", "--provider", provider)
+            target = self.home / ("." + provider) / "skills"
+            self.assertEqual({entry.name for entry in target.iterdir()}, {"mode", "help", "goal", "audit", "setup"})
+            self.write_json(path, adapter)
+            before = sorted(self.home.rglob("*"))
+            self.command("install", "--provider", provider, "--dry-run")
+            self.assertEqual(sorted(self.home.rglob("*")), before)
+            for _ in range(2):
+                self.command("install", "--provider", provider)
+            self.assertEqual({entry.name for entry in target.iterdir()}, {"nanide-mode", "nanide-help", "nanide-goal", "nanide-audit", "nanide-setup"})
+            self.command("uninstall", "--provider", provider)
+            self.assertEqual(list(target.iterdir()), [])
+
+    def test_provider_prefix_rejects_unsupported_settings_before_writes(self):
+        path = self.root / "providers/claude/adapter.json"
+        adapter = json.loads(path.read_text())
+        for prefix in (None, "", "other-", "../nanide-", ["nanide-"], 3):
+            with self.subTest(prefix=prefix):
+                self.write_json(path, {**adapter, "skill_name_prefix": prefix})
+                self.assertIn("skill_name_prefix", self.command("install", "--provider", "claude", success=False).stderr)
+                self.assertFalse((self.home / ".claude").exists())
 
 
 if __name__ == "__main__":

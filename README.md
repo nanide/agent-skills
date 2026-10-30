@@ -45,7 +45,7 @@ Select Nanide mode, [`mode`](skills/mode/SKILL.md) with a task and a check that 
 Use Nanide mode to investigate why retries create duplicate records. reproduce, fix, and verify.
 ```
 
-Plugin skills use short names such as `nanide:mode`, `nanide:help`, and `nanide:setup`. Source installations link directly to the same short-named skills. The canonical `mode` skill resolves helpers such as `how` and `audit` from its own directory and reads this checkout's model configuration. Provider installations expose only the [main entry points](providers/README.md#autocomplete-entry-points) in discovery. Ask `mode` to use other helpers by name. Setup uses the short name `setup`. Short helper names identify local files, not standalone catalog selectors. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
+Plugin skills use short names such as `nanide:mode`, `nanide:help`, and `nanide:setup`. Codex source installations link directly to the short-named skills. Cursor and Claude source installations expose prefixed commands such as `/nanide-mode` and `/nanide-help`. These entry points read the same canonical workflows. The canonical `mode` skill resolves helpers such as `how` and `audit` from its own directory and reads this checkout's model configuration. Provider installations expose only the [main entry points](providers/README.md#autocomplete-entry-points) in discovery. Ask `mode` to use other helpers by name. Setup uses `setup` in Codex and `/nanide-setup` in Cursor and Claude source installations. Short helper names identify local files, not standalone catalog selectors. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
 
 Use [`mode`](skills/mode/SKILL.md#work-on-a-pr) for PR writing, creation, review, metadata, status, CI, or shipping within the requested scope. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references.
 
@@ -57,7 +57,7 @@ Model roles default to `inherit-parent`, with two independent reviewers per pane
 
 ## Improve skills while using them
 
-Create a branch in this checkout with `git switch -c improve-skill-name`. Edit the canonical file under `skills/` while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
+Create a branch in this checkout with `git switch -c improve-skill-name`. Edit the canonical file under `skills/` while you work in another project. After changing skill metadata, run `python scripts/skills.py generate-source-adapters` to refresh Cursor and Claude entry points. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
 
 The installer rejects conflicting public skill names in checked discovery roots. Provider installations can link the same canonical sources. Use a separate test environment when validating a different checkout.
 

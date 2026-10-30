@@ -2,7 +2,7 @@
 
 For plugin installation, follow the [plugin guide](../../docs/plugins.md).
 
-For a source checkout, install with `python3 scripts/skills.py install --provider claude`. Personal discovery uses `~/.claude/skills`. Use `--target-dir /path/to/project/.claude/skills` for a project. Start a fresh session and invoke `/mode` or another installed entry point. See the official [skills documentation](https://code.claude.com/docs/en/skills). Source installs use `/mode`. Plugin installs use `/nanide:mode`. Other Claude products are not covered by this adapter.
+For a source checkout, install with `python3 scripts/skills.py install --provider claude`. Personal discovery uses `~/.claude/skills`. Use `--target-dir /path/to/project/.claude/skills` for a project. Start a fresh session and invoke `/nanide-mode` or another installed entry point. See the official [skills documentation](https://code.claude.com/docs/en/skills). Source installs use `/nanide-mode`. Plugin installs use `/nanide:mode`. Other Claude products are not covered by this adapter.
 
 See [autocomplete entry points](../README.md#autocomplete-entry-points) for the installed list and helper access.
 

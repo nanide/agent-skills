@@ -8,5 +8,6 @@
   ],
   "discovery_directory": ".claude/skills",
   "additional_discovery_directories": [],
-  "environment_discovery_directories": {}
+  "environment_discovery_directories": {},
+  "skill_name_prefix": "nanide-"
 }
