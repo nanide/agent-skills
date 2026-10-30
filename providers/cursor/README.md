@@ -2,13 +2,13 @@
 
 For plugin installation, follow the [plugin guide](../../docs/plugins.md).
 
-For a source checkout, install with `python3 scripts/skills.py install --provider cursor`. Personal discovery uses `~/.cursor/skills`. Use `--target-dir /path/to/project/.cursor/skills` for a project. Start a fresh session and invoke `/nanide-mode` or another installed entry point. See the official [skills documentation](https://cursor.com/docs/skills).
+For a source checkout, install with `python3 scripts/skills.py install --provider cursor`. Personal discovery uses `~/.cursor/skills`. Use `--target-dir /path/to/project/.cursor/skills` for a project. Start a fresh session and invoke `/mode` or another installed entry point. See the official [skills documentation](https://cursor.com/docs/skills).
 
 See [autocomplete entry points](../README.md#autocomplete-entry-points) for the installed list and helper access.
 
 ## Tools
 
-Use the current subagent tool when exposed. Inspect its schema before choosing a model, background mode, or agent type. Do not assume upstream pstack's model names or registered agent types exist. Shared agent prompt files are brief templates. Follow the [shared delegation policy](../../skills/nanide-mode/references/delegation.md).
+Use the current subagent tool when exposed. Inspect its schema before choosing a model, background mode, or agent type. Do not assume upstream pstack's model names or registered agent types exist. Shared agent prompt files are brief templates. Follow the [shared delegation policy](../../skills/mode/references/delegation.md).
 
 Use a native planning tool for the working checklist and the shared checkpoint for durable state. A to-do list does not establish a persistent execution loop. Use native background or cloud execution only when requested and available. Scheduling needs an explicit request and a real scheduler. Do not assume a local session will keep running after the application closes.
 

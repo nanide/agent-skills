@@ -1,34 +1,34 @@
 # Design before you write code
 
-One attempt at a hard design locks in the first shape the model thought of. `$nanide-architect` settles types and boundaries before implementation. `$nanide-arena` runs several attempts at the same brief and merges the best parts. `$nanide-interrogate` has independent reviewers try to break the result. When the job is coverage rather than design synthesis, `$nanide-swarm` fans out slices or races and aggregates their results.
+One attempt at a hard design locks in the first shape the model thought of. `$architect` settles types and boundaries before implementation. `$arena` runs several attempts at the same brief and merges the best parts. `$interrogate` has independent reviewers try to break the result. When the job is coverage rather than design synthesis, `$swarm` fans out slices or races and aggregates their results.
 
 The two most common design mistakes are taking the agent's first design and polishing a plan that no code has tested. This page fixes both. You plan through code. Prototypes answer the open questions, a README or tutorial sets the target, and the written plan comes last.
 
-![Three robots draft competing bridge models at their own tables under $nanide-architect, $nanide-arena, and $nanide-interrogate panels, while a judge robot with a clipboard inspects skeptically.](./images/design.jpg)
+![Three robots draft competing bridge models at their own tables under $architect, $arena, and $interrogate panels, while a judge robot with a clipboard inspects skeptically.](./images/design.jpg)
 
-## Settle the shape with `$nanide-architect`
+## Settle the shape with `$architect`
 
 ```text
-$nanide-architect design the import pipeline before writing any code. i care most about how callers use it.
+$architect design the import pipeline before writing any code. i care most about how callers use it.
 ```
 
-[`$nanide-architect`](../../skills/nanide-architect/SKILL.md) grounds itself first, running `$nanide-how` over the code the design touches and `$nanide-why` when it moves ownership or layers. Then it runs `$nanide-arena` to produce competing design sketches, with the caller's usage written first in each, followed by types, signatures, and a module map.
+[`$architect`](../../skills/architect/SKILL.md) grounds itself first, running `$how` over the code the design touches and `$why` when it moves ownership or layers. Then it runs `$arena` to produce competing design sketches, with the caller's usage written first in each, followed by types, signatures, and a module map.
 
 When implementation is part of your request, it can proceed from the design into implementation. A design-only request remains design-only. To add a checkpoint to an implementation request, say so:
 
 ```text
-$nanide-architect with checkpoint. stop and show me before implementing.
+$architect with checkpoint. stop and show me before implementing.
 ```
 
-The design isn't sacred once code starts. If implementation shows the same workaround in unrelated places, or types that only compile with `any` or forced casts, `$nanide-architect` treats that as proof the design is wrong. It scraps the sketch and starts over instead of patching around it.
+The design isn't sacred once code starts. If implementation shows the same workaround in unrelated places, or types that only compile with `any` or forced casts, `$architect` treats that as proof the design is wrong. It scraps the sketch and starts over instead of patching around it.
 
-## Fan out attempts with `$nanide-arena`
+## Fan out attempts with `$arena`
 
 ```text
-$nanide-arena take my prompt to the arena verbatim. i want to compare their proposals with yours.
+$arena take my prompt to the arena verbatim. i want to compare their proposals with yours.
 ```
 
-[`$nanide-arena`](../../skills/nanide-arena/SKILL.md) is the general tool underneath. N subagents attempt the same design or code brief in parallel, each writing to its own worktree or directory. A read-only judge, on a different model family when your configuration allows one, scores every candidate against a rubric. The coordinator reads each candidate end to end, picks a base, grafts in the best ideas from the losers, and verifies the result.
+[`$arena`](../../skills/arena/SKILL.md) is the general tool underneath. N subagents attempt the same design or code brief in parallel, each writing to its own worktree or directory. A read-only judge, on a different model family when your configuration allows one, scores every candidate against a rubric. The coordinator reads each candidate end to end, picks a base, grafts in the best ideas from the losers, and verifies the result.
 
 ```mermaid
 flowchart LR
@@ -44,29 +44,29 @@ flowchart LR
     H --> I[Verify]
 ```
 
-The panel comes from your [`$setup-nanide-skills`](../../skills/setup-nanide-skills/SKILL.md) configuration, and you can adjust it per task. Ask for more candidates when the decision matters, fewer when it doesn't:
+The panel comes from your [`$setup`](../../skills/setup/SKILL.md) configuration, and you can adjust it per task. Ask for more candidates when the decision matters, fewer when it doesn't:
 
 ```text
-$nanide-arena this, 5 candidates. the cache key format is expensive to change later.
+$arena this, 5 candidates. the cache key format is expensive to change later.
 ```
 
-## Cover slices and races with `$nanide-swarm`
+## Cover slices and races with `$swarm`
 
 ```text
-$nanide-swarm check every package under packages/ against its check.sh. one worker per package. one report.
+$swarm check every package under packages/ against its check.sh. one worker per package. one report.
 ```
 
-[`$nanide-swarm`](../../skills/nanide-swarm/SKILL.md) fans N workers across independent slices, coverage matrices, gauntlet lanes, exploration partitions, or declared race arms. Each worker gets its own scope and check, then reports `PASS`, `ISSUES`, or `BLOCKED`. The parent waits for the workers and returns one compact report with any gaps or dropouts.
+[`$swarm`](../../skills/swarm/SKILL.md) fans N workers across independent slices, coverage matrices, gauntlet lanes, exploration partitions, or declared race arms. Each worker gets its own scope and check, then reports `PASS`, `ISSUES`, or `BLOCKED`. The parent waits for the workers and returns one compact report with any gaps or dropouts.
 
-Reach for it when parallelism buys coverage or lets independent checks race. `$nanide-arena` gives every worker the same design or code brief, then picks a base and grafts the best parts. `$nanide-swarm` covers slices or runs a race with a selection rule declared up front. It does not use the base-selection and grafting ceremony.
+Reach for it when parallelism buys coverage or lets independent checks race. `$arena` gives every worker the same design or code brief, then picks a base and grafts the best parts. `$swarm` covers slices or runs a race with a selection rule declared up front. It does not use the base-selection and grafting ceremony.
 
-## Break it with `$nanide-interrogate`
+## Break it with `$interrogate`
 
 ```text
-$nanide-interrogate the whole branch, but skeptically. no nitpicks unless it's an actual bug or regression.
+$interrogate the whole branch, but skeptically. no nitpicks unless it's an actual bug or regression.
 ```
 
-[`$nanide-interrogate`](../../skills/nanide-interrogate/SKILL.md) sends the same diff, intent, and rubric to independent reviewers. They inherit the parent model unless your configuration specifies supported overrides. The report names the models actually used. Agreement is useful evidence to investigate, not proof of correctness. The lead sorts everything into `Act on`, `Consider`, `Noted`, and `Dismissed`, with a reason for each dismissal, and applies nothing automatically.
+[`$interrogate`](../../skills/interrogate/SKILL.md) sends the same diff, intent, and rubric to independent reviewers. They inherit the parent model unless your configuration specifies supported overrides. The report names the models actually used. Agreement is useful evidence to investigate, not proof of correctness. The lead sorts everything into `Act on`, `Consider`, `Noted`, and `Dismissed`, with a reason for each dismissal, and applies nothing automatically.
 
 Read the dismissals too. The lead is a pragmatic senior engineer, not an oracle, and you can override it.
 
@@ -75,43 +75,43 @@ Read the dismissals too. The lead is a pragmatic senior engineer, not an oracle,
 Never take the first design. Ask for a few, and pick from evidence you can see:
 
 ```text
-$nanide-mode prototype a few options for the new dropdown menu. take screenshots or videos for me to compare.
+$mode prototype a few options for the new dropdown menu. take screenshots or videos for me to compare.
 ```
 
-The [Prototype playbook](../../skills/nanide-mode/playbooks/prototype.md) builds throwaway sketches in a scratch directory, puts the variants behind one switcher, drives each one, and captures screenshots or timings. It also works for behavior and algorithms, not just UI. Prototypes are planning with code. They let the agent answer its own open questions by running something instead of asking you, and they leave room for an option you wouldn't have thought of.
+The [Prototype playbook](../../skills/mode/playbooks/prototype.md) builds throwaway sketches in a scratch directory, puts the variants behind one switcher, drives each one, and captures screenshots or timings. It also works for behavior and algorithms, not just UI. Prototypes are planning with code. They let the agent answer its own open questions by running something instead of asking you, and they leave room for an option you wouldn't have thought of.
 
-The same idea scales up to a real design. Pair `$nanide-architect` with prototypes and keep a review gate:
+The same idea scales up to a real design. Pair `$architect` with prototypes and keep a review gate:
 
 ```text
-$nanide-mode we need rate limiting for external webhooks. $nanide-architect it first, and answer open questions with prototypes. let me review before proceeding.
+$mode we need rate limiting for external webhooks. $architect it first, and answer open questions with prototypes. let me review before proceeding.
 ```
 
-Don't spend reviewers on an abstract plan. `$nanide-interrogate` belongs on a diff. Point adversarial review at a plan with no code behind it and the reviewers invent theoretical risks and edge cases that will never happen. Let prototypes settle the questions, then review what got built.
+Don't spend reviewers on an abstract plan. `$interrogate` belongs on a diff. Point adversarial review at a plan with no code behind it and the reviewers invent theoretical risks and edge cases that will never happen. Let prototypes settle the questions, then review what got built.
 
 ## Write the README first for shared code
 
 For a package or API that other code will use, start with the doc a user would read:
 
 ```text
-$nanide-mode write a tutorial for how i would use the new config package first. then $nanide-teach me why it beats the current one.
+$mode write a tutorial for how i would use the new config package first. then $teach me why it beats the current one.
 ```
 
-Writing the tutorial first forces the caller's view. You describe the API to a hypothetical user and work back to the implementation. The doc also becomes a concrete target the agent checks its own work against. Name [`$nanide-technical-writing`](../../skills/nanide-technical-writing/SKILL.md) when the doc itself matters, so a tutorial stays a tutorial instead of drifting into reference and explanation at once.
+Writing the tutorial first forces the caller's view. You describe the API to a hypothetical user and work back to the implementation. The doc also becomes a concrete target the agent checks its own work against. Name [`$technical-writing`](../../skills/technical-writing/SKILL.md) when the doc itself matters, so a tutorial stays a tutorial instead of drifting into reference and explanation at once.
 
 ## Plan after the design settles
 
 The Nanide skills collection has no planning skill, on purpose. When you do want a written plan, ask for it once the design is settled:
 
 ```text
-$nanide-mode turn this design into a plan. small verifiable PRs, each with its own verification steps.
+$mode turn this design into a plan. small verifiable PRs, each with its own verification steps.
 ```
 
-The [Multi-phase plan playbook](../../skills/nanide-mode/playbooks/multi-phase-plan.md) settles any remaining open questions by prototype, then writes one section per PR, each ending in proof that the change works. A passing test suite alone doesn't count as that proof. The plan is the deliverable. The playbook doesn't implement it, and it names which execution playbook should run it next.
+The [Multi-phase plan playbook](../../skills/mode/playbooks/multi-phase-plan.md) settles any remaining open questions by prototype, then writes one section per PR, each ending in proof that the change works. A passing test suite alone doesn't count as that proof. The plan is the deliverable. The playbook doesn't implement it, and it names which execution playbook should run it next.
 
 For a migration, state the bar in the prompt:
 
 ```text
-$nanide-mode plan the migration of our ui library to the new styling system. small verifiable PRs, each with visual regression checks. the result must match the original exactly, bugs included.
+$mode plan the migration of our ui library to the new styling system. small verifiable PRs, each with visual regression checks. the result must match the original exactly, bugs included.
 ```
 
 "bugs included" keeps the migration from quietly fixing things on the way, which would make the old and new output impossible to compare. For a project that spans many days, you can commit the plan to the repo for a while so other agents see the work in progress. Delete it when the work lands.
@@ -120,14 +120,14 @@ $nanide-mode plan the migration of our ui library to the new styling system. sma
 
 You might be wondering whether every change needs this. No. Most changes need none of it. A rough ladder:
 
-- A small, finished change you're unsure about needs `$nanide-interrogate` alone.
-- A consequential design choice with viable alternatives earns `$nanide-architect`, which brings `$nanide-arena` with it.
-- A standalone decision where independent attempts would help, like naming, formats, or an algorithm, is `$nanide-arena` directly.
-- A coverage matrix, set of parallel checks, or race with declared arms is `$nanide-swarm`.
+- A small, finished change you're unsure about needs `$interrogate` alone.
+- A consequential design choice with viable alternatives earns `$architect`, which brings `$arena` with it.
+- A standalone decision where independent attempts would help, like naming, formats, or an algorithm, is `$arena` directly.
+- A coverage matrix, set of parallel checks, or race with declared arms is `$swarm`.
 - An open question you could answer by running something, like a layout, a timing, or an approach, gets a prototype, not a debate.
-- A contested design that's expensive to reverse gets `$nanide-architect`, then `$nanide-interrogate` before shipping.
+- A contested design that's expensive to reverse gets `$architect`, then `$interrogate` before shipping.
 - Work that spans several PRs gets a plan, written after the design settles.
 
-`$nanide-mode` already applies this ladder. Consequential design uncertainty triggers `$nanide-architect`, so you reach for these directly mainly when you want more or less scrutiny than the default.
+`$mode` already applies this ladder. Consequential design uncertainty triggers `$architect`, so you reach for these directly mainly when you want more or less scrutiny than the default.
 
 Next: [Build and clean the change](./05-build-and-clean.md).

@@ -1,8 +1,8 @@
-# Agent skills
+# Nanide
 
 Nanide is an independently maintained fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack), with credit to Lauren Tan and the upstream contributors.
 
-Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `$nanide-mode` to route a task through the collection's playbooks, or request a named helper through that mode. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `mode` to route a task through the collection's playbooks, or request a named helper through that mode. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
 
 ## Install as a plugin
 
@@ -39,25 +39,25 @@ The installer checks for conflicting skill names and unmanaged destination paths
 
 ## Use the skills
 
-Invoke [`$nanide-mode`](skills/nanide-mode/SKILL.md) with a task and a check that can pass or fail:
+Select Nanide mode, [`mode`](skills/mode/SKILL.md) with a task and a check that can pass or fail:
 
 ```text
-$nanide-mode investigate why retries create duplicate records. reproduce, fix, and verify.
+Use Nanide mode to investigate why retries create duplicate records. reproduce, fix, and verify.
 ```
 
-`$nanide-mode` resolves helpers from its real sibling directory and reads this checkout's model configuration. All helper IDs use `nanide-`, such as `nanide-how` and `nanide-audit`. Provider installations expose only the [main entry points](providers/README.md#autocomplete-entry-points) in discovery. Ask `$nanide-mode` to use other helpers by name. `$setup-nanide-skills` keeps its existing name. Old generic selectors have no Nanide aliases. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
+Plugin skills use short names such as `nanide:mode`, `nanide:help`, and `nanide:setup`. Source installations link directly to the same short-named skills. The canonical `mode` skill resolves helpers such as `how` and `audit` from its own directory and reads this checkout's model configuration. Provider installations expose only the [main entry points](providers/README.md#autocomplete-entry-points) in discovery. Ask `mode` to use other helpers by name. Setup uses the short name `setup`. Short helper names identify local files, not standalone catalog selectors. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
 
-Use [`$nanide-mode`](skills/nanide-mode/SKILL.md#work-on-a-pr) for PR writing, creation, review, metadata, status, CI, or shipping within the requested scope. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references.
+Use [`mode`](skills/mode/SKILL.md#work-on-a-pr) for PR writing, creation, review, metadata, status, CI, or shipping within the requested scope. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references.
 
 The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the available skills and playbooks.
 
 ## Configure model roles
 
-Model roles default to `inherit-parent`, with two independent reviewers per panel. Invoke [`$setup-nanide-skills`](skills/setup-nanide-skills/SKILL.md) to save your choices in an ignored provider-local configuration. That complete document replaces [the portable defaults](agent-config.json). Read [configuration precedence](providers/README.md#configuration). Copy it explicitly to a different checkout when switching versions.
+Model roles default to `inherit-parent`, with two independent reviewers per panel. Select Nanide [`setup`](skills/setup/SKILL.md) to save your choices in an ignored provider-local configuration. That complete document replaces [the portable defaults](agent-config.json). Read [configuration precedence](providers/README.md#configuration). Copy it explicitly to a different checkout when switching versions.
 
 ## Improve skills while using them
 
-Create a branch in this checkout with `git switch -c improve-skill-name`. Edit its linked source while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
+Create a branch in this checkout with `git switch -c improve-skill-name`. Edit the canonical file under `skills/` while you work in another project. Return here to review `git diff`, run validation, and commit the change. The [release guide](docs/releases.md) covers version bumps and immutable tags.
 
 The installer rejects conflicting public skill names in checked discovery roots. Provider installations can link the same canonical sources. Use a separate test environment when validating a different checkout.
 
@@ -79,7 +79,7 @@ Uninstall removes the managed discovery links. It retains source files, personal
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-The validator parses YAML, checks metadata and local Markdown links, and checks configuration and installation records. See [the authoring playbook](skills/nanide-mode/playbooks/authoring-a-skill.md) for instruction changes.
+The validator parses YAML, checks metadata and local Markdown links, and checks configuration and installation records. See [the authoring playbook](skills/mode/playbooks/authoring-a-skill.md) for instruction changes.
 
 Distributed copies must include the [MIT license](LICENSE) and its attribution.
 

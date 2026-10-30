@@ -7,76 +7,76 @@ The build playbooks share one discipline. Say what you observed, and let the pla
 A bug prompt states the symptom and asks for a reproduction first:
 
 ```text
-$nanide-mode this command emits two records after a retry. repro first, then fix and verify.
+$mode this command emits two records after a retry. repro first, then fix and verify.
 ```
 
 A feature prompt states the behavior and what must not change:
 
 ```text
-$nanide-mode add a --json flag. text output stays byte-identical. verify both forms.
+$mode add a --json flag. text output stays byte-identical. verify both forms.
 ```
 
 A refactoring prompt pins behavior before structure moves:
 
 ```text
-$nanide-mode move parsing into one module, zero behavior change. record the current output first and prove it's unchanged after.
+$mode move parsing into one module, zero behavior change. record the current output first and prove it's unchanged after.
 ```
 
 A perf prompt states the measurement, not an impression:
 
 ```text
-$nanide-mode startup takes 1.8s on this fixture. trace it, fix the measured cause, show me before and after.
+$mode startup takes 1.8s on this fixture. trace it, fix the measured cause, show me before and after.
 ```
 
-Each of these routes to its playbook ([Bug fix](../../skills/nanide-mode/playbooks/bug-fix.md), [Feature](../../skills/nanide-mode/playbooks/feature.md), [Refactoring](../../skills/nanide-mode/playbooks/refactoring.md), [Perf issue](../../skills/nanide-mode/playbooks/perf-issue.md)), and the playbook supplies the steps you didn't type: reproduce before fixing, name the data shape before implementing, pin behavior before restructuring, profile before optimizing.
+Each of these routes to its playbook ([Bug fix](../../skills/mode/playbooks/bug-fix.md), [Feature](../../skills/mode/playbooks/feature.md), [Refactoring](../../skills/mode/playbooks/refactoring.md), [Perf issue](../../skills/mode/playbooks/perf-issue.md)), and the playbook supplies the steps you didn't type: reproduce before fixing, name the data shape before implementing, pin behavior before restructuring, profile before optimizing.
 
-For sustained improvement of one number, there's the [Hillclimb playbook](../../skills/nanide-mode/playbooks/hillclimb.md). Give it the metric, a target, and a floor on attempts, and it loops one hypothesis at a time with a frozen measurement harness. It keeps wins and reverts everything else.
+For sustained improvement of one number, there's the [Hillclimb playbook](../../skills/mode/playbooks/hillclimb.md). Give it the metric, a target, and a floor on attempts, and it loops one hypothesis at a time with a frozen measurement harness. It keeps wins and reverts everything else.
 
-Both perf playbooks run [`$nanide-benchmark-checklist`](../../skills/nanide-benchmark-checklist/SKILL.md) on their numbers. Perf issue vets its baseline and every number after it, and Hillclimb vets its harness before freezing it. [Verify and ship](./06-verify-and-ship.md#vet-a-measured-number-with-nanide-benchmark-checklist) shows when to type it yourself.
+Both perf playbooks run [`$benchmark-checklist`](../../skills/benchmark-checklist/SKILL.md) on their numbers. Perf issue vets its baseline and every number after it, and Hillclimb vets its harness before freezing it. [Verify and ship](./06-verify-and-ship.md#vet-a-measured-number-with-benchmark-checklist) shows when to type it yourself.
 
-Sometimes you want the cause before any fix. For a live symptom, such as a leak, an idle CPU spin, or a visual glitch, the [Runtime forensics playbook](../../skills/nanide-mode/playbooks/runtime-forensics.md) instruments the running process. For a profile you already captured, the [Trace forensics playbook](../../skills/nanide-mode/playbooks/trace-forensics.md) reads the artifact and maps the hot frame to source. Both return a diagnosis, not a fix:
+Sometimes you want the cause before any fix. For a live symptom, such as a leak, an idle CPU spin, or a visual glitch, the [Runtime forensics playbook](../../skills/mode/playbooks/runtime-forensics.md) instruments the running process. For a profile you already captured, the [Trace forensics playbook](../../skills/mode/playbooks/trace-forensics.md) reads the artifact and maps the hot frame to source. Both return a diagnosis, not a fix:
 
 ```text
-$nanide-mode here's a cpuprofile from the slow startup. tell me where the time goes and which source lines own it. no fix yet.
+$mode here's a cpuprofile from the slow startup. tell me where the time goes and which source lines own it. no fix yet.
 ```
 
-## Write the failing test first with `$nanide-tdd`
+## Write the failing test first with `$tdd`
 
 When a bug has a cheap local test path, the whole prompt can be two words:
 
 ```text
-$nanide-tdd implement
+$tdd implement
 ```
 
-In context, that's enough. [`$nanide-tdd`](../../skills/nanide-tdd/SKILL.md) writes the smallest test that fails for the intended reason, then the fix, then reruns the test. If a test would need broad harness setup or brittle mocks, the skill says so and uses the closest executable check instead. Don't force a test where a real command is stronger evidence.
+In context, that's enough. [`$tdd`](../../skills/tdd/SKILL.md) writes the smallest test that fails for the intended reason, then the fix, then reruns the test. If a test would need broad harness setup or brittle mocks, the skill says so and uses the closest executable check instead. Don't force a test where a real command is stronger evidence.
 
 ## Load the TypeScript rules by name
 
-[`nanide-typescript-best-practices`](../../skills/nanide-typescript-best-practices/SKILL.md) turns the type-system principles into concrete rules: discriminated unions, `unknown` at boundaries, exhaustive variants, schema-derived types. It doesn't load on its own, so type `$nanide-typescript-best-practices` when a task touches `.ts` or `.tsx` files.
+[`typescript-best-practices`](../../skills/typescript-best-practices/SKILL.md) turns the type-system principles into concrete rules: discriminated unions, `unknown` at boundaries, exhaustive variants, schema-derived types. It doesn't load on its own, so type `$typescript-best-practices` when a task touches `.ts` or `.tsx` files.
 
 ## Clean before you commit
 
-The [Opening a PR playbook](../../skills/nanide-mode/playbooks/opening-a-pr.md) runs the bundled [diff cleanup](../../skills/nanide-mode/references/diff-cleanup.md) before each commit and applies [`$nanide-unslop`](../../skills/nanide-unslop/SKILL.md) to the PR description and commit bodies. Perform a focused diff review to remove narrating comments, unsupported guards, dead compatibility paths, and unrelated edits.
+The [Opening a PR playbook](../../skills/mode/playbooks/opening-a-pr.md) runs the bundled [diff cleanup](../../skills/mode/references/diff-cleanup.md) before each commit and applies [`$unslop`](../../skills/unslop/SKILL.md) to the PR description and commit bodies. Perform a focused diff review to remove narrating comments, unsupported guards, dead compatibility paths, and unrelated edits.
 
-For prose, `$nanide-unslop` takes a target and any extra rules you have:
+For prose, `$unslop` takes a target and any extra rules you have:
 
 ```text
-$nanide-unslop the readme changes, no emdashes
+$unslop the readme changes, no emdashes
 ```
 
 You'll develop your own shorthand. The skill reads intent fine from terse prompts like `unslop that, tighten it`.
 
-## Strip the comments with `$nanide-no-comments`
+## Strip the comments with `$no-comments`
 
 Comments need their own pass, and not from the agent that wrote them. An author defends its comments the way you'd defend yours. So before review, hand them to fresh eyes:
 
 ```text
-$nanide-no-comments the diff
+$no-comments the diff
 ```
 
-[`$nanide-no-comments`](../../skills/nanide-no-comments/SKILL.md) uses the [Comment Sicko brief](../../prompts/comment-sicko.md) with an available read-only subagent. Repository comment rules govern the review. Keep durable, non-obvious reasons and required notices. Remove narration and stale claims. Prefer better names or structure when they clarify the code, without broadening the change into unrelated refactoring.
+[`$no-comments`](../../skills/no-comments/SKILL.md) uses the [Comment Sicko brief](../../prompts/comment-sicko.md) with an available read-only subagent. Repository comment rules govern the review. Keep durable, non-obvious reasons and required notices. Remove narration and stale claims. Prefer better names or structure when they clarify the code, without broadening the change into unrelated refactoring.
 
-`$nanide-unslop` cleans prose. The diff cleanup removes redundant code, and `$nanide-no-comments` hands the comments to a reviewer who didn't write them.
+`$unslop` cleans prose. The diff cleanup removes redundant code, and `$no-comments` hands the comments to a reviewer who didn't write them.
 
 **Pitfall:** cleanup is not optional polish. A diff with narrating comments and defensive dead weight reads as unfinished to reviewers, and the extra code is where the next bug hides. If the diff feels padded, run the diff cleanup before you commit, not after review calls it out.
 

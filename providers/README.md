@@ -14,9 +14,9 @@ Run `python3 scripts/skills.py install --provider all --dry-run` to preview one 
 
 ## Autocomplete entry points
 
-For source installations, the `entry_points` list in each provider’s `adapter.json` limits local discovery to `nanide-mode`, `nanide-goal`, `nanide-help`, `nanide-audit`, and `setup-nanide-skills`. The installer validates these names against the collection. An adapter without this optional list installs every skill.
+For source installations, the `entry_points` list in each provider’s `adapter.json` limits local discovery to `mode`, `goal`, `help`, `audit`, and `setup`. The installer validates these names against the canonical collection. An adapter without this optional list installs every skill.
 
-Run the provider install command again to remove previously managed helper links. The source files remain in the checkout. Main workflows resolve their real source paths and read sibling helpers directly. Helpers no longer have individual autocomplete entries. To request one, ask `nanide-mode` to use the named helper.
+Run the provider install command again to remove previously managed helper links. The source files remain in the checkout. Main workflows resolve their canonical paths and read sibling helpers directly. Helpers no longer have individual autocomplete entries. To request one, ask Nanide mode to use the named helper.
 
 This controls filesystem discovery, not a host visibility flag. A separately installed copy can still appear in autocomplete. Legacy bundle installations without `--provider` still expose the full collection. Follow the [legacy bundle conversion](../docs/installation.md#install-alongside-other-collections) before using this entry-point list.
 
@@ -24,7 +24,7 @@ This controls filesystem discovery, not a host visibility flag. A separately ins
 
 Resolve paths from this repository's real directory, following symlinks. Read `providers/<provider>/config.local.json` when present, otherwise `providers/<provider>/config.json` when present, otherwise [agent-config.json](../agent-config.json). Each file is a complete replacement, not a merge. Reject malformed configuration instead of falling back. Keep personal model IDs in the ignored provider-local file.
 
-The shared [delegation policy](../skills/nanide-mode/references/delegation.md) owns role resolution, panel sizing, ownership, and fallback behavior. Adapters map those choices to available host tools. Do not copy that policy into each provider folder.
+The shared [delegation policy](../skills/mode/references/delegation.md) owns role resolution, panel sizing, ownership, and fallback behavior. Adapters map those choices to available host tools. Do not copy that policy into each provider folder.
 
 ## Capability contract
 

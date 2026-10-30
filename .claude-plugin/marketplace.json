@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "agent-skills",
+      "name": "nanide",
       "source": "./",
       "description": "Shared skills for investigating, implementing, reviewing, and verifying engineering work."
     }

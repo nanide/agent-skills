@@ -28,37 +28,37 @@ class PackageTests(unittest.TestCase):
         self.git("init", "--quiet")
         self.write_json("plugin.json", {
             "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-            "name": "agent-skills", "version": "0.2.0", "license": "MIT",
+            "name": "nanide", "version": "0.2.0", "license": "MIT",
             "extensions": {"com.openai": {"interface": {"logo": "./assets/icon.svg", "composerIcon": "./assets/icon.svg"}}},
         })
-        self.write_json(".claude-plugin/plugin.json", {"name": "agent-skills", "version": "0.2.0"})
+        self.write_json(".claude-plugin/plugin.json", {"name": "nanide", "version": "0.2.0"})
         for path in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json", ".cursor-plugin/marketplace.json"):
             source = {"source": "local", "path": "./"} if path.startswith(".agents/") else "./"
-            catalog = {"name": "nanide", "plugins": [{"name": "agent-skills", "source": source}]}
+            catalog = {"name": "nanide", "plugins": [{"name": "nanide", "source": source}]}
             if path.startswith(".agents/"):
                 catalog["plugins"][0]["policy"] = {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}
             else:
                 catalog["owner"] = {"name": "Maintainer"}
             self.write_json(path, catalog)
         self.write("assets/icon.svg", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32"/></svg>\n')
-        self.write("skills/nanide-mode/SKILL.md", "---\nname: nanide-mode\ndescription: Test skill.\n---\n\n[Helper](references/pr-titles.md)\n")
-        self.write("skills/nanide-mode/scripts/check-plan.mjs", "export {};\n")
+        self.write("skills/mode/SKILL.md", "---\nname: mode\ndescription: Test skill.\n---\n\n[Helper](references/pr-titles.md)\n")
+        self.write("skills/mode/scripts/check-plan.mjs", "export {};\n")
         for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
-            self.write(f"skills/nanide-mode/references/{name}", "# Reference\n")
-        self.write("README.md", "# Test collection\n\n[Skill](skills/nanide-mode/SKILL.md)\n")
+            self.write(f"skills/mode/references/{name}", "# Reference\n")
+        self.write("README.md", "# Test collection\n\n[Skill](skills/mode/SKILL.md)\n")
         self.write("LICENSE", "MIT\n")
         self.write("prompts/example.md", "# Prompt\n")
         self.write("docs/example.md", "[Prompt](../prompts/example.md)\n")
         self.write("requirements.txt", (SOURCE / "requirements.txt").read_text())
         self.write_json("agent-config.json", {"default_model": "inherit-parent", "roles": {}, "panel_size": 2})
-        self.write_json("skill-names.json", {"nanide-mode": "nanide-mode"})
+        self.write_json("skill-names.json", {"poteto-mode": "mode"})
         sources = ["pstack", "poteto-pr-description", "prepare-goal", "research-to-goal"]
         self.write_json("import-receipt.json", {"format": 1, "sources": sources, "files": {f"{name}/SKILL.md": "a" * 64 for name in sources}})
         self.write_json("upstream.json", {"source": "https://example.com/upstream", "commit": "b" * 40})
         for provider in ("codex", "cursor", "claude"):
             self.write_json(f"providers/{provider}/adapter.json", {
                 "discovery_directory": f".{provider}/skills", "additional_discovery_directories": [],
-                "environment_discovery_directories": {}, "entry_points": ["nanide-mode"],
+                "environment_discovery_directories": {}, "entry_points": ["mode"],
             })
         for name in ("package_plugin.py", "skills.py", "plugin.schema.json"):
             self.write(f"scripts/{name}", (SOURCE / "scripts" / name).read_text())
@@ -95,7 +95,7 @@ class PackageTests(unittest.TestCase):
         sentinel = output / "keep.txt"
         sentinel.write_text("keep\n")
         archive = package_cli.write_package(package, output)
-        self.assertEqual(archive.name, "agent-skills-0.2.0.zip")
+        self.assertEqual(archive.name, "nanide-0.2.0.zip")
         with zipfile.ZipFile(archive) as release:
             names = set(release.namelist())
             self.assertIn("plugin.json", names)
@@ -127,7 +127,7 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(stat.S_IMODE(release.getinfo("scripts/skills.py").external_attr >> 16), 0o755)
             self.assertEqual(stat.S_IMODE(release.getinfo("README.md").external_attr >> 16), 0o644)
             self.assertIn(b"Test collection", release.read("README.md"))
-        self.write("README.md", "# Test collection\n\n[Skill](skills/nanide-mode/SKILL.md)\n")
+        self.write("README.md", "# Test collection\n\n[Skill](skills/mode/SKILL.md)\n")
         third = package_cli.write_package(package_cli.collect_package(self.root), self.base / "third")
         self.assertEqual(original, third.read_bytes())
 
@@ -146,14 +146,14 @@ class PackageTests(unittest.TestCase):
         self.assertNotIn("providers/codex/config.local.json", {str(file.path) for file in package.files})
 
     def test_file_symlinks_become_regular_files_in_archive(self):
-        link = self.root / "skills/nanide-mode/agents/openai.yaml"
+        link = self.root / "skills/mode/agents/openai.yaml"
         link.parent.mkdir()
         self.write("providers/codex/openai.yaml", "policy:\n  allow_implicit_invocation: false\n")
         link.symlink_to("../../../providers/codex/openai.yaml")
         self.git("add", ".")
         archive = package_cli.write_package(package_cli.collect_package(self.root), self.base / "release")
         with zipfile.ZipFile(archive) as release:
-            info = release.getinfo("skills/nanide-mode/agents/openai.yaml")
+            info = release.getinfo("skills/mode/agents/openai.yaml")
             self.assertEqual(stat.S_IFMT(info.external_attr >> 16), stat.S_IFREG)
             self.assertEqual(release.read(info), b"policy:\n  allow_implicit_invocation: false\n")
 
@@ -181,11 +181,11 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_drift_and_missing_assets_are_rejected(self):
         mutations = (
-            (".claude-plugin/plugin.json", {"name": "agent-skills", "version": "9.0.0"}),
+            (".claude-plugin/plugin.json", {"name": "nanide", "version": "9.0.0"}),
             (".claude-plugin/plugin.json", {"name": "other", "version": "0.2.0"}),
             (".claude-plugin/marketplace.json", {"name": "other", "plugins": []}),
-            (".agents/plugins/marketplace.json", {"name": "nanide", "plugins": [{"name": "agent-skills", "source": "./"}]}),
-            (".cursor-plugin/marketplace.json", {"name": "nanide", "plugins": [{"name": "agent-skills", "source": "../"}]}),
+            (".agents/plugins/marketplace.json", {"name": "nanide", "plugins": [{"name": "nanide", "source": "./"}]}),
+            (".cursor-plugin/marketplace.json", {"name": "nanide", "plugins": [{"name": "nanide", "source": "../"}]}),
         )
         for path, value in mutations:
             original = (self.root / path).read_text()
@@ -221,14 +221,14 @@ class PackageTests(unittest.TestCase):
 
     def test_optional_onboarding_requires_a_local_existing_file(self):
         original = (self.root / "plugin.json").read_text()
-        for value in (None, "skills/nanide-mode/SKILL.md", "./skills/nanide-mode", "./skills/missing/SKILL.md", "./../outside.md"):
+        for value in (None, "skills/mode/SKILL.md", "./skills/nanide-mode", "./skills/missing/SKILL.md", "./../outside.md"):
             with self.subTest(value=value):
                 data = json.loads(original)
                 data["extensions"]["com.openai"]["onboardingSkill"] = value
                 self.write_json("plugin.json", data)
                 with self.assertRaisesRegex(package_cli.Invalid, "onboardingSkill"):
                     package_cli.collect_package(self.root)
-        data["extensions"]["com.openai"]["onboardingSkill"] = "./skills/nanide-mode/SKILL.md"
+        data["extensions"]["com.openai"]["onboardingSkill"] = "./skills/mode/SKILL.md"
         self.write_json("plugin.json", data)
         package_cli.collect_package(self.root)
 
@@ -254,12 +254,17 @@ class PackageTests(unittest.TestCase):
         self.assertFalse(output.exists())
         self.run_cli("--output-dir", str(output))
         relocated = self.base / "relocated"
-        with zipfile.ZipFile(output / "agent-skills-0.2.0.zip") as release:
+        with zipfile.ZipFile(output / "nanide-0.2.0.zip") as release:
             release.extractall(relocated)
         shutil.rmtree(self.root)
         result = subprocess.run([sys.executable, str(relocated / "scripts/skills.py"), "validate"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Validated 1 skills", result.stdout)
+        native = relocated / "skills/mode/SKILL.md"
+        self.assertIn("name: mode\n", native.read_text())
+        self.assertFalse((relocated / "skills/nanide-mode").exists())
+        self.assertIn("[Helper](references/pr-titles.md)", native.read_text())
+        self.assertTrue((native.parent / "references/pr-titles.md").is_file())
 
     def test_cli_rejects_missing_local_dependency_before_output_creation(self):
         self.write("docs/example.md", "[Missing](missing-helper.md)\n")

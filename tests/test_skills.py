@@ -40,11 +40,11 @@ class InstallerTests(unittest.TestCase):
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         for name in mapping.values():
             self.skill(self.root / "skills" / name, name)
-        script = self.root / "skills/nanide-mode/scripts/check-plan.mjs"
+        script = self.root / "skills/mode/scripts/check-plan.mjs"
         script.parent.mkdir()
         script.write_text("export {};\n")
         for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
-            reference = self.root / "skills/nanide-mode/references" / name
+            reference = self.root / "skills/mode/references" / name
             reference.parent.mkdir(exist_ok=True)
             reference.write_text("# PR instructions\n")
         self.write_json(self.root / "skill-names.json", mapping)
@@ -64,8 +64,6 @@ class InstallerTests(unittest.TestCase):
     def populate_legacy(self):
         self.write_json(self.legacy / "pstack/codex-config.json", self.defaults)
         for name, public in json.loads((SOURCE / "skill-names.json").read_text()).items():
-            if name == public:
-                continue
             self.skill(self.legacy / "pstack/skills" / name, name)
         for name in cli.LEGACY[1:]:
             self.skill(self.legacy / name, name)
@@ -110,7 +108,7 @@ class InstallerTests(unittest.TestCase):
             for name in expected:
                 self.assertEqual((target / name / "SKILL.md").resolve(), self.root / "skills" / name / "SKILL.md")
         self.command("uninstall", "--provider", "all", "--dry-run")
-        self.assertTrue((self.target / "nanide-mode").is_symlink())
+        self.assertTrue((self.target / "mode").is_symlink())
         for _ in range(2):
             self.command("uninstall", "--provider", "all")
         for directory in (".agents", ".cursor", ".claude"):
@@ -123,7 +121,7 @@ class InstallerTests(unittest.TestCase):
             adapter = json.loads(path.read_text())
             self.write_json(path, {key: value for key, value in adapter.items() if key != "entry_points"})
             self.command("install", "--provider", provider)
-            self.assertTrue((target / "nanide-how").is_symlink())
+            self.assertTrue((target / "how").is_symlink())
             self.skill(target / "unrelated", "unrelated")
             self.write_json(path, adapter)
             before = sorted(target.iterdir())
@@ -132,9 +130,9 @@ class InstallerTests(unittest.TestCase):
             for _ in range(2):
                 self.command("install", "--provider", provider)
             self.assertEqual({skill.name for skill in cli.discovery_skills(target, set())}, set(adapter["entry_points"]) | {"unrelated"})
-            mode = (target / "nanide-mode/SKILL.md").resolve()
-            self.assertTrue((mode.parent.parent / "nanide-how/SKILL.md").is_file())
-            self.assertTrue((mode.parent.parent / "nanide-principle-prove-it-works/SKILL.md").is_file())
+            mode = (target / "mode/SKILL.md").resolve()
+            self.assertTrue((mode.parent.parent / "how/SKILL.md").is_file())
+            self.assertTrue((mode.parent.parent / "principle-prove-it-works/SKILL.md").is_file())
             receipt = json.loads((cli.state_dir(target) / "provider-install.json").read_text())
             self.assertEqual(set(receipt["links"]), set(adapter["entry_points"]))
             self.command("uninstall", "--provider", provider)
@@ -144,15 +142,15 @@ class InstallerTests(unittest.TestCase):
     def test_entry_points_reject_invalid_or_unknown_names_before_installing(self):
         path = self.root / "providers/codex/adapter.json"
         adapter = json.loads(path.read_text())
-        for entries in ([], None, "nanide-mode", [1], ["nanide-mode", "nanide-mode"], ["../nanide-mode"], ["nanide-missing"]):
+        for entries in ([], None, "mode", [1], ["mode", "mode"], ["../mode"], ["nanide-missing"]):
             with self.subTest(entries=entries):
                 self.write_json(path, {**adapter, "entry_points": entries})
                 self.assertIn("entry_points", self.command("install", "--provider", "codex", success=False).stderr)
                 self.assertFalse(self.target.exists())
 
     def test_all_provider_preflight_rejects_last_host_collision_before_writes(self):
-        collision = self.home / ".claude/skills/nanide-mode"
-        self.skill(collision, "nanide-mode")
+        collision = self.home / ".claude/skills/mode"
+        self.skill(collision, "mode")
         self.assertIn("unmanaged", self.command("install", "--provider", "all", success=False).stderr)
         self.assertFalse((self.home / ".agents").exists())
         self.assertFalse((self.home / ".cursor").exists())
@@ -161,12 +159,12 @@ class InstallerTests(unittest.TestCase):
 
     def test_all_provider_uninstall_preflight_preserves_other_hosts(self):
         self.command("install", "--provider", "all")
-        target = self.home / ".claude/skills/nanide-mode"
+        target = self.home / ".claude/skills/mode"
         target.unlink()
         target.symlink_to(self.base / "other")
         self.assertIn("Managed link changed", self.command("uninstall", "--provider", "all", success=False).stderr)
-        self.assertTrue((self.home / ".agents/skills/nanide-mode").is_symlink())
-        self.assertTrue((self.home / ".cursor/skills/nanide-mode").is_symlink())
+        self.assertTrue((self.home / ".agents/skills/mode").is_symlink())
+        self.assertTrue((self.home / ".cursor/skills/mode").is_symlink())
         self.assertEqual(target.readlink(), self.base / "other")
 
     def test_all_provider_rejects_non_global_options(self):
@@ -214,14 +212,14 @@ class InstallerTests(unittest.TestCase):
             target = self.base / provider / "skills"
             self.command("install", "--provider", provider, "--target-dir", str(target), "--dry-run")
             self.assertFalse(target.parent.exists())
-            self.skill(target / "nanide-mode", "nanide-mode")
+            self.skill(target / "mode", "mode")
             result = self.command("install", "--provider", provider, "--target-dir", str(target), success=False)
             self.assertIn("unmanaged", result.stderr)
-            self.assertTrue((target / "nanide-mode/SKILL.md").is_file())
+            self.assertTrue((target / "mode/SKILL.md").is_file())
 
     def test_provider_install_preserves_tampered_links(self):
         self.command("install", "--provider", "claude")
-        target = self.home / ".claude/skills/nanide-mode"
+        target = self.home / ".claude/skills/mode"
         target.unlink()
         target.symlink_to(self.base / "other")
         self.assertIn("Managed link changed", self.command("uninstall", "--provider", "claude", success=False).stderr)
@@ -245,11 +243,11 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue(old.exists())
 
     def test_provider_collisions_are_scoped_to_the_selected_host(self):
-        self.skill(self.home / ".codex/skills/custom", "nanide-mode")
+        self.skill(self.home / ".codex/skills/custom", "mode")
         self.assertIn("Skill name collision", self.command("install", "--provider", "codex", success=False).stderr)
         self.command("install", "--provider", "cursor")
         self.command("install", "--provider", "claude")
-        self.skill(self.home / ".cursor/skills/duplicate", "nanide-mode")
+        self.skill(self.home / ".cursor/skills/duplicate", "mode")
         self.command("install", "--provider", "cursor", "--target-dir", str(self.base / "project/skills"), success=False)
 
     def test_old_pending_migration_config_destination_can_resume(self):
@@ -273,7 +271,7 @@ class InstallerTests(unittest.TestCase):
             self.assertIn("Invalid discovery directory", self.command("validate", success=False).stderr)
 
     def test_provider_rules_must_live_outside_shared_instructions(self):
-        path = self.root / "skills/nanide-mode/SKILL.md"
+        path = self.root / "skills/mode/SKILL.md"
         original = path.read_text()
         path.write_text(original + "Use Codex collaboration tools.\n")
         self.assertIn("provider-specific instructions", self.command("validate", success=False).stderr)
@@ -291,26 +289,15 @@ class InstallerTests(unittest.TestCase):
         self.command("uninstall", "--target-dir", str(self.target))
         self.assertFalse((self.target / cli.BUNDLE).is_symlink())
         self.assertTrue((self.target / "other/SKILL.md").is_file())
-        self.assertTrue((self.root / "skills/nanide-mode/SKILL.md").is_file())
+        self.assertTrue((self.root / "skills/mode/SKILL.md").is_file())
 
-    def test_normal_install_coexists_with_full_pstack_without_changing_it(self):
+    def test_short_source_names_reject_full_pstack_collision_without_changing_it(self):
         self.populate_legacy()
-        mapping = json.loads((SOURCE / "skill-names.json").read_text())
         baseline = self.make_receipt()["files"]
-        personal_config = dict(self.defaults, panel_size=3)
-        self.write_json(self.root / "providers/codex/config.local.json", personal_config)
-        self.install()
-        self.install()
+        self.assertIn("Skill name collision", self.install(success=False).stderr)
         self.assertEqual(self.make_receipt()["files"], baseline)
-        self.assertEqual(json.loads((self.root / "providers/codex/config.local.json").read_text()), personal_config)
+        self.assertFalse((self.target / cli.BUNDLE).exists())
         self.assertFalse((cli.state_dir(self.target) / "backups").exists())
-        discovered = list(cli.discovery_skills(self.legacy, set())) + list(cli.discovery_skills(self.target, set()))
-        names = [skill.name for skill in discovered]
-        personal_names = {skill.name for skill in cli.load_collection(self.root).skills}
-        self.assertEqual(set(names), {source for source, public in mapping.items() if source != public} | personal_names | {"poteto-pr-description", "prepare-goal", "research-to-goal"})
-        self.assertEqual(len(names), len(set(names)))
-        self.command("uninstall", "--target-dir", str(self.target))
-        self.assertEqual(self.make_receipt()["files"], baseline)
 
     def test_dry_run_has_no_filesystem_effect(self):
         self.populate_legacy()
@@ -339,7 +326,7 @@ class InstallerTests(unittest.TestCase):
                     dest.unlink()
 
     def test_duplicate_name_in_target_or_global_root_stops_install(self):
-        for name in ("nanide-mode", "nanide-audit", "nanide-how"):
+        for name in ("mode", "audit", "how"):
             for location in (self.target / "custom-name", self.legacy / "custom-name"):
                 with self.subTest(name=name, location=location):
                     self.skill(location, name)
@@ -357,31 +344,23 @@ class InstallerTests(unittest.TestCase):
 
     def test_duplicate_name_behind_bundle_symlink_stops_install(self):
         alias = self.base / "alias"
-        self.skill(alias / "nested", "nanide-mode")
+        self.skill(alias / "nested", "mode")
         self.target.mkdir(parents=True)
         (self.target / "alias").symlink_to(alias)
         self.install(success=False)
         self.assertFalse(cli.exists(self.target / cli.BUNDLE))
 
-    def test_generic_helpers_and_updated_pstack_are_allowed(self):
+    def test_updated_pstack_collision_preserves_upstream_source(self):
         self.populate_legacy()
         path = self.legacy / "pstack/skills/how/SKILL.md"
         path.write_text(path.read_text() + "An upstream update.\n")
-        self.skill(self.target / "custom-how", "how")
-        self.install()
-        self.command("uninstall", "--target-dir", str(self.target))
         contents = path.read_text()
-        path.unlink()
-        copy = self.base / "how.md"
-        copy.write_text(contents)
-        path.symlink_to(copy)
-        (self.target / "baseline-alias").symlink_to(self.legacy / "pstack")
-        self.install()
+        self.assertIn("Skill name collision", self.install(success=False).stderr)
         self.assertEqual(path.read_text(), contents)
-        self.assertTrue(path.is_symlink())
+        self.assertFalse((self.target / cli.BUNDLE).exists())
 
     def test_identical_nanide_duplicate_is_rejected_with_or_without_symlink(self):
-        source = self.root / "skills/nanide-how"
+        source = self.root / "skills/how"
         duplicate = self.target / "external-copy"
         duplicate.parent.mkdir(parents=True)
         shutil.copytree(source, duplicate)
@@ -615,7 +594,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_validator_checks_yaml_names_and_links_but_skips_code_examples(self):
         self.command("validate")
-        path = self.root / "skills/nanide-mode/SKILL.md"
+        path = self.root / "skills/mode/SKILL.md"
         original = path.read_text()
         path.write_text(original + "\n```md\n[example](missing.md)\n```\n`[example](missing.md)`\n")
         self.command("validate")
@@ -623,7 +602,7 @@ class InstallerTests(unittest.TestCase):
         self.command("validate", success=False)
         path.write_text(original.replace("description: A test skill.", "description: invalid: scalar"))
         self.command("validate", success=False)
-        path.write_text(original.replace("name: nanide-mode", "name: prepare-goal"))
+        path.write_text(original.replace("name: mode", "name: prepare-goal"))
         self.command("validate", success=False)
 
     def test_manifest_schema_rejects_invalid_fields_and_allows_new_versions(self):
@@ -641,7 +620,7 @@ class InstallerTests(unittest.TestCase):
         self.command("validate", success=False)
 
     def test_validator_checks_anchors_and_optional_invocation_policy(self):
-        path = self.root / "skills/nanide-mode/SKILL.md"
+        path = self.root / "skills/mode/SKILL.md"
         path.write_text(path.read_text() + "\n[valid](#example)\n")
         metadata = path.parent / "agents/openai.yaml"
         metadata.parent.mkdir()
@@ -657,13 +636,13 @@ class InstallerTests(unittest.TestCase):
     def test_registry_requires_exact_coverage_and_allows_native_identity_entries(self):
         path = self.root / "skill-names.json"
         mapping = json.loads(path.read_text())
-        self.skill(self.root / "skills/nanide-new-workflow", "nanide-new-workflow")
+        self.skill(self.root / "skills/new-workflow", "new-workflow")
         self.assertIn("exactly cover", self.command("validate", success=False).stderr)
-        self.write_json(path, {**mapping, "nanide-new-workflow": "nanide-new-workflow"})
+        self.write_json(path, {**mapping, "new-workflow": "new-workflow"})
         self.command("validate")
         self.install()
 
-    def test_registry_rejects_missing_extra_invalid_duplicate_and_unprefixed_ids(self):
+    def test_registry_rejects_missing_extra_invalid_duplicate_and_prefixed_ids(self):
         path = self.root / "skill-names.json"
         mapping = json.loads(path.read_text())
         missing = dict(mapping)
@@ -674,26 +653,26 @@ class InstallerTests(unittest.TestCase):
             "invalid source": {**mapping, "Bad_Source": "nanide-extra"},
             "invalid public": {**mapping, "how": "Nanide_How"},
             "nontext public": {**mapping, "how": ["nanide-how"]},
-            "duplicate": {**mapping, "why": "nanide-how"},
-            "unprefixed": {**mapping, "how": "how"},
+            "duplicate": {**mapping, "why": "how"},
+            "prefixed": {**mapping, "how": "nanide-how"},
         }
         for label, registry in cases.items():
             with self.subTest(case=label):
                 self.write_json(path, registry)
                 self.assertIn("skill-names.json", self.command("validate", success=False).stderr)
         self.write_json(path, mapping)
-        self.skill(self.root / "skills/unprefixed", "unprefixed")
-        self.write_json(path, {**mapping, "unprefixed": "unprefixed"})
-        self.assertIn("Nanide namespace", self.command("validate", success=False).stderr)
+        self.skill(self.root / "skills/nanide-extra", "nanide-extra")
+        self.write_json(path, {**mapping, "extra": "nanide-extra"})
+        self.assertIn("short canonical name", self.command("validate", success=False).stderr)
 
     def test_collection_registry_names_every_live_skill_and_preserves_source_ids(self):
         mapping = json.loads((SOURCE / "skill-names.json").read_text())
         original_brands = {
-            "poteto-audit": "nanide-audit",
-            "poteto-goal": "nanide-goal",
-            "poteto-help": "nanide-help",
-            "poteto-mode": "nanide-mode",
-            "setup-pstack": "setup-nanide-skills",
+            "poteto-audit": "audit",
+            "poteto-goal": "goal",
+            "poteto-help": "help",
+            "poteto-mode": "mode",
+            "setup-pstack": "setup",
         }
         self.assertEqual({name: mapping[name] for name in original_brands}, original_brands)
         receipt = json.loads((SOURCE / "import-receipt.json").read_text())
@@ -701,23 +680,23 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("poteto-pr-description/SKILL.md", receipt["files"])
         self.assertIn("poteto-pr-description", receipt["sources"])
         self.assertNotIn("poteto-pr-description", mapping)
-        self.assertEqual({source for source, public in mapping.items() if source != public}, historical - {"poteto-pr-description"})
-        self.assertTrue(all(public == "nanide-" + source for source, public in mapping.items() if source not in original_brands and source != public))
+        self.assertEqual(set(mapping), historical - {"poteto-pr-description"})
+        self.assertTrue(all(public == source for source, public in mapping.items() if source not in original_brands))
         self.assertEqual(set(mapping.values()), {skill.name for skill in cli.load_collection(SOURCE).skills})
         for name in cli.RETIRED_SKILLS:
             self.assertNotIn(name, mapping.values())
             self.assertFalse((SOURCE / "skills" / name).exists())
-        self.assertFalse((SOURCE / "skills/audit").exists())
-        self.assertFalse((SOURCE / "skills/how").exists())
+        self.assertTrue((SOURCE / "skills/audit").exists())
+        self.assertTrue((SOURCE / "skills/how").exists())
 
     def test_obsolete_selectors_and_paths_fail_but_shell_variables_do_not(self):
-        path = self.root / "skills/nanide-mode/SKILL.md"
+        path = self.root / "skills/mode/SKILL.md"
         original = path.read_text()
-        for reference in ("Use $poteto-pr-description.", "Read ../poteto-pr-description/SKILL.md.", "Read skills/poteto-pr-description/references/descriptions.md.", "Use $nanide-pr.", "Read ../nanide-pr/SKILL.md.", "Read ../nanide-pr/references/titles.md.", "Use $nanide-pr-description.", "Read ../nanide-pr-description/SKILL.md.", "Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md.", "Use $how.", "Read ../how/SKILL.md.", "Use $audit.", "Read ../audit/SKILL.md.", "Read ../how/scripts/check.sh.", "Read skills/how/.", "Read ../audit/."):
+        for reference in ("Use $poteto-pr-description.", "Read ../poteto-pr-description/SKILL.md.", "Read skills/poteto-pr-description/references/descriptions.md.", "Use $nanide-pr.", "Read ../nanide-pr/SKILL.md.", "Read ../nanide-pr/references/titles.md.", "Use $nanide-pr-description.", "Read ../nanide-pr-description/SKILL.md.", "Use $poteto-mode.", "Read ../poteto-mode/SKILL.md.", "Use $setup-pstack.", "Read ../setup-pstack/SKILL.md.", "Read ../nanide-how/SKILL.md.", "Read skills/nanide-audit/."):
             with self.subTest(reference=reference):
                 path.write_text(original + reference + "\n")
                 self.assertIn("obsolete local skill", self.command("validate", success=False).stderr)
-        path.write_text(original + "[Original helper](https://github.com/cursor/plugins/blob/main/pstack/skills/how/SKILL.md).\nUse $nanide-how and read ../nanide-how/SKILL.md.\n```sh\nhow=example\nprintf '%s' \"$how\"\n```\nExplain how this works and why.\n")
+        path.write_text(original + "[Original helper](https://github.com/cursor/plugins/blob/main/pstack/skills/how/SKILL.md).\nUse $how and read ../how/SKILL.md.\n```sh\nhow=example\nprintf '%s' \"$how\"\n```\nExplain how this works and why.\n")
         self.command("validate")
 
     def test_prompt_templates_retain_collection_validation(self):
@@ -730,7 +709,7 @@ class InstallerTests(unittest.TestCase):
             with self.subTest(content=content):
                 path.write_text(content)
                 self.assertIn(message, self.command("validate", success=False).stderr)
-        path.write_text("Use $nanide-mode.\n")
+        path.write_text("Use $mode.\n")
         self.command("validate")
 
     def test_registry_rejects_retired_skills_even_if_recreated(self):
@@ -747,7 +726,7 @@ class InstallerTests(unittest.TestCase):
 
     def test_required_pr_references_cannot_be_missing(self):
         for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
-            path = self.root / "skills/nanide-mode/references" / name
+            path = self.root / "skills/mode/references" / name
             original = path.read_text()
             with self.subTest(reference=name):
                 path.unlink()
@@ -764,23 +743,66 @@ class InstallerTests(unittest.TestCase):
         shutil.copy2(SOURCE / "README.md", self.root / "README.md")
         shutil.copy2(SOURCE / "LICENSE", self.root / "LICENSE")
         self.install()
-        entry = self.target / cli.BUNDLE / "nanide-mode/SKILL.md"
+        entry = self.target / cli.BUNDLE / "mode/SKILL.md"
         real = entry.resolve()
-        self.assertEqual(real, self.root / "skills/nanide-mode/SKILL.md")
+        self.assertEqual(real, self.root / "skills/mode/SKILL.md")
+        canonical = real
         discovered = list(cli.discovery_skills(self.target, set()))
         names = [skill.name for skill in discovered]
         self.assertEqual(len(names), len(set(names)))
         self.assertEqual(set(names), set(json.loads((self.root / "skill-names.json").read_text()).values()))
         self.assertFalse(set(names) & set(cli.RETIRED_SKILLS))
         for name in ("pr-titles.md", "pr-descriptions.md", "pr-metadata.md"):
-            reference = entry.parent / "references" / name
+            reference = canonical.parent / "references" / name
             self.assertTrue(reference.is_file())
-            self.assertEqual(reference.resolve(), real.parent / "references" / name)
+            self.assertEqual(reference.resolve(), canonical.parent / "references" / name)
         self.assertEqual(cli.markdown_links(self.root), [])
         for public in json.loads((self.root / "skill-names.json").read_text()).values():
-            sibling = real.parent / ".." / public / "SKILL.md"
+            sibling = canonical.parent / ".." / public / "SKILL.md"
             self.assertTrue(sibling.is_file(), str(sibling))
             self.assertEqual(cli.frontmatter(sibling)["name"], public)
+
+    def test_short_source_install_reads_live_canonical_body_and_policy(self):
+        canonical = self.root / "skills/mode/SKILL.md"
+        metadata = canonical.parent / "agents/openai.yaml"
+        metadata.parent.mkdir()
+        metadata.write_text("policy:\n  allow_implicit_invocation: false\n")
+        self.command("install", "--provider", "codex")
+        installed = self.target / "mode/SKILL.md"
+        self.assertEqual(installed.resolve(), canonical)
+        self.assertEqual(cli.frontmatter(installed)["name"], "mode")
+        self.assertEqual((installed.parent / "agents/openai.yaml").read_bytes(), metadata.read_bytes())
+        canonical.write_text(canonical.read_text() + "A newly edited workflow body.\n")
+        self.assertIn("A newly edited workflow body.", installed.read_text())
+
+    def test_provider_upgrade_removes_owned_long_links_from_old_layouts(self):
+        for source_directory in ("skills", "providers/source-skills"):
+            with self.subTest(source_directory=source_directory):
+                self.target.mkdir(parents=True, exist_ok=True)
+                links = {}
+                for name in ("nanide-mode", "nanide-help", "setup-nanide-skills"):
+                    source = self.root / source_directory / name
+                    (self.target / name).symlink_to(source, target_is_directory=True)
+                    links[name] = str(source)
+                self.write_json(cli.state_dir(self.target) / "provider-install.json", dict(provider="codex", root=str(self.root), target=str(self.target), links=links))
+                self.command("install", "--provider", "codex")
+                self.assertEqual({path.name for path in self.target.iterdir()}, {"mode", "help", "goal", "audit", "setup"})
+                self.assertEqual((self.target / "mode/SKILL.md").resolve(), self.root / "skills/mode/SKILL.md")
+                self.command("uninstall", "--provider", "codex")
+
+    def test_interim_router_bundle_can_upgrade_or_uninstall(self):
+        self.target.mkdir(parents=True)
+        destination = self.target / cli.BUNDLE
+        interim = self.root / "providers/source-skills"
+        destination.symlink_to(interim, target_is_directory=True)
+        self.write_json(cli.state_dir(self.target) / "install.json", dict(source=str(interim), target=str(destination)))
+        self.install()
+        self.assertEqual(destination.resolve(), self.root / "skills")
+        self.command("uninstall", "--target-dir", str(self.target))
+        destination.symlink_to(interim, target_is_directory=True)
+        self.command("uninstall", "--target-dir", str(self.target))
+        self.assertFalse(destination.is_symlink())
+
 
 if __name__ == "__main__":
     unittest.main()

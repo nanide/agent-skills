@@ -1,6 +1,6 @@
 # Execution state in Codex
 
-Use the current tool schemas as the authority. Discover available tools before calling them. If a capability is unavailable, report the limitation and preserve a recoverable local checkpoint. Read the shared [execution state](../../skills/nanide-mode/references/execution-state.md) for provider-neutral checkpoints. This adapter describes optional tools when exposed by the active host.
+Use the current tool schemas as the authority. Discover available tools before calling them. If a capability is unavailable, report the limitation and preserve a recoverable local checkpoint. Read the shared [execution state](../../skills/mode/references/execution-state.md) for provider-neutral checkpoints. This adapter describes optional tools when exposed by the active host.
 
 ## Plans and checkpoints
 

@@ -1,6 +1,6 @@
 # Review PR workflow decisions
 
-Use these cases to review [Nanide mode](../skills/nanide-mode/SKILL.md#work-on-a-pr) and its linked owners. They are instruction-review scenarios, not automated proof of model behavior. Unless a row says otherwise, Nanide is selected for the current task.
+Use these cases to review [Nanide mode](../skills/mode/SKILL.md#work-on-a-pr) and its linked owners. They are instruction-review scenarios, not automated proof of model behavior. Unless a row says otherwise, Nanide is selected for the current task.
 
 | Request and evidence | Expected decision |
 |---|---|

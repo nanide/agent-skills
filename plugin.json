@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "agent-skills",
+  "name": "nanide",
   "version": "0.2.0",
   "description": "Shared skills for investigating, implementing, reviewing, and verifying engineering work.",
   "repository": "https://github.com/nanide/agent-skills",
@@ -20,7 +20,7 @@
       "interface": {
         "displayName": "Nanide",
         "shortDescription": "Engineering workflows with verified results.",
-        "longDescription": "Investigate, implement, review, and verify engineering work with Nanide skills. Start with nanide-mode for a task or nanide-help for guidance.",
+        "longDescription": "Investigate, implement, review, and verify engineering work with Nanide skills. Start with mode for a task or help for guidance.",
         "developerName": "Borys",
         "category": "Developer Tools",
         "capabilities": [

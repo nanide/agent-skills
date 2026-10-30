@@ -16,7 +16,7 @@ Use the Python environment from the [source installation instructions](../README
 .venv/bin/python scripts/package_plugin.py --output-dir dist
 ```
 
-The output is `dist/agent-skills-<version>.zip` and its SHA-256 sidecar. The archive has `plugin.json` at its root. Internal file symlinks become regular files. Dependencies and relative paths stay together.
+The output is `dist/nanide-<version>.zip` and its SHA-256 sidecar. The archive has `plugin.json` at its root. Internal file symlinks become regular files. Dependencies and relative paths stay together.
 
 The build rejects tracked private configuration and generated state. A directory allowlist limits archive contents. Git-based marketplaces install the repository directly, so the tracked-file check also protects that route. This check does not inspect Git history or detect secrets inside otherwise permitted source files.
 
@@ -32,7 +32,7 @@ claude plugin validate /path/to/extracted/.claude-plugin/plugin.json
 claude plugin validate /path/to/extracted/.claude-plugin/marketplace.json
 ```
 
-Use a temporary Codex home to register the extracted marketplace and install `agent-skills@nanide`. Check the installed cache for `skills/nanide-mode/SKILL.md`, a sibling helper, `providers/README.md`, and `agent-config.json`. Keep this test separate from your normal installed collection.
+Use a temporary Codex home to register the extracted marketplace and install `nanide@nanide`. Check the installed cache for `skills/mode/SKILL.md`, a sibling helper, `providers/README.md`, and `agent-config.json`. Keep this test separate from your normal installed collection.
 
 For Cursor, copy the extracted package into an isolated local plugin test directory supported by your environment. Cursor's documented location is `~/.cursor/plugins/local/<plugin-name>`. Reload the application and inspect **Customize**. Local imports may be disabled by an administrator. See [Cursor local plugin testing](https://cursor.com/docs/plugins).
 

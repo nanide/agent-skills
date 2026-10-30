@@ -12,10 +12,10 @@ Before a listing exists, use the Codex CLI marketplace commands. These commands 
 
 ```sh
 codex plugin marketplace add nanide/agent-skills
-codex plugin add agent-skills@nanide
+codex plugin add nanide@nanide
 ```
 
-Start a fresh session. Ask Codex to use Nanide to explain your project. Use the installed skill selector for `nanide-mode` when available.
+Start a fresh session. Ask Codex to use Nanide to explain your project. Use the installed skill selector for `nanide:mode` when available.
 
 ## Install in Cursor
 
@@ -36,26 +36,30 @@ Run these commands inside Claude Code.
 
 ```text
 /plugin marketplace add nanide/agent-skills
-/plugin install agent-skills@nanide
+/plugin install nanide@nanide
 ```
 
 Start a fresh session and invoke the namespaced skill.
 
 ```text
-/agent-skills:nanide-mode explain how this project works.
+/nanide:mode explain how this project works.
 ```
 
-The equivalent shell commands are `claude plugin marketplace add nanide/agent-skills` and `claude plugin install agent-skills@nanide`. See [Claude Code marketplaces](https://code.claude.com/docs/en/plugin-marketplaces).
+The equivalent shell commands are `claude plugin marketplace add nanide/agent-skills` and `claude plugin install nanide@nanide`. See [Claude Code marketplaces](https://code.claude.com/docs/en/plugin-marketplaces).
+
+## Upgrade from the old plugin name
+
+The plugin identifier changed from `agent-skills` to `nanide`. Save any provider-local configuration from the old cache before removing `agent-skills@nanide`. Refresh the marketplace, then install `nanide@nanide` and start a fresh session. Remove the old plugin to avoid duplicate workflows. The repository remains `nanide/agent-skills`.
 
 ## Switch from a source installation
 
 If Nanide is already installed through `scripts/skills.py`, uninstall its discovery links from that checkout before enabling the plugin. Follow [uninstall instructions](installation.md#switch-checkouts-and-uninstall). Keep the checkout and personal configuration until you have verified the plugin.
 
-Plugin discovery can expose all helpers in `skills/`. The source installer exposes five main entry points. Start with `nanide-mode` or `nanide-help` in either installation. Host-specific invocation syntax and available tools still differ.
+Plugin discovery can expose all helpers in `skills/`. The source installer exposes five main entry points. Plugin skills use short names such as `nanide:mode` and `nanide:help`. Source installations expose the same short-named skills. Rerun the source installer after upgrading to replace prefixed links. Host-specific invocation syntax and available tools still differ.
 
 ## Configure and update
 
-Nanide works with its bundled defaults. Model setup is optional. Ask the installed `setup-nanide-skills` skill to configure role choices only when you want different models.
+Nanide works with its bundled defaults. Model setup is optional. Ask the installed `nanide:setup` skill to configure role choices only when you want different models.
 
 Configuration saved inside a plugin cache can be replaced during an update or uninstall. Keep a separate copy of `providers/<provider>/config.local.json` if you customize it. Restore it only after checking that the new package supports those choices.
 

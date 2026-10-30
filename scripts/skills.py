@@ -152,14 +152,14 @@ def validate_skill_names(collection: Collection):
     for source, public in mapping.items():
         if not isinstance(source, str) or not kebab.fullmatch(source) or not isinstance(public, str) or not kebab.fullmatch(public):
             raise Invalid("skill-names.json: source and public IDs must be lowercase kebab-case")
-        if source in RETIRED_SKILLS or public in RETIRED_SKILLS:
+        if source in RETIRED_SKILLS or public in RETIRED_SKILLS or public in {"pr", "pr-description"}:
             raise Invalid(f"skill-names.json: retired skill is reference material, not a public skill: {source}")
-        if not public.startswith("nanide-") and public != "setup-nanide-skills":
-            raise Invalid(f"skill-names.json: public ID must use the Nanide namespace: {public}")
+        if public.startswith("nanide-") or public == "setup-nanide-skills":
+            raise Invalid(f"skill-names.json: public ID must use the short canonical name: {public}")
     names = {skill.name for skill in collection.skills}
     if len(set(mapping.values())) != len(mapping) or set(mapping.values()) != names:
         raise Invalid("skill-names.json: public IDs must be unique and exactly cover discovered skill names")
-    obsolete = (set(mapping) - names) | {"audit", *RETIRED_SKILLS}
+    obsolete = (set(mapping) - names) | set(RETIRED_SKILLS) | {"setup-nanide-skills" if name == "setup" else "nanide-" + name for name in names}
     identifiers = "|".join(re.escape(name) for name in sorted(obsolete, key=len, reverse=True))
     selector = re.compile(rf"\$(?:{identifiers})(?![\w-])")
     local_path = re.compile(rf"(?:(?:\.\./)+|(?<![\w/])skills/)(?:{identifiers})/|/(?:{identifiers})/(?:SKILL\.md|(?:references|scripts|agents)/)")
@@ -261,14 +261,14 @@ def validate(collection: Collection):
         raise Invalid("Install the declared dependencies with python3 -m pip install -r requirements.txt") from error
     schema = read_json(root / "scripts/plugin.schema.json")
     errors.extend(f"plugin.json: {error.message}" for error in Draft202012Validator(schema).iter_errors(manifest))
-    if isinstance(manifest, dict) and (manifest.get("name") != BUNDLE or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", str(manifest.get("version", "")))):
-        errors.append("plugin.json: expected agent-skills identity and semantic version")
+    if isinstance(manifest, dict) and (manifest.get("name") != "nanide" or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", str(manifest.get("version", "")))):
+        errors.append("plugin.json: expected nanide identity and semantic version")
     provenance = read_json(root / "upstream.json")
     if not isinstance(provenance, dict) or not isinstance(provenance.get("source"), str) or not provenance["source"].startswith("https://") or not re.fullmatch(r"[a-f0-9]{40}", provenance.get("commit", "")):
         errors.append("upstream.json: source URL and pinned upstream commit are required")
     import_receipt(root)
     validate_skill_names(collection)
-    required = ("skills/nanide-mode/SKILL.md", "skills/nanide-mode/scripts/check-plan.mjs", "skills/nanide-mode/references/pr-titles.md", "skills/nanide-mode/references/pr-descriptions.md", "skills/nanide-mode/references/pr-metadata.md")
+    required = ("skills/mode/SKILL.md", "skills/mode/scripts/check-plan.mjs", "skills/mode/references/pr-titles.md", "skills/mode/references/pr-descriptions.md", "skills/mode/references/pr-metadata.md")
     for name in required:
         if not (root / name).is_file():
             errors.append(f"Missing required reference {name}")
@@ -365,11 +365,12 @@ def plan_install(collection: Collection, target: Path, migration: Path | None) -
             raise Invalid(f"An interrupted installation needs the original command. Review {pending}")
         changes = tuple(Change(item["kind"], Path(item["source"]), Path(item["destination"])) for item in journal["changes"])
         for change in changes:
-            valid = change.kind == "link" and change.source == collection.root / "skills" and change.destination == dest
+            valid = change.kind == "link" and change.source in {collection.root / "skills", collection.root / "providers/source-skills"} and change.destination == dest
             valid |= change.kind == "preserve-config" and migration is not None and change.source == migration / "pstack/codex-config.json" and change.destination in {collection.root / "providers/codex/config.local.json", collection.root / "codex-config.local.json"}
             valid |= change.kind == "backup" and migration is not None and change.source.parent == migration and change.source.name in MIGRATION_SOURCES and change.destination.name == change.source.name and change.destination.parent.parent == state / "backups"
             if not valid:
                 raise Invalid(f"Unsafe interrupted action in {pending}")
+        changes = tuple(Change(change.kind, collection.root / "skills", change.destination) if change.kind == "link" else change for change in changes)
     else:
         changes = []
         if migration:
@@ -503,9 +504,9 @@ def plan_uninstall(collection: Collection, target: Path):
     dest = target / BUNDLE
     if not exists(dest):
         return ()
-    if not dest.is_symlink() or dest.resolve() != collection.root / "skills":
+    if not dest.is_symlink() or dest.resolve() not in {collection.root / "skills", collection.root / "providers/source-skills"}:
         raise Invalid(f"Refusing to remove another installation: {dest}")
-    return (Change("unlink", dest, collection.root / "skills"),)
+    return (Change("unlink", dest, dest.resolve()),)
 
 
 

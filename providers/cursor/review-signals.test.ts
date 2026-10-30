@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import { buildReviewThreads, parseReviewThreadPage } from "../../skills/nanide-mode/scripts/watch-pr/github.ts";
+import { buildReviewThreads, parseReviewThreadPage } from "../../skills/mode/scripts/watch-pr/github.ts";
 
 it("annotates Bugbot threads with distinct review-pass counts", () => {
   const response = {

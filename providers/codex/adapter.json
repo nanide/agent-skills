@@ -1,10 +1,10 @@
 {
   "entry_points": [
-    "nanide-mode",
-    "nanide-goal",
-    "nanide-help",
-    "nanide-audit",
-    "setup-nanide-skills"
+    "mode",
+    "goal",
+    "help",
+    "audit",
+    "setup"
   ],
   "discovery_directory": ".agents/skills",
   "additional_discovery_directories": [

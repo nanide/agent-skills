@@ -21,7 +21,7 @@ The installer checks the selected target and the selected provider's personal di
 
 Run the normal install command without a migration option to leave other collections in place. Each collection keeps its own model configuration. Save this collection's model choices in ignored `providers/<provider>/config.local.json`.
 
-Each live public skill ID uses `nanide-`, except `$setup-nanide-skills`. For helpers outside the discovery entry points, ask `nanide-mode` to use their names, such as `nanide-how` or `nanide-interrogate`. Use [`$nanide-mode`](../skills/nanide-mode/SKILL.md#work-on-a-pr) for PR work. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references. Other existing `$nanide-*` selectors keep their names. The [registry](../skill-names.json) records the source-to-public mappings for live skills and creates no runtime aliases. The old `how` selector belongs to other installed collections.
+Native plugin skills use short IDs such as `mode`, `help`, and `setup` within the `nanide` namespace. Source installations link directly to the same canonical short-named skills. Rerun the installer after upgrading to replace the old managed prefixed links. Ask mode to use helpers by their short names, such as `how` or `interrogate`. The [registry](../skill-names.json) maps upstream IDs to canonical short IDs. Other installed collections can also have short names, so resolve Nanide helpers through local files.
 
 An unmanaged entry with the same public ID stops installation. Managed provider installations can point to the same canonical source. Other collections may update their generic helpers without changing Nanide installation. Model configuration stays in each collection's own checkout.
 
@@ -43,12 +43,12 @@ Explicitly invoke a Nanide skill or ask to use Nanide to select it for the curre
 For an optional project default, add this to the project's `AGENTS.md`:
 
 ```text
-When no collection has been explicitly selected for the current task, use Nanide for completion audits and PR work. Use $nanide-audit and $nanide-mode. Keep an explicit collection choice through the current task unless the user switches.
+When no collection has been explicitly selected for the current task, use Nanide for completion audits and PR work. Use $audit and $mode. Keep an explicit collection choice through the current task unless the user switches.
 ```
 
 Selecting Nanide chooses the workflow, not permission for every PR action. A draft stays a draft, a status check stays within its requested mode, and merging follows an explicit shipping request and its gates. Editing PR guidance itself does not select its workflow.
 
-The [selection guidance](../skills/nanide-mode/SKILL.md#select-a-collection-for-the-task) governs Nanide's helpers. Other installed collections retain their own descriptions and routing rules. This guidance does not promise deterministic host selection or suppress third-party skills. The installer stores no collection-selection state. Review [selection scenarios](collection-selection-scenarios.md) when changing these instructions.
+The [selection guidance](../skills/mode/SKILL.md#select-a-collection-for-the-task) governs Nanide's helpers. Other installed collections retain their own descriptions and routing rules. This guidance does not promise deterministic host selection or suppress third-party skills. The installer stores no collection-selection state. Review [selection scenarios](collection-selection-scenarios.md) when changing these instructions.
 
 ## Migrate an installation
 

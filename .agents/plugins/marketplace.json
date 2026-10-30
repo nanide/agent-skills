@@ -3,7 +3,7 @@
   "interface": { "displayName": "Nanide" },
   "plugins": [
     {
-      "name": "agent-skills",
+      "name": "nanide",
       "source": { "source": "local", "path": "./" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Developer Tools"

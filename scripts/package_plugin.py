@@ -138,8 +138,8 @@ def validate_package(package: Package) -> None:
         if file.path.is_absolute() or ".." in file.path.parts or forbidden(file.path) or not selected(file.path):
             raise Invalid(f"Unsafe package member: {file.path}")
     canonical = manifest(files, "plugin.json")
-    if package.name != "agent-skills" or not isinstance(package.version, str) or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", package.version):
-        raise Invalid("plugin.json: expected agent-skills identity and semantic version")
+    if package.name != "nanide" or not isinstance(package.version, str) or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", package.version):
+        raise Invalid("plugin.json: expected nanide identity and semantic version")
     if (canonical.get("name"), canonical.get("version")) != (package.name, package.version):
         raise Invalid("Package identity differs from plugin.json")
     claude = manifest(files, ".claude-plugin/plugin.json")
@@ -153,7 +153,7 @@ def validate_package(package: Package) -> None:
         entry = entries[0]
         source = {"source": "local", "path": "./"} if path.startswith(".agents/") else "./"
         if entry.get("name") != package.name or entry.get("source") != source:
-            raise Invalid(f"{path}: expected agent-skills@nanide with local source ./")
+            raise Invalid(f"{path}: expected nanide@nanide with local source ./")
         if "version" in entry and entry["version"] != package.version:
             raise Invalid(f"{path}: version must match plugin.json")
         if path.startswith(".agents/"):
