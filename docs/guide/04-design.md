@@ -66,7 +66,7 @@ Reach for it when parallelism buys coverage or lets independent checks race. `$a
 $interrogate the whole branch, but skeptically. no nitpicks unless it's an actual bug or regression.
 ```
 
-[`$interrogate`](../../skills/interrogate/SKILL.md) sends the same diff, intent, and rubric to independent reviewers. They inherit the parent model unless your configuration specifies supported overrides. The report names the models actually used. Agreement is useful evidence to investigate, not proof of correctness. The lead sorts everything into `Act on`, `Consider`, `Noted`, and `Dismissed`, with a reason for each dismissal, and applies nothing automatically.
+[`$interrogate`](../../skills/interrogate/SKILL.md) sends the same diff, intent, and rubric to independent reviewers. They inherit the parent model unless your configuration specifies supported overrides. The report names the models actually used. Reviewers reproduce behavioral defects in owned scratch checkouts. The lead reruns their evidence in a clean copy of the same source snapshot. Structural findings need cited owners and consumers, a present cost, and a feasible simpler shape. Agreement does not replace either kind of proof. The lead assigns verified findings to `Act on`, `Consider`, or `Noted`, records rejected claims under `Dismissed`, and lists unresolved checks as verification gaps. It applies no fixes automatically.
 
 Read the dismissals too. The lead is a pragmatic senior engineer, not an oracle, and you can override it.
 
@@ -86,7 +86,7 @@ The same idea scales up to a real design. Pair `$architect` with prototypes and 
 $mode we need rate limiting for external webhooks. $architect it first, and answer open questions with prototypes. let me review before proceeding.
 ```
 
-Don't spend reviewers on an abstract plan. `$interrogate` belongs on a diff. Point adversarial review at a plan with no code behind it and the reviewers invent theoretical risks and edge cases that will never happen. Let prototypes settle the questions, then review what got built.
+For a design or skill document, review concrete contradictions, ownership, and actual consumers. A source-backed structural finding can stand without a runtime failure. Claims about unimplemented behavior need a bounded prototype or remain verification gaps. Reject speculative future risks.
 
 ## Write the README first for shared code
 

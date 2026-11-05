@@ -1,5 +1,17 @@
 # Lead Judgment Framework
 
+## Admit evidence before judgment
+
+Use the evidence fields in [reviewer-prompt.md](reviewer-prompt.md). Verification and impact are separate decisions. Agreement is provenance, not proof.
+
+For each behavioral claim, inspect the command and repro artifacts before running them. Reconstruct the recorded source snapshot in a clean lead-owned copy. Transfer only inspected repro files. Do not reuse reviewer-generated binaries or caches. Confirm that the disputed implementation is unchanged and that setup exercises the intended path. Follow repository execution approvals and avoid shared mutable test targets.
+
+Rerun the command and inspect its output and resulting artifacts. Admit the finding only when the failure reproduces and violates the stated intent. Check the actual base or changed path before attributing a preexisting failure to the change. Missing dependencies, permissions, unsafe targets, or unavailable runtime state are verification gaps. A reviewer run without the lead rerun is not lead-verified.
+
+For each structural claim, read the cited definitions and consumers in the snapshot. Confirm the present maintenance cost and that the proposed simpler shape preserves the stated behavior and constraints. A demonstrated ownership or instruction contradiction can survive without a runtime failure. An unrun behavioral claim cannot enter through this route.
+
+Only verified findings enter Act on, Consider, or Noted. Dismiss disproven or irrelevant claims with a reason. Keep unresolved claims and blocked checks in verification gaps. Merge verified findings by root cause and retain their evidence. Check source drift before reporting so the verdict covers only the recorded snapshot.
+
 ## Filtering Principles
 
 ### Nitpick Gravity
@@ -31,7 +43,7 @@ These are honest mistakes from reviewers working with limited information. Dismi
 
 Don't dismiss findings just because they're uncomfortable. The whole point of adversarial review is to catch things you'd miss. Signs a finding deserves attention:
 
-- Multiple models flag the same issue independently (consensus signal)
+- The evidence survives an independent rerun or direct source inspection
 - The finding identifies a concrete execution path, not a hypothetical
 - The finding reveals a gap in your mental model of the code
 - You read the finding and think "...yeah, actually"

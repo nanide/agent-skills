@@ -4,7 +4,7 @@ Each reviewer applies this code-quality lens in addition to the rubric. It is a 
 
 Above all, be ambitious about code structure. Do not merely identify local cleanup. Actively search for "code judo" moves, restructurings that preserve behavior while making the implementation dramatically simpler, smaller, more direct, and more elegant.
 
-This is a read-only review lens. The prompts below ask for proposed improvements, not permission to edit code or expand the task.
+This lens proposes improvements. It does not authorize implementation edits or expand the task. The [reviewer evidence contract](reviewer-prompt.md#evidence-contract) governs structural proof and bounded repro artifacts.
 
 ## Core Prompt
 
@@ -22,7 +22,7 @@ Each dimension is stated once. Apply the ones that are relevant.
 
 0. **Be ambitious about structural simplification.** Do not stop at "this could be a bit cleaner." Look for reframings that make whole branches, helpers, modes, conditionals, or layers disappear. Assume a "code judo" move is often available. It uses the existing architecture more effectively and makes the change dramatically simpler. If you can delete complexity rather than rearrange it, push hard for that.
 
-1. **Do not let a PR push a file from under 1k lines to over 1k lines without a very strong reason.** Treat this as a strong smell. Prefer extracting helpers, subcomponents, or modules. If the diff crosses that threshold, ask whether the code should be decomposed first. Waive only for a compelling structural reason where the resulting file stays clearly organized.
+1. **Inspect large files for mixed responsibilities.** Crossing 1,000 lines prompts inspection, but size alone is not a blocker. Trace the owners and consumers, identify a present maintenance cost, and propose a simpler shape before recommending decomposition. Keep a coherent file intact when splitting it adds indirection.
 
 2. **Do not allow spaghetti growth in existing code.** Be suspicious of new ad-hoc conditionals, scattered special cases, or one-off branches inserted into unrelated flows. Treat "weird if statements in random places" as a design problem, not a style nit. Prefer pushing the logic into a dedicated helper, state machine, or module instead of tangling an existing path.
 
@@ -42,7 +42,7 @@ Prioritize structural code-quality regressions and missed simplifications first,
 
 ## Approval Bar
 
-Do not approve merely because behavior seems correct. Treat these as presumptive blockers unless the author can justify them: the PR keeps a lot of incidental complexity when a code-judo move would delete it. Pushes a file from below 1000 lines to above 1000 lines. Adds ad-hoc branching that tangles an existing flow. Scatters feature checks across shared code. Adds an unnecessary abstraction, wrapper, or cast-heavy contract, or duplicates an existing helper or puts logic in the wrong layer when there is a clear canonical home. If those conditions are not met, leave explicit, actionable feedback and push for a cleaner decomposition.
+Do not approve merely because behavior seems correct. Concrete structural regressions can block approval. Require the affected owners and consumers, a present cost, and a feasible simpler shape that preserves behavior. Examples include duplicated policy ownership, unnecessary forwarding layers, and feature decisions scattered across unrelated modules. Apply that evidence bar to every proposed simplification. File size, preference, or hypothetical future work alone does not justify a blocker.
 
 ## Review Tone
 

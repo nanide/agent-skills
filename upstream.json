@@ -30,6 +30,10 @@
     {
       "commit": "2776ddd2355d6d6c8747d3964600f28daf62f049",
       "change": "Import the statechart compiler, corpus, and Pele rendering guidance. Preserve Nanide invocation metadata, canonicalize the macOS symlink test fixture, and correct strict TypeScript return types."
+    },
+    {
+      "commit": "ab1f702ce8e8b6557edb56b09f52cde8bfb83f17",
+      "change": "Adapt review reproduction and independent rerun requirements while retaining source-backed structural findings, provider-neutral isolation, and explicit verification gaps."
     }
   ]
 }

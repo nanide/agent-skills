@@ -1,6 +1,6 @@
 # Review Rubric
 
-Review through whichever lenses are relevant. Not every lens applies to every change.
+Review through whichever lenses are relevant. Not every lens applies to every change. Use the [reviewer evidence contract](reviewer-prompt.md#evidence-contract) for behavioral findings, structural findings, and verification gaps. Source tracing alone does not verify a runtime defect.
 
 ## Correctness
 

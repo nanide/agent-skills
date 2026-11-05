@@ -1,68 +1,59 @@
 ---
 name: interrogate
-description: "Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Multiple LLM reviewers challenge changes from independent angles."
+description: "Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Independent reviewers prove behavioral defects and ground structural findings in the actual source."
 ---
 
 # Interrogate
 
-Spawn independent reviewers to adversarially review code changes. Configured model diversity can expose different blind spots; same-model reviewers remain independent reviewers, not a diverse-model panel. The deliverable is a synthesized verdict. Do NOT auto-apply changes.
+Challenge the requested change or design with independent reviewers. Verify their evidence before assigning a verdict. Preserve concrete structural review. Do not apply fixes or post external comments.
 
-## Step 1, Scope
+## 1. Frame the subject
 
-Identify what to review from context:
+Use the scope the user names. For a branch review, determine the actual base and merge base. Review the diff from that merge base through the working tree unless the request explicitly excludes local changes. Include relevant staged, unstaged, and nonignored untracked files. Exclude unrelated work and secrets.
 
-- If the user points at specific files or a diff, use that.
-- If on a feature branch, determine the actual base branch and run `git diff <base>...HEAD` for the full changeset.
-- If the user's message references recent work, gather the relevant files.
+Record the intent, base, HEAD, scoped paths, and snapshot inputs. Capture tracked changes from HEAD as a binary-capable patch and explicitly list included untracked files. Check that the source did not change while capturing it. A commit hash alone does not identify uncommitted work.
 
-When the user targets an existing PR for review, link it in this chat and use the active provider’s attachment capability when available. Do not attach background references or dependencies.
+For a design or named-file review, record the exact files and versions instead of inventing a branch comparison. State the intended behavior from the request and available commits or PR description. Ask only when the intent remains unclear after inspecting that evidence.
 
-Package the diff or file contents with any surrounding context files the reviewers need to understand the code.
+When reviewing a requested PR, link it in this chat and use the active provider's attachment capability when available. Do not attach background references or dependencies.
 
-## Step 2, Intent
+## 2. Prepare independent reviewers
 
-Before spawning reviewers, state the intent in one clear paragraph from the user's message, commit messages, the PR description if one exists, and the code. If you're unsure about the intent, ask the user before proceeding.
+Resolve `interrogate reviewers` in the effective configuration. A configured list sets the reviewer count. Otherwise use `panel_size`, default two, inheriting the parent. Report actual models. Same-model independence is not model diversity.
 
-## Step 3, Spawn Reviewers
+Follow [Delegation](../mode/references/delegation.md) and [Execution state](../mode/references/execution-state.md) for supported tools and checkout lifecycle. The author checkout and external state stay read-only. When a reproduction can write files, give each reviewer an owned disposable checkout or copy plus explicit repro and build-output paths. Reconstruct the recorded source snapshot, including deletions, binary changes, file modes, and selected untracked files. Verify its contents before running checks. Worktree creation alone does not copy local changes.
 
-Resolve `interrogate reviewers` in the effective configuration. A configured list sets the reviewer count. Otherwise use `panel_size` (default two), each inheriting the parent. Label seats Reviewer A, B, and so on.
+Reviewers may create temporary tests or repro scripts only in their assigned paths. They may not change implementation behavior, dependency declarations, or another reviewer's artifacts. Commands follow repository target and service-recovery rules. An isolated checkout does not authorize shared-service or external-state changes.
 
-Follow [Delegation](../mode/references/delegation.md) for scoped briefs, ownership, concurrency, and missing-tool handling. Every reviewer is read-only.
+If isolation is unavailable, continue source inspection and genuinely read-only checks. Report blocked runtime checks instead of running writing commands in the author checkout. If delegation is unavailable, follow the provider fallback and report missing independence. A required independent-review gate remains unmet.
 
-Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Use only supported model and reasoning overrides from the role configuration.
+## 3. Collect evidence
 
-## Step 4, Synthesize
+Fill [reviewer-prompt.md](references/reviewer-prompt.md) for every reviewer with the same intent, source snapshot, [rubric](references/rubric.md), and [code-quality lens](references/code-quality-review.md). Supply each reviewer's owned paths and execution constraints. The template owns the evidence fields.
 
-As results come back, build a unified picture. Parse every reviewer's findings. Merge findings that describe the same issue differently, and note which models raised each one. Findings two or more models raised independently are the highest signal. Read a lone model's finding, but weight it accordingly. Note disagreements. If one model flags something and another explicitly says the opposite, that is context for the verdict.
+Behavioral findings require a run against the actual disputed code. Structural findings require a concrete source trace, present maintenance cost, and feasible simpler shape. Do not turn an unrun behavioral or security claim into a structural finding to avoid reproduction. Unavailable or unsafe checks remain verification gaps.
 
-## Step 5, Lead Judgment
+## 4. Verify before judging
 
-You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator. Read `references/lead-judgment.md` for the full framework. Put every finding in one of four buckets, with the model(s) that raised it and a one-line rationale.
+Read each finding and its artifacts. Follow the evidence admission rules in [lead-judgment.md](references/lead-judgment.md). Inspect commands before executing them. Rerun behavioral evidence in a clean lead-owned copy of the same snapshot with only inspected repro artifacts. Do not reuse reviewer-generated binaries or caches. Stop conflicting writers before verification and preserve repository execution approvals.
 
-- **Act on**. Real issues affecting correctness, security, or maintainability given the actual goals. They would block a real PR.
-- **Consider**. Legitimate, but you're not sure they outweigh the cost of addressing them now. Worth the user's attention.
-- **Noted**. Technically valid but not actionable. Context-dependent, premature optimization, or low-impact at this stage.
-- **Dismissed**. Wrong, nitpicky, or missing context, with a brief reason.
+Inspect structural evidence directly in the cited definitions and consumers. Do not require a fake failing test for an instruction contradiction or a material ownership problem. A structural finding can block approval when its current cost is demonstrated.
 
-## Output Format
+Merge verified findings by root cause. Preserve evidence from each reviewer. Agreement records provenance and can guide investigation, but it never replaces proof. Investigate a lone security or correctness finding on its merits.
 
-### Intent
-> [The stated intent paragraph from Step 2]
+Assign the existing judgment buckets only after evidence verification. Use **Act on** for material issues that block the requested change, **Consider** for supported tradeoffs, **Noted** for supported context, and **Dismissed** for rejected claims with reasons. Missing proof belongs under verification gaps, not a verified bucket or silent dismissal.
 
-### Reviewers
-- Reviewer [label]: [model name], [N findings] (one bullet per reviewer)
+Before reporting, check whether the source changed since the snapshot. Name the snapshot actually reviewed and exclude newer edits from the verdict. Retain referenced repro artifacts and logs before cleaning up only owned checkouts and processes.
 
-### Act On
-[Each: description, which models raised it, why it matters.]
+## Output
 
-### Consider
-[Each: description, which models raised it, the tradeoff.]
+Report the following:
 
-### Noted
-[Brief list.]
+- **Intent and scope.** State the goal, base or named files, reviewed snapshot, included local changes, and any drift.
+- **Reviewers.** Name each reviewer and actual model. Report missing independence or coverage.
+- **Act on, Consider, and Noted.** Give each finding's evidence kind, locations, concrete impact, lead verification, and contributing reviewers. Include commands, expected and observed output, and artifact paths for behavioral findings.
+- **Dismissed.** Give each rejected claim and the concrete reason.
+- **Verification gaps.** Name each blocked or unverified claim, attempted check, missing prerequisite, and next safe check.
+- **Agreement map.** Note independent agreement and disagreements without treating votes as proof.
 
-### Dismissed
-[Each with a brief rationale.]
-
-### Agreement Map
-[Where models agreed and diverged, and what that pattern tells us.]
+No findings is a valid result. If checks remain blocked, say that no findings were verified and list the gaps. Do not call that a clean review.
