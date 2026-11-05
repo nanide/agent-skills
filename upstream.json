@@ -1,5 +1,23 @@
 {
   "source": "https://github.com/cursor/plugins/tree/main/pstack",
   "commit": "8b3326d99fd4b993cb33a24dad8af03175c642c5",
-  "upstream_version": "0.15.30"
+  "upstream_version": "0.15.30",
+  "selective_imports": [
+    {
+      "commit": "96dec8ee58deb7b388fa080fbceaba4460a7c9dd",
+      "change": "Distinguish fork heads during stack discovery."
+    },
+    {
+      "commit": "fe096ef31c94c30997207ffb6e30c51f15a34f16",
+      "change": "Cap polling sleeps at the deadline."
+    },
+    {
+      "commit": "3c596e701b5ca3d213e072464eec36baf0dee3e7",
+      "change": "Prefer the active PR over branch history in the retained orchestration store."
+    },
+    {
+      "commit": "86c2448db179ad2f9193aecea549e664c5905895",
+      "change": "Recognize matching inline code delimiters."
+    }
+  ]
 }
