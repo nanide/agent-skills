@@ -18,7 +18,7 @@ Use [mode](../mode/SKILL.md#work-on-a-pr) for PR bodies, titles, creation, revie
 
 Use setup to change role models. The installed default inherits the current chat model; panels use two independent reviewers unless configured otherwise. Check the effective configuration before explaining this user's settings. Same-model review is not multi-provider review.
 
-Use `statechart` to generate user-facing Mermaid statecharts from TLA+ models or turn agreed charts into model skeletons. Full model checking needs Java and a configured TLA2TOOLS JAR; PNG rendering needs Mermaid CLI.
+Use `statechart` to check TLA+ models and draw Mermaid charts with paths to broken rules. Run the bundled `scripts/statechart` launcher with a spec and optional view module. Model checking needs Java and TLC through `TLA2TOOLS` or mise. Render SVGs with Pele using the skill's rendering reference.
 
 Use `recall` for relevant prior chat context, `reflect` for lessons from a run, and `automate-me` for a personal working-style skill. Use available chat tools within the requested project, topic, and time window. Chat summaries are not full execution transcripts.
 

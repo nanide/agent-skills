@@ -26,6 +26,10 @@
     {
       "commit": "ab1f702ce8e8b6557edb56b09f52cde8bfb83f17",
       "change": "Import only the decision-before-measurement guidance from Explain the Number."
+    },
+    {
+      "commit": "2776ddd2355d6d6c8747d3964600f28daf62f049",
+      "change": "Import the statechart compiler, corpus, and Pele rendering guidance. Preserve Nanide invocation metadata, canonicalize the macOS symlink test fixture, and correct strict TypeScript return types."
     }
   ]
 }

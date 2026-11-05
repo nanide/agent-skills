@@ -123,11 +123,19 @@ A counterexample in model terms convinces you. The PM or designer who owns the b
 $statechart what the user sees when they edit a note offline
 ```
 
-[`$statechart`](../../skills/statechart/SKILL.md) draws a Mermaid statechart of what the user sees, generated from a TLA+ model, so the picture and the checked model can't drift apart. The reader's rules ("you never see Synced while you're offline") become invariants. Each bug TLC finds is a numbered path in the reader's words, and each state is marked works, still wrong, or fixed by your open PR. Before the hand-off, the agent reproduces each bug path in the real code, so a modeling error doesn't reach the reader as a bug.
+[`$statechart`](../../skills/statechart/SKILL.md) checks a TLA+ model and draws a Mermaid chart in the reader's words. A view module supplies state and step labels. It can show flat states, nested states, or parallel regions. The report lists the shortest paths to broken rules and any rules that could not be checked. A chart marks states as `breaks` or `mayBreak` when all or only some of their underlying model states break a rule.
 
-It also runs the other way. Sketch the behavior as a chart, agree on it with the reader, and the skill writes a TLA+ skeleton from it. TLC checks the agreed chart's rules before any code exists. As guards from the real code go into the spec, each place the code departs from the chart shows up as a difference for the reader to decide.
+Run the launcher from a scratch directory with an explicit output directory:
 
-When the code already has a TLA+ spec, the skill can audit the code against it. The agent models what the code does and checks that model next to the unchanged spec. The chart marks the steps where the two differ, and each rule either one breaks is a numbered path.
+```sh
+/path/to/agent-skills/skills/statechart/scripts/statechart Model.tla --config Model.cfg --view view.mjs --out output
+```
+
+The command writes `report.md`, `chart.mmd` when the chart budget permits, and TLC output. The output directory must be new or empty. Set `TLA2TOOLS` to a TLC 1.7.4 JAR and use Java 11 or later, or let mise install the pinned tools. Follow the [rendering reference](../../skills/statechart/references/render.md) to produce an SVG with Pele.
+
+This replaces the former `statechart.mjs from-spec` and `from-chart` commands. Chart-to-spec generation, `--fixed`, `--against`, mapping modules, and integrated PNG rendering are no longer supported. Replace mapping modules with view exports named `state`, `step`, `group`, `colors`, and `title`. Read `report.md` instead of `stories.md` and `summary.json`.
+
+Before handing off a model of code, replay each bug path against the real code. Treat a path that does not reproduce as a possible modeling error. A model-checking pass covers only the stated model and bounds.
 
 ## Open the PR
 
