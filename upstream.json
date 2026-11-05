@@ -18,6 +18,14 @@
     {
       "commit": "86c2448db179ad2f9193aecea549e664c5905895",
       "change": "Recognize matching inline code delimiters."
+    },
+    {
+      "commit": "7054003c3723e82d099fb7620e3bc8d7d63eebc6",
+      "change": "Adapt reflection cache protection to canonical Nanide sources and existing authorization."
+    },
+    {
+      "commit": "ab1f702ce8e8b6557edb56b09f52cde8bfb83f17",
+      "change": "Import only the decision-before-measurement guidance from Explain the Number."
     }
   ]
 }

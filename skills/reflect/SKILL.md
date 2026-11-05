@@ -35,6 +35,8 @@ Move any Accepted item that a lint rule, script, metadata flag, or runtime check
 
 ## 5. Apply
 
+Resolve the target skill through symlinks before proposing edits. Never edit a copy under `plugins/cache/` or a generated provider entry point. Locate its canonical source checkout and name the destination in the proposed edit. For Nanide, edit the canonical file under `skills/` in that checkout. If the source is unavailable, report the missing destination and keep the proposal in the report until the user supplies it. Do not create a replacement installation or publish changes without authorization.
+
 Present the synthesizer's full Accepted / Rejected / Backlog output. If the user already authorized skill edits, apply that scope. Otherwise request approval for the concrete Accepted edits. The user may choose a subset or redirect routing.
 
 Keep Backlog items in the report. File them externally only when the user authorized that action.
