@@ -21,13 +21,21 @@ Use Execution state for checkpoint contents and storage. Keep the canonical stat
 
 ## Keep the plan visible
 
-Before creating a native Goal, save the plan at one canonical path under Execution state's conventions. Reuse the existing plan or checkpoint when it already holds the plan. Put a concise summary of completed work, current work, blockers, and the next action near the top.
+Save the plan at one canonical path under Execution state's conventions. Reuse an existing plan in place. Near the top, name the current step, blockers, and next action. List the chunks in execution order as Markdown task items (`- [ ]`). Give each an outcome and a completion check. Together they must cover the requested deliverables, constraints, and acceptance checks. Keep the original task text below the checklist.
 
-Display the saved plan using the active [provider adapter](../../providers/README.md), or link the saved file when display tools are unavailable. Confirm success before reporting a panel as open. Continue authorized execution when only the display is unavailable. If the plan cannot be saved, report the failure and resolve it before creating a new Goal.
+Display the saved plan using the active [provider adapter](../../providers/README.md) when available. Confirm success before reporting a panel as open. Immediately before creating the Goal, send one or two sentences in chat saying which Goal is about to start, with a clickable link to the saved plan. With local tracking, introduce the local plan instead. A missing panel does not block execution. If the save fails, report the path and error and resolve the failure before starting the Goal.
+
+After each chunk passes its completion check, mark its existing row `- [x]`, record the evidence beside it, and advance the current step. Leave partial or blocked rows unchecked. Before starting another chunk, even within the same turn, send one or two sentences in chat summarizing what finished and linking the same updated plan. The final report can carry the last chunk's update. Reconcile every required row before completion.
 
 At every goal reevaluation, read the native goal when available and the canonical checkpoint, reconcile actual progress and evidence, then update the same plan document before continuing work. This includes each continuation turn, milestone assessment, scope change, pickup after compaction, and completion or other lifecycle assessment. Refresh the status summary and checkpoint contents defined by Execution state. Record the assessment time even when the plan is unchanged. Preserve useful history and link detailed evidence.
 
 Edit the canonical file in place. Do not create a new plan per turn or repeatedly open duplicate panels. On pickup, reuse and reconcile the existing document, then open it beside the chat if needed. After a native goal lifecycle transition, record the returned status in that same document. Without native tracking, record the local task status and label it as local. If a later save fails, report that the visible plan is stale and retry at the next checkpoint without misrepresenting its freshness.
+
+## Return after side work
+
+When the user asks for side work and then continuation, record the first unfinished Goal step before switching. A detour alone does not request a pause. After the detour, reread the same plan and native status when available. For an active Goal, execute the next authorized step in the same turn. Do the same for a local plan.
+
+For a paused Goal, an explicit request to continue authorizes returning to the work in this turn. If the host still reports paused, say so, identify the provider's resume control for automatic continuation, and do the next authorized step. Report native resumption only after observing active status. Honor a pause that the user has not lifted, unresolved blockers, and host limits. Preserve the existing Goal.
 
 ## Finish
 
