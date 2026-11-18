@@ -34,6 +34,10 @@
     {
       "commit": "ab1f702ce8e8b6557edb56b09f52cde8bfb83f17",
       "change": "Adapt review reproduction and independent rerun requirements while retaining source-backed structural findings, provider-neutral isolation, and explicit verification gaps."
+    },
+    {
+      "commit": "bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7",
+      "change": "Report bounded SANY source diagnostics and render unambiguous parent entries while preserving transition labels and destinations."
     }
   ]
 }
