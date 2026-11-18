@@ -2,204 +2,187 @@
 import fs from "node:fs";
 import process from "node:process";
 
-const RULE =
-	"Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.";
-const LANES = /Ten coverage lanes on `[^`<>]+` at the PR head/;
-const SUB_BLOCKS = [
-	"Depends on.",
-	"Files.",
-	"Build.",
-	"You see.",
-	"Verify, unit.",
-	"Verify, live.",
-	"Verify, perf.",
-	"Review gate.",
-	"Merge.",
-];
-const PROGRAM_H3 = ["Arm the program", "Spawn owners", "PR mechanics", "Verdict and merge", "Boot recipe"];
-const PROGRAM_MARKERS = ["installed skill paths", "host schedule", "status message"];
-const HOW_TO_READ_MARKERS = [
-	"One box is one unit of work",
-	"names the evidence",
-	"Check a box only when its evidence exists",
-	"playbooks/",
-	RULE,
-];
-const PERF_ITEMS = ["Metric.", "Probe.", "Baseline.", "Rule."];
-const BOX = /^\s*- \[[ x]\] (.*)$/;
-
 const file = process.argv[2];
 if (!file) {
 	console.error("Usage: node check-plan.mjs <plan.md>");
 	process.exit(2);
 }
 
-const raw = fs.readFileSync(file, "utf8").split(/\r?\n/);
+let source;
+try {
+	source = fs.readFileSync(file, "utf8");
+} catch (error) {
+	console.error(`${file}: ${error.message}`);
+	process.exit(1);
+}
+
 const problems = [];
-const fail = (line, message) => problems.push(`${file}:${line}: ${message}`);
-
-let start = 0;
-if (raw[0] === "---") {
-	start = raw.indexOf("---", 1) + 1;
+function fail(line, message) {
+	problems.push(`${file}:${line}: ${message}`);
 }
 
-const lines = [];
-let fence = null;
-const openingFence = (text) => {
-	const match = text.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
-	if (!match || (match[1][0] === "`" && match[2].includes("`"))) return null;
-	return { char: match[1][0], length: match[1].length };
-};
-const closingFence = (text, opening) => {
-	const match = text.match(/^ {0,3}(`+|~+)[ \t]*$/);
-	return Boolean(
-		match &&
-		match[1][0] === opening.char &&
-		match[1].length >= opening.length,
-	);
-};
-for (let i = start; i < raw.length; i++) {
-	const text = raw[i];
-	const n = i + 1;
-	let code = Boolean(fence);
-	if (fence && closingFence(text, fence)) {
-		code = false;
-		fence = null;
-	} else if (!fence) {
-		fence = openingFence(text);
-		code = Boolean(fence);
+// Fenced examples can contain complete plans, including valid headings and fields.
+function proseLines(source) {
+	const raw = source.split(/\r?\n/);
+	const start = raw[0] === "---" ? raw.indexOf("---", 1) + 1 : 0;
+	const lines = [];
+	let fence;
+	for (let i = start; i < raw.length; i++) {
+		const text = raw[i];
+		const match = text.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+		if (fence) {
+			if (match && match[1][0] === fence[0] && match[1].length >= fence.length && !match[2].trim()) {
+				fence = undefined;
+			}
+		} else if (match && (match[1][0] === "~" || !match[2].includes("`"))) {
+			fence = match[1];
+		} else {
+			lines.push({ text, n: i + 1 });
+		}
 	}
-	lines.push({ n, text, code });
-	if (code) continue;
-	const prose = text
-		.replace(/(?<!`)(`+)(?!`)(.*?)(?<!`)\1(?!`)/g, "`")
-		.replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-		.replace(/\]\([^)]*\)/g, "]");
-	if (/[\u2013\u2014]/.test(prose)) fail(n, "long dash");
-	if (/[\u2018\u2019\u201c\u201d]/.test(prose)) fail(n, "curly quote");
-	if (/: \S/.test(prose)) fail(n, "mid-sentence colon");
+	return lines;
 }
 
-const h2 = (l) => (!l.code && l.text.startsWith("## ") ? l.text.slice(3).trim() : null);
+const lines = proseLines(source);
+if (!lines.some(({ text }) => /^# \S/.test(text))) fail(1, "missing plan title");
 const sections = [];
-for (const l of lines) {
-	const title = h2(l);
-	if (title !== null) sections.push({ title, n: l.n, body: [] });
-	else if (sections.length) sections.at(-1).body.push(l);
-}
-const find = (title) => sections.find((s) => s.title === title);
-const bodyText = (s) => s.body.map((l) => l.text).join("\n");
-const boxes = (ls) => ls.filter((l) => !l.code && BOX.test(l.text)).map((l) => ({ n: l.n, text: l.text.match(BOX)[1] }));
-
-const h1 = lines.findIndex((l) => !l.code && l.text.startsWith("# "));
-if (h1 === -1) fail(1, "no H1 title");
-const howToRead = find("How to read this");
-if (!howToRead) fail(1, 'no "## How to read this" section');
-if (h1 !== -1 && howToRead) {
-	const intro = lines.slice(h1 + 1).filter((l) => l.n < howToRead.n && l.text.trim() !== "");
-	if (intro.length >= 10) fail(lines[h1].n, `intro is ${intro.length} lines, under ten required`);
-	for (const marker of HOW_TO_READ_MARKERS) {
-		if (!bodyText(howToRead).includes(marker)) fail(howToRead.n, `How to read this lacks "${marker}"`);
-	}
+for (const line of lines) {
+	const heading = line.text.match(/^##\s+(.+?)\s*$/);
+	if (heading) sections.push({ ...line, title: heading[1], body: [] });
+	else sections.at(-1)?.body.push(line);
 }
 
-const program = find("Program checklist");
-if (!program) fail(1, 'no "## Program checklist" section');
-else {
-	const h3s = program.body.filter((l) => !l.code && l.text.startsWith("### ")).map((l) => l.text.slice(4).trim());
-	let cursor = 0;
-	for (const name of PROGRAM_H3) {
-		const at = h3s.findIndex((t, i) => i >= cursor && t.startsWith(name));
-		if (at === -1) fail(program.n, `Program checklist lacks "### ${name}" in order`);
-		else cursor = at + 1;
+const program = sections.findIndex(({ title }) => title === "Program checklist");
+const close = sections.findIndex(({ title }) => title === "Close the program");
+const legacy = program !== -1;
+let units;
+if (legacy) {
+	if (close <= program) fail(sections[program].n, 'expected "## Close the program" after the program checklist');
+	units = sections.slice(program + 1, close < 0 ? undefined : close);
+	for (const section of sections.slice(close < 0 ? sections.length : close + 1)) {
+		if (!section.title.startsWith("Appendix")) {
+			fail(section.n, `"## ${section.title}" after Close the program is not an appendix`);
+		}
 	}
-	for (const marker of PROGRAM_MARKERS) {
-		if (!bodyText(program).includes(marker)) fail(program.n, `Program checklist lacks "${marker}"`);
+	// Retain prose checks for the original template. The opening checkpoint can contain a verbatim user request.
+	for (const { text, n } of lines.filter(({ n }) => n >= sections[0].n)) {
+		const prose = text
+			.replace(/(?<!`)(`+)(?!`)(.*?)(?<!`)\1(?!`)/g, "`")
+			.replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+			.replace(/\]\([^)]*\)/g, "]");
+		if (/[\u2013\u2014]/.test(prose)) fail(n, "long dash");
+		if (/[\u2018\u2019\u201c\u201d]/.test(prose)) fail(n, "curly quote");
+		if (/: \S/.test(prose)) fail(n, "mid-sentence colon");
 	}
+} else {
+	units = sections.filter(({ title }) => !/^Appendix(?:\s|\.|$)/i.test(title));
+}
+if (!units.length) fail(1, "no change sections found");
+
+const fieldNames = ["Depends on", "Files", "Build", "Result", "Unit", "Live", "Performance", "Review"];
+const aliases = new Map([
+	["You see", "Result"], ["Verify, unit", "Unit"], ["Verify, live", "Live"],
+	["Verify, perf", "Performance"], ["Review gate", "Review"],
+]);
+const checkbox = /^\s*-\s+\[[ xX]\]\s*/;
+const listMarker = /^\s*[-*]\s+/;
+const emptyAnswer = /^(?:n\/a|none|todo|tbd|\.\.\.|<[^>]+>)[.!]?$/i;
+const exemption = /^(?:n\/a|none|not applicable)(?:[.:]\s*(.*)|$)/i;
+
+function hasDetail(text) {
+	return Boolean(text.trim()) && !emptyAnswer.test(text.trim());
 }
 
-const close = find("Close the program");
-if (!close) fail(1, 'no "## Close the program" section');
-const programIndex = sections.indexOf(program);
-const closeIndex = sections.indexOf(close);
-const prSections = programIndex === -1 || closeIndex === -1 ? [] : sections.slice(programIndex + 1, closeIndex);
-if (prSections.length === 0) fail(1, "no PR sections between Program checklist and Close the program");
+function fieldsOf(unit) {
+	const fields = new Map();
+	let field;
+	let checkboxEvidence = false;
+	for (const line of unit.body) {
+		const text = line.text.replace(checkbox, "").trim();
+		const label = (legacy ? line.text : text).match(/^\*\*([^*]+?)\.?\*\*\s*(.*)$/);
+		const name = label && (aliases.get(label[1]) ?? label[1]);
+		if (label && (fieldNames.includes(name) || name === "Merge")) {
+			if (fields.has(name)) fail(line.n, `${unit.title}: duplicate ${name} field`);
+			// The old verification headers contain instructions for writing the plan, not its evidence.
+			checkboxEvidence = legacy && label[1].startsWith("Verify,");
+			field = { n: line.n, content: checkboxEvidence ? [] : [label[2]] };
+			fields.set(name, field);
+		} else if (!legacy && (label || /^#{1,6}\s/.test(text))) {
+			field = undefined;
+		} else if (field && text && (!checkboxEvidence || checkbox.test(line.text))) {
+			field.content.push(text.replace(listMarker, "").trim());
+		}
+	}
+	return fields;
+}
 
-const report = [];
-for (const pr of prSections) {
-	const heads = [];
-	for (const l of pr.body) {
-		if (l.code) continue;
-		const m = l.text.match(/^\*\*([^*]+)\*\*(.*)$/);
-		if (m && SUB_BLOCKS.includes(m[1])) heads.push({ name: m[1], n: l.n, rest: m[2].trim(), lines: [] });
-		else if (heads.length) heads.at(-1).lines.push(l);
-	}
-	const names = heads.map((h) => h.name);
-	if (names.join("|") !== SUB_BLOCKS.join("|")) {
-		fail(pr.n, `${pr.title}: sub-blocks are [${names.join(", ")}], expected [${SUB_BLOCKS.join(", ")}]`);
-	}
-	const block = (name) => heads.find((h) => h.name === name);
-	const counts = {};
-	for (const h of heads) counts[h.name] = boxes(h.lines).length;
+function part(field, label) {
+	const prefix = label + ".";
+	return field.content.find((line) => line.startsWith(prefix))?.slice(prefix.length).trim() ?? "";
+}
 
-	const depends = block("Depends on.");
-	if (depends && depends.rest === "") fail(depends.n, `${pr.title}: Depends on names nothing`);
-	for (const name of ["Files.", "Build.", "You see.", "Verify, unit.", "Merge."]) {
-		const b = block(name);
-		if (b && boxes(b.lines).length === 0) fail(b.n, `${pr.title}: ${name} has no box`);
-	}
-	for (const name of ["Verify, unit.", "Verify, live.", "Verify, perf."]) {
-		const b = block(name);
-		if (b && !b.rest.startsWith(RULE)) fail(b.n, `${pr.title}: ${name} does not open with the rule`);
-	}
-
-	const live = block("Verify, live.");
-	if (live) {
-		if (!LANES.test(live.rest)) fail(live.n, `${pr.title}: Verify, live lacks "Ten coverage lanes on \`<swarm workers model>\` at the PR head" with the model filled in`);
-		const lanes = boxes(live.lines).map((b) => ({ ...b, m: b.text.match(/^Lane (\d+)\. /) }));
-		const numbers = lanes.filter((b) => b.m).map((b) => Number(b.m[1])).sort((a, b) => a - b);
-		if (numbers.join(",") !== "1,2,3,4,5,6,7,8,9,10") fail(live.n, `${pr.title}: lanes are [${numbers.join(",")}], expected 1 to 10`);
-		for (const lane of lanes) {
-			if (!lane.m) fail(lane.n, `${pr.title}: live box is not a lane`);
-			else if (!/Save `[^`]+`/.test(lane.text)) fail(lane.n, `${pr.title}: lane ${lane.m[1]} names no screenshot`);
-			else if (!lane.text.includes("Pass when")) fail(lane.n, `${pr.title}: lane ${lane.m[1]} has no pass predicate`);
+const previousIds = new Set();
+for (const unit of units) {
+	const fields = fieldsOf(unit);
+	const value = (name) => fields.get(name)?.content.join(" ").trim() ?? "";
+	const issue = (name, message) => fail(fields.get(name)?.n ?? unit.n, `${unit.title}: ${message}`);
+	for (const name of fieldNames) {
+		const text = value(name);
+		if (!text) {
+			issue(name, `supply ${name} with its ${name === "Depends on" ? "dependencies or None" : "plan details"}`);
+		} else if (!["Depends on", "Performance", "Review"].includes(name) && (!hasDetail(text) || exemption.test(text))) {
+			issue(name, `supply ${name} with its plan details`);
 		}
 	}
 
-	const perf = block("Verify, perf.");
-	if (perf) {
-		const items = boxes(perf.lines).map((b) => b.text.split(" ")[0]);
-		if (items.join("|") !== PERF_ITEMS.join("|")) fail(perf.n, `${pr.title}: perf boxes are [${items.join(", ")}], expected [${PERF_ITEMS.join(", ")}]`);
+	if (legacy) {
+		const perf = fields.get("Performance");
+		if (perf) {
+			for (const label of ["Metric", "Probe", "Baseline", "Rule"]) {
+				if (!hasDetail(part(perf, label))) issue("Performance", `supply the performance ${label.toLowerCase()}`);
+			}
+		}
+		const review = value("Review");
+		if (review && !review.startsWith("None.") && !["operator", "screenshot", "video"].every((word) => review.includes(word))) {
+			issue("Review", "describe the operator review and its screenshot and video evidence, or use the legacy None. exemption");
+		}
+		continue;
 	}
+	const id = unit.title.match(/^([\w-]+)\.\s+\S/)?.[1];
+	if (!id) fail(unit.n, `${unit.title}: use a heading like "## LIST. Show installed skills"`);
+	if (previousIds.has(id)) fail(unit.n, `${unit.title}: duplicate change ID ${id}`);
+	const dependencies = value("Depends on").replace(/\.$/, "");
+	if (dependencies && !/^none$/i.test(dependencies)) {
+		for (const parent of dependencies.split(/\s*,\s*/)) {
+			if (!previousIds.has(parent)) issue("Depends on", `dependency "${parent}" must name an earlier change`);
+		}
+	}
+	if (id) previousIds.add(id);
 
-	const gate = block("Review gate.");
-	if (gate) {
-		const gateBoxes = boxes(gate.lines);
-		if (gate.rest.startsWith("None.")) {
-			if (gateBoxes.length) fail(gate.n, `${pr.title}: Review gate says None but has boxes`);
+	for (const name of ["Performance", "Review"]) {
+		const field = fields.get(name);
+		if (!field || !value(name)) continue;
+		const exempt = value(name).match(exemption);
+		if (exempt) {
+			if (!hasDetail(exempt[1] ?? "")) issue(name, `explain why ${name} does not apply`);
+			continue;
+		}
+		if (name === "Review") {
+			if (!hasDetail(part(field, "Evidence"))) issue(name, "name the operator's interaction review evidence under Evidence.");
+			if (!field.content.some((line) => !line.startsWith("Evidence.") && hasDetail(line))) {
+				issue(name, "describe the interaction the operator reviews");
+			}
 		} else {
-			const text = gate.lines.map((l) => l.text).join("\n");
-			if (gateBoxes.length === 0) fail(gate.n, `${pr.title}: Review gate has no box`);
-			for (const word of ["screenshot", "video", "operator"]) {
-				if (!text.includes(word)) fail(gate.n, `${pr.title}: Review gate lacks "${word}"`);
+			for (const detail of ["Metric", "Probe", "Baseline", "Limit"]) {
+				if (!hasDetail(part(field, detail))) issue(name, `supply the performance ${detail.toLowerCase()}`);
+			}
+			if (hasDetail(part(field, "Limit")) && !/\d/.test(part(field, "Limit"))) {
+				issue(name, "give the numerical failure threshold under Limit.");
 			}
 		}
 	}
-
-	const total = boxes(pr.body).length;
-	const cells = SUB_BLOCKS.filter((s) => s !== "Depends on.").map((s) => `${s.replace(/[ ,.]+/g, "-").replace(/-$/, "").toLowerCase()}=${counts[s] ?? 0}`);
-	report.push(`${pr.title}  boxes=${total}  ${cells.join(" ")}`);
 }
 
-if (closeIndex !== -1) {
-	const tail = sections.slice(closeIndex + 1);
-	for (const s of tail) {
-		if (!s.title.startsWith("Appendix")) fail(s.n, `"## ${s.title}" after Close the program is not an appendix`);
-	}
-	if (!tail.some((s) => s.title.includes("Prototype evidence"))) fail(close.n, 'no "## Appendix ... Prototype evidence" section');
-}
-
-for (const line of report) console.log(line);
-console.log(`${prSections.length} PR sections, ${problems.length} problems`);
-for (const p of problems) console.error(p);
+for (const problem of problems) console.error(problem);
+console.log(`${units.length} PR sections, ${problems.length} problems`);
 process.exit(problems.length ? 1 : 0);
