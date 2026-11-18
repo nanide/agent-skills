@@ -46,6 +46,10 @@
     {
       "commit": "2f87c854fe3e2fcda44ca86b46ede35aad3c46b7",
       "change": "Pass operator scope and acceptance checks through nested worker briefs and compare failed checks with the base."
+    },
+    {
+      "commit": "bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7",
+      "change": "Start rationale lookup with the decision history. Preserve scoped shared-record recall and targeted follow-up on gaps or conflicts."
     }
   ]
 }

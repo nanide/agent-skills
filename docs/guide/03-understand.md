@@ -30,7 +30,7 @@ Ask the question you actually have. [`$how`](../../skills/how/SKILL.md) reads th
 $why was the retry limit set to five? does the reason still hold?
 ```
 
-[`$why`](../../skills/why/SKILL.md) starts from source control, then queries whatever evidence categories your MCPs expose, such as the issue tracker, long-form docs, team chat, observability, error tracking, and analytics, all in parallel. The report cites everything, separates direct evidence from inference, and says "appears to" when the record is thin. A null result gets reported too, because "nobody wrote down why" is itself an answer.
+[`$why`](../../skills/why/SKILL.md) reads the commit or PR that introduced the decision and the later changes that revised it. If the authors recorded the reason, the answer cites it there. If the record is thin or disputed, the agent follows relevant leads, such as a linked incident or design proposal. The answer distinguishes what people wrote from what the agent inferred and names any gap that affects the conclusion.
 
 The two compose naturally. `do $why first then $how` is a good prompt when you suspect the history explains the mess.
 
