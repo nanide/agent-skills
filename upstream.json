@@ -42,6 +42,10 @@
     {
       "commit": "2f87c854fe3e2fcda44ca86b46ede35aad3c46b7",
       "change": "Adapt change-specific plans and their acceptance evidence while retaining the installed checker and legacy plan format."
+    },
+    {
+      "commit": "2f87c854fe3e2fcda44ca86b46ede35aad3c46b7",
+      "change": "Pass operator scope and acceptance checks through nested worker briefs and compare failed checks with the base."
     }
   ]
 }

@@ -6,7 +6,7 @@ description: Engineering workflow for concise, detailed responses, deliberate su
 
 # Nanide mode
 
-Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<public-id>/SKILL.md` from its real directory before looking up a catalog name. Use the public IDs in `../../skill-names.json`. The registry records source IDs for provenance and validation, not callable aliases. Short helper names in these instructions identify local sibling files, not bare catalog invocations. Put this file's absolute path in every delegate brief so delegates use this collection's siblings. If a selected helper is missing, report the limitation and continue independent authorized work. Do not silently substitute another collection's helper.
+Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<public-id>/SKILL.md` from its real directory before looking up a catalog name. Use the public IDs in `../../skill-names.json`. The registry records source IDs for provenance and validation, not callable aliases. Short helper names in these instructions identify local sibling files, not bare catalog invocations. Pass this file's resolved absolute path to every delegate, including nested delegates, so each uses this collection's siblings. If a selected helper is missing, report the limitation and continue independent authorized work. Do not silently substitute another collection's helper.
 
 ## Select a collection for the task
 

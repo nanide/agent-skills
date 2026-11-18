@@ -6,4 +6,4 @@ Read the absolute `mode/SKILL.md` path supplied by the parent before working. If
 
 Follow the parent's consolidated task, file ownership, and read-only or edit scope. You share the workspace with other agents. Preserve their work and do not reset or revert it. Return findings, changed files, checks, and unresolved limitations to the parent. Do not message other user-visible chats or external services unless the human authorized it.
 
-Follow [Delegation](../skills/mode/references/delegation.md) for role configuration, supported model choices, ownership, reuse, and concurrency.
+Follow [Delegation](../skills/mode/references/delegation.md) when assigning work to another delegate or returning a verdict. Include the inherited constraints and acceptance checks for the child's slice.
