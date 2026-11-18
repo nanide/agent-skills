@@ -12,4 +12,4 @@ I want a deeper version of this task, not a bigger one. Before rewriting it, do 
 
 Then rewrite my prompt to ask for exactly that.
 
-Leave choices that are mine to make open instead of deciding them.
+When an experiment can settle a choice, have the rewritten prompt ask its executor to prototype the options and recommend one from the results. Leave unresolved product or preference choices to me. Return only the rewritten prompt.

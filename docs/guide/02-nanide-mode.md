@@ -72,7 +72,7 @@ When you're unsure whether a prompt is aimed right, run [`$sharpen`](../../skill
 $sharpen write a migration guide for the v2 config format.
 ```
 
-The agent says what a top professional would do that you didn't ask for, the rawest material they would start from, the methods and tools they would use, and what other than you or the agent would show the result is right. Then it rewrites your prompt to ask for exactly that, deeper but not bigger, and leaves your choices open. It doesn't do the task. Read the rewrite, then send it, for example with `$mode`.
+The rewrite asks for the expert approach, primary material, methods, and an outside check on the result. When an experiment could settle a choice, the prompt asks its executor to run it and recommend an option from the evidence. You keep the product decisions. Sharpen returns the prompt without running it. Read the rewrite, then send it, for example with `$mode`.
 
 ## Follow up short
 

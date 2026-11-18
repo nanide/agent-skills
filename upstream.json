@@ -50,6 +50,10 @@
     {
       "commit": "bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7",
       "change": "Start rationale lookup with the decision history. Preserve scoped shared-record recall and targeted follow-up on gaps or conflicts."
+    },
+    {
+      "commit": "bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7",
+      "change": "Ask the rewritten prompt to prototype empirical choices and preserve user-owned preferences."
     }
   ]
 }
