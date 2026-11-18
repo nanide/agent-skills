@@ -31,6 +31,16 @@ At every goal reevaluation, read the native goal when available and the canonica
 
 Edit the canonical file in place. Do not create a new plan per turn or repeatedly open duplicate panels. On pickup, reuse and reconcile the existing document, then open it beside the chat if needed. After a native goal lifecycle transition, record the returned status in that same document. Without native tracking, record the local task status and label it as local. If a later save fails, report that the visible plan is stale and retry at the next checkpoint without misrepresenting its freshness.
 
+## Amend an active plan
+
+When a user instruction or authorized handoff changes the work, read the last saved plan and apply outstanding clarifications in arrival order before the next affected action. Use the current objective and checklist as the starting point. Keep the original request verbatim. A status question or detour alone leaves the objective intact.
+
+Trace each change to the affected outcome, steps, dependencies, and completion checks. Edit those rows in place. Insert new steps in execution order using the existing checklist format. Preserve unaffected wording, headings, order, checkbox states, and evidence links. Remove superseded work from the pending queue and briefly record what retired it. Keep completed work with the evidence it earned. Give newly required proof its own unchecked step. Reassess in-flight assignments before using their results or dispatching more work.
+
+For a material change, record its source and effect beside the affected work or in the existing decision trail. Refresh the effective objective, completion check, and next action wherever they have changed. Compare the saved plan with its previous version: every changed requirement must be accounted for, and every removed obligation must follow from the clarification. Correct unrelated rewrites. Repeated steering should leave one set of steps. If the amendment cannot be saved, recover it before continuing dependent work.
+
+After compaction, reconcile the saved amendments with any newer user instructions and the actual evidence. Resume at the first authorized, actionable step of the amended checklist. If the native objective predates an amendment, record the difference and follow the provider's lifecycle rules. An incompatible replacement requires resolving the native conflict before claiming completion.
+
 ## Return after side work
 
 When the user asks for side work and then continuation, record the first unfinished Goal step before switching. A detour alone does not request a pause. After the detour, reread the same plan and native status when available. For an active Goal, execute the next authorized step in the same turn. Do the same for a local plan.
