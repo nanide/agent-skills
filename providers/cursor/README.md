@@ -10,6 +10,8 @@ See [autocomplete entry points](../README.md#autocomplete-entry-points) for the 
 
 Use the current subagent tool when exposed. Inspect its schema before choosing a model, background mode, or agent type. Do not assume upstream pstack's model names or registered agent types exist. Shared agent prompt files are brief templates. Follow the [shared delegation policy](../../skills/mode/references/delegation.md).
 
+A new [Cursor subagent](https://cursor.com/docs/subagents) starts with the context supplied in its prompt. Use a resume ID only for a continuation when the active tool supports it. If another execution mode leaves inheritance unspecified, report it as unknown.
+
 Use a native planning tool for the working checklist and the shared checkpoint for durable state. A to-do list does not establish a persistent execution loop. Use native background or cloud execution only when requested and available. Scheduling needs an explicit request and a real scheduler. Do not assume a local session will keep running after the application closes.
 
 For worktree isolation, inspect current checkouts and use available managed tools or Git with an explicit base. Preserve ownership and dirty work during cleanup. Use only conversation history exposed to this session or supplied by the user.

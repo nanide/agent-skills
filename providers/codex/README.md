@@ -12,6 +12,8 @@ See [autocomplete entry points](../README.md#autocomplete-entry-points) for the 
 
 Use the exposed collaboration tools for spawning, messaging, inspection, and waiting. Check the current schema for model overrides and inheritance restrictions. Omit model and effort overrides for inherited roles. Shared agent prompt files are brief templates, not registered agent types.
 
+For a fresh delegate, set `fork_turns="none"` on `spawn_agent` when available. In schemas that default to `"all"`, omission copies the parent conversation. Use `followup_task` for another turn with the same agent and `list_agents` for a status check. If the schema lacks history controls, report its documented behavior or mark inheritance unknown.
+
 Read [execution state](execution-state.md) when native Goals, scheduling, managed worktrees, command sessions, or artifact attachments are involved. These tools vary across hosts. Their absence does not prevent ordinary local work or durable checkpoints.
 
 Use scoped conversation tools only when available and authorized. A summary is not a complete transcript. Do not scan unrelated private history to compensate for a missing tool.

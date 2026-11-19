@@ -10,6 +10,16 @@ When delegating part of an assignment, carry the same resolved mode path, operat
 
 Judge the result against the assignment and required repository checks. Add a diagnostic when it helps establish a result. A new sign-off requires an applicable instruction. Before attributing a failing check to the change, run the same check on the base under comparable conditions. Report a reproduced baseline failure separately, including its effect on the requested proof. If comparison or required evidence is unavailable, report the gap to the parent.
 
-Queue only independent work. Inspect agent status without restarting idle workers. Reuse agents according to host rules when retained context helps the same task. Start a fresh agent when independence or a materially different task requires it. Supply a consolidated brief with all corrections when transferring work. Confirm a previous writer has stopped before transferring ownership.
+## Choose whether to resume a delegate
+
+Guard the delegate's context window as well as the coordinator's. Use the deliverable to decide which history the delegate needs.
+
+- For a correction, retry, or follow-up on the same deliverable, resume its agent when the prior investigation still helps. Send the correction and the relevant evidence.
+- Queue only independent work. Start a fresh agent for each independent item, even when an idle agent has the same role or both items serve one parent goal.
+- For an independent judgment, start a fresh reviewer with the criteria and primary evidence. Withhold earlier verdicts until the reviewer records its assessment.
+
+Start fresh agents without inherited conversation history when the host supports it. Supply the objective, scope, applicable constraints, evidence paths, and completion check in the brief. If the host includes history or leaves inheritance unclear, report what the host exposes. If an earlier verdict may be visible, keep the independent assessment pending until a reviewer can receive it blind.
+
+On pickup, inspect the agent and its process without restarting either. Keep a running process or unfinished write with its owner through completion or a confirmed handoff. Before transferring work, confirm the previous writer has stopped writing. Give the successor a consolidated brief with corrections, verified progress, remaining work, and the owner and identifier of each active process or writable path.
 
 If delegation is unavailable, report the limitation and perform authorized work directly. Do not claim independent review or model diversity. When independent review is a required acceptance gate, keep that gate unmet and report it. The parent reviews the actual artifacts and owns the final result.
