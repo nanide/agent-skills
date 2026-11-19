@@ -4,15 +4,21 @@ Nanide adds engineering workflows to Cursor, Codex, and Claude Code. Use it to t
 
 ## Install as a plugin
 
-Choose your client. While this repository is private, use a GitHub account that can read it. For Codex and Claude Code, Git must be able to authenticate from your terminal.
+Choose your client below. All three installation paths use this public GitHub repository.
 
 ### Cursor
 
-1. Open the [Nanide repository](https://github.com/nanide/agent-skills) on GitHub. On `main`, select **Code → Download ZIP** and extract the archive.
-2. Create `~/.cursor/plugins/local/nanide/` in your home directory and copy the contents of the extracted folder into it. Check that `plugin.json` is directly inside `nanide/`.
-3. In Cursor, run **Developer: Reload Window** from the command palette. Open **Customize** and check that the Nanide skills are available.
+1. Open **Customize** in Cursor and choose **From GitHub Repository**.
+2. Paste `https://github.com/nanide/agent-skills` and import the repository.
+3. Select **Nanide → Install** and choose **User** to make the skills available across your projects.
 
-This installs Nanide for your user account. Managed installations must allow [local plugin imports](https://cursor.com/docs/plugins#test-plugins-locally).
+If you prefer the Cursor CLI, register the marketplace from your terminal:
+
+```sh
+agent plugin marketplace add https://github.com/nanide/agent-skills
+```
+
+Then open **Customize** and install **Nanide** with **User** scope. If GitHub import is unavailable, follow the [manual ZIP installation](docs/plugins.md#install-from-a-zip).
 
 ### Codex
 
@@ -33,35 +39,47 @@ claude plugin install nanide --marketplace nanide/agent-skills
 
 ### Try it in your project
 
-Open a fresh agent session in your project and ask:
+Open a fresh agent chat in your project. Try the line for your client:
 
-> Use Nanide to explain how this project starts and where its tests live.
+| Client | First message |
+| --- | --- |
+| Cursor | Type `/mode`, select the **mode** skill from Nanide in the picker, then type `explain how this project starts and where its tests live`. |
+| Codex | `$nanide:mode explain how this project starts and where its tests live` |
+| Claude Code | `/nanide:mode explain how this project starts and where its tests live` |
 
 Look for an answer that points to files in your project. See the [plugin guide](docs/plugins.md) for team distribution, upgrades, and alternative installation commands.
 
 ## Use the skills
 
-Start with **Nanide mode**. Tell it what you want to learn or change. Mode chooses the matching helper, so you can start a plan, ask why the code works a certain way, or investigate a bug from the same chat.
+Start with **mode**. Tell it what you want to learn or change, and it picks the matching helper. Type the selector in your agent chat, followed by a space and your request. For the plugin installs above, use these selectors:
 
-The examples below use `nanide-mode` and `nanide-goal` as shorthand for the two skills. In Codex, select `$nanide:mode` or `$nanide:goal`. In Claude Code, use `/nanide:mode` or `/nanide:goal`. In Cursor, select the installed Nanide skill or ask for “Nanide mode” or “Nanide goal” by name.
+| Skill | Cursor (choose the Nanide match) | Codex | Claude Code |
+| --- | --- | --- | --- |
+| Mode | `/mode` | `$nanide:mode` | `/nanide:mode` |
+| Goal | `/goal` | `$nanide:goal` | `/nanide:goal` |
+| Audit | `/audit` | `$nanide:audit` | `/nanide:audit` |
+| Help | `/help` | `$nanide:help` | `/nanide:help` |
+| Setup | `/setup` | `$nanide:setup` | `/nanide:setup` |
 
-Pick a starting question for your project:
+In Cursor, typing `/` opens the skill picker. Search for the name and select the Nanide skill if another command has the same name. [Cursor skill invocation](https://cursor.com/docs/skills)
 
-```text
-nanide-mode create a plan to make invoice retries safe. Include a test that retries the same invoice twice.
-nanide-mode why does the invoice worker acknowledge a job before saving its result?
-nanide-mode investigate why retrying a failed invoice sometimes creates a second charge. Trace one retry and draft a fix plan.
-```
+Here are three ways to start. Each example uses one client's spelling. To use it in another client, change only the selector.
 
-Once you have a plan, choose how to run it:
+| Task | Example message |
+| --- | --- |
+| Plan in Cursor | `/mode create a plan to make invoice retries safe. Include a test that retries the same invoice twice.` |
+| Ask why in Codex | `$nanide:mode why does the invoice worker acknowledge a job before saving its result?` |
+| Investigate in Claude Code | `/nanide:mode investigate why retrying a failed invoice sometimes creates a second charge. Trace one retry and draft a fix plan.` |
 
-- `nanide-mode implement the plan` works through the agreed change and verifies the result in the current chat.
-- `nanide-goal implement the plan` starts a longer-running task. Goal saves the plan and checkpoints each verified step. If the conversation context is compacted one or more times, the agent can pick up from the saved checkpoint. Hosts with native Goal tracking also show the task's lifecycle status.
+Once you have a plan, choose how to run it. These examples use Codex.
+
+- `$nanide:mode implement the plan` works through the agreed change and verifies the result in the current chat.
+- `$nanide:goal implement the plan` starts a longer-running task. Goal saves the plan and checkpoints each verified step. If the conversation context is compacted one or more times, the agent can pick up from the saved checkpoint. Hosts with native Goal tracking also show the task's lifecycle status.
 
 You can change a plan while it runs. In the same chat, ask:
 
 ```text
-nanide-mode update the plan to cover retries after a worker restart. Add that test before changing the worker, then continue.
+$nanide:mode update the plan to cover retries after a worker restart. Add that test before changing the worker, then continue.
 ```
 
 Goal updates the existing plan, keeps the evidence for completed steps, and continues with the revised work.
@@ -69,10 +87,10 @@ Goal updates the existing plan, keeps the evidence for completed steps, and cont
 ### Audit the branch before review
 
 ```text
-nanide-audit check changes in this branch
+$nanide:audit check changes in this branch
 ```
 
-Select `$nanide:audit` in Codex, `/nanide:audit` in Claude Code, or ask for “Nanide audit” in Cursor. Audit compares the changes since the branch split from its base, including relevant uncommitted work, with the task requirements and repository instructions. For the invoice example, it would check whether the restart test actually exercises the retry path and whether its assertions catch a second charge. It reports confirmed defects, the evidence for each finding, and gaps that still need verification. A standalone audit is read-only. During an authorized implementation task, it can also correct findings within that scope.
+Audit compares the changes since the branch split from its base, including relevant uncommitted work, with the task requirements and repository instructions. For the invoice example, it would check whether the restart test actually exercises the retry path and whether its assertions catch a second charge. It reports confirmed defects, the evidence for each finding, and gaps that still need verification. A standalone audit is read-only. During an authorized implementation task, it can also correct findings within that scope.
 
 See the [skill catalog](docs/catalog.md) for other helpers and the [workflow guide](docs/guide/README.md) for more examples.
 
@@ -103,7 +121,14 @@ For just one provider, replace `all` with `codex`, `cursor`, or `claude`. Use a 
 
 The installer checks for conflicting skill names and unmanaged destination paths. See [installation and recovery](docs/installation.md) for collision rules, migration, and recovery.
 
-For source installations, Codex exposes `$mode` and `$goal`. Cursor and Claude Code expose `/nanide-mode` and `/nanide-goal`. See the [provider entry points](providers/README.md#autocomplete-entry-points) for the full list.
+The source installer exposes five chat selectors:
+
+| Client | Mode | Goal | Audit | Help | Setup |
+| --- | --- | --- | --- | --- | --- |
+| Cursor and Claude Code | `/nanide-mode` | `/nanide-goal` | `/nanide-audit` | `/nanide-help` | `/nanide-setup` |
+| Codex | `$mode` | `$goal` | `$audit` | `$help` | `$setup` |
+
+For example, after a Cursor source install, type `/nanide-mode create a plan to make invoice retries safe`. See the [provider entry points](providers/README.md#autocomplete-entry-points) for discovery details.
 
 ## Configure model roles
 

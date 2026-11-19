@@ -19,7 +19,19 @@ Start a fresh session. Ask Codex to use Nanide to explain your project. Use the 
 
 ## Install in Cursor
 
-For a personal installation, follow the [Cursor steps in the README](../README.md#cursor). To update the local plugin, replace its files with the contents of a fresh ZIP and reload the window. Back up any personal configuration stored in the plugin folder first.
+For a personal installation, follow the [GitHub import or CLI instructions](../README.md#cursor).
+
+### Install from a ZIP
+
+If GitHub import is unavailable, install the plugin in your local Cursor folder.
+
+1. Open the [Nanide repository](https://github.com/nanide/agent-skills) on GitHub. On `main`, select **Code → Download ZIP** and extract the archive.
+2. Create `~/.cursor/plugins/local/nanide/` in your home directory and copy the contents of the extracted folder into it. Check that `plugin.json` is directly inside `nanide/`.
+3. In Cursor, run **Developer: Reload Window** from the command palette. Open **Customize** and check that the Nanide skills are available.
+
+This installs Nanide for your user account. Managed installations must allow [local plugin imports](https://cursor.com/docs/plugins#test-plugins-locally).
+
+To update a ZIP installation, back up any personal configuration in the plugin folder, replace the plugin files with the contents of a fresh ZIP, and reload the window.
 
 ### Distribute through a Cursor team marketplace
 
