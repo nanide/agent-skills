@@ -6,6 +6,8 @@ description: Engineering workflow for concise, detailed responses, deliberate su
 
 # Nanide mode
 
+When the user asks you to put their request back to them, restate their goal, or check that you understand their intent, first open and read [In your own words](../in-your-own-words/SKILL.md). Use it to state the goal and the problem it solves. For a restatement-only request, this skill read is the only preparation needed. Reply and stop before starting the underlying task.
+
 Resolve this file through symlinks. When a step calls a bundled helper, open its linked SKILL.md and follow its procedure. For a bare public ID, open `../<public-id>/SKILL.md` from this file's real directory. Open the file even when the catalog omits the helper. Use public IDs from `../../skill-names.json`. Source IDs record provenance. Use the helper from the selected collection even when another collection exposes the same name. Pass this file's resolved absolute path to every delegate, including nested delegates. If the read fails, report the attempted path and error. If the file opens but a required tool is unavailable, follow the helper's fallback and record the missing capability. Continue independent authorized work and leave any unmet requirement open.
 
 ## Select a collection for the task
