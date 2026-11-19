@@ -2,7 +2,7 @@
 
 Install the complete Nanide collection through your application's plugin tools. You do not need to clone the source or run the Python installer. Some workflows run tools such as Git, Node.js, or Java. Those workflows retain their runtime requirements.
 
-These instructions require the marketplace catalogs to be available in the repository revision you install. A private repository also requires access. Preparing the repository does not publish a listing in any provider's public directory.
+Marketplace installations require the marketplace catalogs to be available in the repository revision you install. A private repository also requires access. Preparing the repository does not publish a listing in any provider's public directory.
 
 ## Install in Codex
 
@@ -67,7 +67,7 @@ Nanide works with its bundled defaults. Model setup is optional. Ask the install
 
 Configuration saved inside a plugin cache can be replaced during an update or uninstall. Keep a separate copy of `providers/<provider>/config.local.json` if you customize it. Restore it only after checking that the new package supports those choices.
 
-Use the provider's plugin manager to update or remove the plugin. Start a fresh session after updating. Do not edit a cached plugin as your development checkout.
+For marketplace installations, use the provider's plugin manager to update or remove the plugin. Start a fresh session after updating. Do not edit a cached plugin as your development checkout.
 
 ## Report a problem
 
