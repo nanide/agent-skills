@@ -17,6 +17,19 @@ Use these cases to review selection decisions against [Nanide's selection guidan
 | A selected Nanide workflow requires a helper or tool that is unavailable. | Report the missing dependency and continue independent authorized work. Do not silently substitute a helper from another collection. |
 | A new task begins after a previous Nanide task. | Establish selection from the new task and its applicable repository default. The previous task's choice does not create a persistent default. |
 
+## Route a request after Nanide is selected
+
+Start at Mode with the request in the first column. Check the owner's instructions and the result the user authorized.
+
+| Request | Expected decision |
+|---|---|
+| "Teach me how this subsystem works and why it was built this way." | Investigation selects Teach. Explain the mechanics and distinguish the recorded history from inference. |
+| "What could this small change break downstream?" | Use Blast radius. Trace affected consumers and check the fact their safety depends on. Report missing proof. |
+| "What changed in this chat?" or "Where did I get to across last week's chats?" | Use Ketchup for the current chat and Recall for the scoped history request. Resuming a specific prior run goes through Session pickup. |
+| "Our app verification feature map is stale. Refresh it locally." | Maintain the project verifier. Check the map against source and live behavior. Report local corrections and product gaps. |
+| "Verify this change." The project has no verification skill. | Use the available tools on the matching surface. Report missing proof if the target is unavailable. Creating a reusable verifier requires its own scope. |
+| "How would durable Goal tracking work here?" | Explain Goal. A request for an explanation leaves the native lifecycle untouched. |
+
 See [PR workflow scenarios](pr-workflow-scenarios.md) for action boundaries after selection.
 
 For substantial instruction changes, review the applicable cases independently. Record the actual decisions, evidence, and gaps with the task's review artifacts. A passing structural validator establishes valid names and references, not these model decisions.

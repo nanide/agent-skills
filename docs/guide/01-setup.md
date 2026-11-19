@@ -1,6 +1,8 @@
 # Set up Nanide skills
 
-Install the collection from its source checkout using the [installation instructions](../../README.md#install-a-source-checkout). Use `--provider all` to install once for all supported providers. Select one provider explicitly when you need a project-specific target. Each provider installation links the shared skill sources into its discovery directory. See [provider adapters](../../providers/README.md) for paths. Use `--target-dir` for a project installation.
+Install the collection from its source checkout using the [installation instructions](../../README.md#install-a-source-checkout). Use `--provider all` to install once for all supported providers. Select one provider explicitly when you need a project-specific target. Each provider installation links five entry points into its discovery directory. See [provider adapters](../../providers/README.md) for paths. Use `--target-dir` for a project installation.
+
+The examples in this guide use Codex source selectors such as `$mode`, `$goal`, and `$setup`. Cursor and Claude Code source installations use `/nanide-mode`, `/nanide-goal`, and `/nanide-setup`. On any of these installs, ask mode to use a helper by name. For plugin selectors, see the [plugin guide](../plugins.md).
 
 ## Pick your models
 
@@ -12,9 +14,9 @@ Setup preserves existing overrides unless you ask to change them. Remove a role'
 
 ## Choose verification for your project
 
-Use the repository's existing verification tools first. If none can prove the changed behavior, `$create-verification-skill` can create a project skill with launch, control, evidence, and cleanup steps. It follows the repository's skill-directory convention. Personal skills use the selected [provider adapter](../../providers/README.md).
+Use the repository's existing verification tools first. If none can prove the changed behavior, `create-verification-skill` can create a project skill with launch, control, evidence, and cleanup steps. It follows the repository's skill-directory convention. Personal skills use the selected [provider adapter](../../providers/README.md).
 
-Use `$create-formal-verification-skill` when one important property needs a model checker or another verifier. The result states the model, bounds, and limitations. Neither generator changes product code or creates schedules merely because you ran setup.
+Use `create-formal-verification-skill` when one important property needs a model checker or another verifier. The result states the model, bounds, and limitations. Neither generator changes product code or creates schedules merely because you ran setup.
 
 ## Keep cost in check
 

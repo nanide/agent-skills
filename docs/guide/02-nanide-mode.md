@@ -64,12 +64,12 @@ For a noisy report, such as a long thread or a vague bug, make the restatement t
 $mode read this thread. restate the underlying issue in your own words, in plain english. don't change any code yet.
 ```
 
-A misreading shows up in the restatement, before any code exists. Correct it there, and it costs you one message instead of one wrong fix. For the restatement alone, with no playbook, run [`$in-your-own-words`](../../skills/in-your-own-words/SKILL.md). It restates what the agent thinks your goals are and what problem you're trying to solve.
+A misreading shows up in the restatement, before any code exists. Correct it there, and it costs you one message instead of one wrong fix. To request just the restatement, ask mode to use [`in-your-own-words`](../../skills/in-your-own-words/SKILL.md). It restates what the agent thinks your goals are and what problem you're trying to solve.
 
-When you're unsure whether a prompt is aimed right, run [`$sharpen`](../../skills/sharpen/SKILL.md) on it before you send it:
+When you're unsure whether a prompt is aimed right, ask mode to use [`sharpen`](../../skills/sharpen/SKILL.md) on it before you send it:
 
 ```text
-$sharpen write a migration guide for the v2 config format.
+$mode use sharpen to improve my prompt, "write a migration guide for the v2 config format."
 ```
 
 The rewrite asks for the expert approach, primary material, methods, and an outside check on the result. When an experiment could settle a choice, the prompt asks its executor to run it and recommend an option from the evidence. You keep the product decisions. Sharpen returns the prompt without running it. Read the rewrite, then send it, for example with `$mode`.
@@ -121,9 +121,9 @@ When you step away, say what done means and go:
 $mode im stepping away. keep going until the migration check reports zero old callers. log your decisions.
 ```
 
-When you step away, the agent keeps the selected playbook, saves a checkpoint, and records decisions with [`$show-me-your-work`](../../skills/show-me-your-work/SKILL.md). [Run work while you sleep](./07-overnight.md) covers the full overnight contract.
+When you step away, the agent keeps the selected playbook, saves a checkpoint, and records decisions with [`show-me-your-work`](../../skills/show-me-your-work/SKILL.md). [Run work while you sleep](./07-overnight.md) covers the full overnight contract.
 
-**Pitfall:** don't enumerate skills in your prompt ("use $how, then $architect, then $arena..."). The playbook already sequences them, and a hand-written sequence usually reorders or drops steps the playbook would have kept. Name a skill only when you want to override a specific choice.
+**Pitfall:** don't enumerate skills in your prompt ("use how, then architect, then arena..."). The playbook already sequences them, and a hand-written sequence usually reorders or drops steps the playbook would have kept. Name a skill only when you want to override a specific choice.
 
 Read [`mode`](../../skills/mode/SKILL.md) itself for the full routing rules.
 

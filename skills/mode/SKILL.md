@@ -22,6 +22,7 @@ Remaining triggers:
 
 - For an unfamiliar subsystem or unresolved architecture question, use [how](../how/SKILL.md). Reuse current evidence when it already explains the affected behavior.
 - About to ask a user-input question on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Actions outside the authorization scope still need the operator. Never apply a default as approval for such actions.
+- When reading or editing a TypeScript `.ts` or `.tsx` file, follow [TypeScript best practices](../typescript-best-practices/SKILL.md).
 - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
 - For a consequential design choice with viable alternatives, use [architect](../architect/SKILL.md) before implementing. A mechanical edit or established pattern needs no design fan-out.
 - Parallel fan-out → the [swarm](../swarm/SKILL.md) skill for coverage matrices, races, gauntlets, and exploration partitions. Use [arena](../arena/SKILL.md) for design or code bakeoffs with base selection and grafting.
@@ -31,7 +32,7 @@ Remaining triggers:
 - Docs, RFCs, readmes, PR descriptions, or commit messages → the [technical-writing](../technical-writing/SKILL.md) skill (`technical-writing`).
 - Before commit → the bundled [diff cleanup](references/diff-cleanup.md) checklist.
 - Before review → the [no-comments](../no-comments/SKILL.md) skill (`no-comments`).
-- Shipping UI / IDE / CLI → available browser, computer, or terminal tools and repository testing runbooks. Follow repository target and service-recovery approvals. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
+- For real-surface verification, first find and read the applicable project verification skill and testing runbook. Use their launcher, ownership rules, and evidence requirements. If the project has no matching verifier, use the available tools on the requested surface. Follow repository target and service-recovery approvals. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
 - Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the [benchmark-checklist](../benchmark-checklist/SKILL.md) skill before you report or act on the number.
 - PR work, including bodies, titles, creation, review, and metadata → use [Work on a PR](#work-on-a-pr) below. Read only the instructions for the requested operation. Editing PR guidance itself is skill authoring.
 - Any PR-status request ("babysit this", "get it green", "address the bugbot comments", and most often "check on PR X" or "anything outstanding on X") → the **Babysit** playbook (`playbooks/babysit.md`). Never triggered by merely opening a PR. Declare its mode before polling. The playbook's step 1 owns the request-to-mode mapping. A phase delegate returns its report without starting an unassigned monitor.
@@ -46,14 +47,14 @@ Use these routes only when Nanide is selected under [collection selection](#sele
 
 | Requested result | Instructions |
 |---|---|
-| Draft, rewrite, or review the body | [Write a PR description](references/pr-descriptions.md). Return a draft or save only as authorized. |
+| Draft, rewrite, or review the body | [Write a PR description](references/pr-descriptions.md). Return findings for review alone. Draft or save changes as requested. |
 | Draft or change only the title | [Write a PR title](references/pr-titles.md). |
 | Change labels, assignees, milestones, draft state, or similar metadata | [Change PR metadata](references/pr-metadata.md). |
 | Open a PR | [Opening a PR](playbooks/opening-a-pr.md). |
 | Review the code or diff | [Interrogate](../interrogate/SKILL.md). |
 | Audit instruction compliance | [Audit](../audit/SKILL.md). |
 
-A generic "review this PR" requests code review, not a body rewrite. For combined requests, follow each owner within the user's scope. Status and repair follow Babysit above. Landing follows Shipping above. Creating or editing a PR does not start monitoring. Repair does not authorize merging. Do not bypass Shipping because checks are green.
+A generic "review this PR" requests code review. For a request to prove what the change could break downstream, use [blast-radius](../blast-radius/SKILL.md) on the requested diff. For combined requests, follow each owner within the user's scope. Status and repair follow Babysit above. Landing follows Shipping above. Creating or editing a PR does not start monitoring. Repair does not authorize merging. Do not bypass Shipping because checks are green.
 
 Follow [Opening a PR's forge, tool, and attachment rules](playbooks/opening-a-pr.md) for PR operations. Report what changed or what you found, the evidence checked, and material gaps. Link an accessed or created PR.
 
@@ -106,7 +107,7 @@ Proceed autonomously within the user’s authorized task. System and developer i
 
 For long implementation work, create a local commit after each coherent phase is reviewed and its required checks pass. Stage only that phase, preserve unrelated changes, and follow repository branch rules. The parent coordinates commits in shared checkouts. Do not squash or amend completed phase commits without a user request. This preference authorizes local phase commits, not pushes or merges. Report each phase hash and validation result.
 
-Continue active work with bounded waits and updates. Use the host scheduling tool only for an explicit reminder, monitor, recurring run, or future continuation request. Do not promise background progress from an ordinary chat. Invoking this skill creates no automation or Goal. For long or resumable work, read [Execution state](references/execution-state.md) for durable plans, explicit Goal activation, checkpoints, process ownership, and native worktree lifecycle.
+Continue active work with bounded waits and updates. Use the host scheduling tool only for explicitly requested future or recurring work that the host supports. Watch a specific run through completion in the active session. Do not promise background progress from an ordinary chat. Invoking this skill creates no automation or Goal. For long or resumable work, read [Execution state](references/execution-state.md) for durable plans, explicit Goal activation, checkpoints, process ownership, and native worktree lifecycle.
 
 **No is an acceptable answer.** Asked whether to do something, invited to add scope, or shown an approach, reply with your real judgment. Decline, push back, or say "this doesn't earn its place" when true. A recommendation is a judgment, not a validation. Agreement is not the default, candor over sycophancy.
 
@@ -136,7 +137,7 @@ Comments follow the same rule as the reply. Write them clean as you go. Keep a c
 
 Follow [Execution state](references/execution-state.md) for durable plans and checkpoints. For multi-step work, use a plan tool when available or a concise checklist. Track the applicable playbook gates and task-specific checks without copying the full playbook. Explain skipped required gates. Match the task to a playbook below and open its full steps at `playbooks/<title>.md`, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its file. Read only the matched playbook and references needed for the current phase.
 
-Choose the playbook that covers the requested result. When the user steps away, keep that playbook, record the exit condition in the durable checkpoint, and maintain the decision trail. Use [figure-it-out](../figure-it-out/SKILL.md) when no bundled playbook fits or a cross-cutting task leaves a consequential workflow decision uncovered. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. figure-it-out designs one bespoke run, orchestrate runs the program.
+Choose the playbook that covers the requested result. When the user steps away, keep that playbook, record the exit condition in the durable checkpoint, and maintain the decision trail. For a specialist request, match the requested outcome in [Help’s intent index](../help/SKILL.md#choose-by-outcome) and open the linked owner directly. Check the index before designing a bespoke workflow with [figure-it-out](../figure-it-out/SKILL.md). Use that fallback when neither a playbook nor a specialist covers the task, or a cross-cutting task leaves a consequential workflow decision uncovered. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. figure-it-out designs one bespoke run, orchestrate runs the program.
 
 - **Investigation.** Read-only question: how does X work, why was Y built this way, are we sure about Z, should we do X or Y.
 - **Bug fix.** A reported defect to reproduce, root-cause, and fix with runtime evidence.

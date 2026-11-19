@@ -1,17 +1,19 @@
 # Skill catalog
 
-`$mode` resolves its own sibling helpers. Every helper uses its namespaced public selector. See [collection selection](installation.md#choose-a-collection-for-the-task) for explicit choices and optional repository defaults.
+The examples use Codex source selectors. Source installations expose `mode`, `goal`, `help`, `audit`, and `setup`. In Codex, start with `$mode`. In Cursor or Claude Code, use `/nanide-mode`. Mode reads the other skills from the same checkout.
 
-## skills
+Plugin installations use namespaced selectors such as `$nanide:mode` in Codex or `/nanide:mode` in Claude Code. See the [plugin guide](plugins.md) for each host and [collection selection](installation.md#choose-a-collection-for-the-task) for repository defaults.
 
-[`$mode`](../skills/mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). the table below is for when you want one directly:
+## Skills
 
-```
-$how do we cancel runs? do we have an n+1 when we look up every run to cancel?
-```
+[`$mode`](../skills/mode/SKILL.md) runs most of these for you when a step needs them (`how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `unslop`, `no-comments`, `technical-writing`, `tdd`, and the principles). To request a particular helper, name it in your prompt.
 
 ```
-$interrogate review this pr.
+$mode use how to trace run cancellation. do we have an n+1 when we look up every run to cancel?
+```
+
+```
+$mode use interrogate to review this pr.
 ```
 
 <details>
@@ -20,39 +22,40 @@ $interrogate review this pr.
 | skill | use it when |
 |---|---|
 | [`$mode`](../skills/mode/SKILL.md) | default entry point for any non-trivial task, including PR writing, creation, review, metadata, status, CI, and shipping within the requested scope. |
-| [`$help`](../skills/help/SKILL.md) | you're new to the collection, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `$help`. |
-| [`$in-your-own-words`](../skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `$in-your-own-words`. |
-| [`$sharpen`](../skills/sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt. it asks the executor to test choices an experiment can settle and leaves product preferences to you. doesn't do the task. runs only when you type `$sharpen`. |
-| [`$how`](../skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
-| [`$why`](../skills/why/SKILL.md) | you want the reason behind a decision. traces the introducing commit or PR and later revisions, then follows relevant leads when the record is thin or disputed. |
-| [`$recall`](../skills/recall/SKILL.md) | you're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
-| [`$ketchup`](../skills/ketchup/SKILL.md) | you want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
-| [`$blast-radius`](../skills/blast-radius/SKILL.md) | you have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
-| [`$architect`](../skills/architect/SKILL.md) | a consequential design choice has viable alternatives and needs the caller's usage, types, and module shape settled first. |
-| [`$arena`](../skills/arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
-| [`$swarm`](../skills/swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
+| [`$goal`](../skills/goal/SKILL.md) | start or continue a long-running task with a saved plan, completion checks, and native Goal tracking when available. |
+| [`$help`](../skills/help/SKILL.md) | you're new to the collection, or unsure which skill, playbook, or principle fits. answers questions about workflows. For an action request, it runs the appropriate skill within the requested scope. |
+| [`in-your-own-words`](../skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. ask mode to use `in-your-own-words`. |
+| [`sharpen`](../skills/sharpen/SKILL.md) | you want a prompt made deeper, not bigger, before you send it: what a top professional would do that you didn't ask for, the raw material they'd start from, their methods and tools, and an outside check that the result is right. hands back the rewritten prompt. it asks the executor to test choices an experiment can settle and leaves product preferences to you. doesn't do the task. ask mode to use `sharpen`. |
+| [`how`](../skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
+| [`why`](../skills/why/SKILL.md) | you want the reason behind a decision. traces the introducing commit or PR and later revisions, then follows relevant leads when the record is thin or disputed. |
+| [`recall`](../skills/recall/SKILL.md) | you're starting or resuming work and want your recent context on a topic rebuilt from your own chat history and the shared record, handed back as a tight current-state brief. |
+| [`ketchup`](../skills/ketchup/SKILL.md) | you want what changed in this chat since your last message, in plain words and small visuals, with every item waiting on you listed and decidable from the reply alone, even when that makes the reply long. |
+| [`blast-radius`](../skills/blast-radius/SKILL.md) | you have a small-looking change and want to know what else it could break, with the one fact it's safe because of proven by running code, not asserted. |
+| [`architect`](../skills/architect/SKILL.md) | a consequential design choice has viable alternatives and needs the caller's usage, types, and module shape settled first. |
+| [`arena`](../skills/arena/SKILL.md) | you want N parallel attempts at the same thing, then to grab the best parts of each. |
+| [`swarm`](../skills/swarm/SKILL.md) | you want N parallel workers across different slices or races, then one aggregated report. |
 | [`$audit`](../skills/audit/SKILL.md) | you want completed task changes checked against applicable skills and instructions, with corrections within the existing task authorization. |
-| [`$interrogate`](../skills/interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
-| [`$automate-me`](../skills/automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |
-| [`$make-bot-ui`](../skills/make-bot-ui/SKILL.md) | you want a dashboard for a supported, authorized automation endpoint. |
+| [`interrogate`](../skills/interrogate/SKILL.md) | you have a diff and want independent reviewers to try to break it, including a strict code-quality lens. |
+| [`automate-me`](../skills/automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |
+| [`make-bot-ui`](../skills/make-bot-ui/SKILL.md) | you want a dashboard for a supported, authorized automation endpoint. |
 | [`$setup`](../skills/setup/SKILL.md) | you want to pick which models the collection uses per role. checks supported models and updates the ignored local configuration. |
-| [`$reflect`](../skills/reflect/SKILL.md) | a long task landed and you want the recipe captured as a skill edit. |
-| [`$correct`](../skills/correct/SKILL.md) | you keep correcting agents for the same mistakes. mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and ci, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
-| [`$teach`](../skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs `$how` and `$why` and weaves one plain explanation, built up diagram by diagram. |
-| [`$tdd`](../skills/tdd/SKILL.md) | you're fixing a bug and there's a cheap local test path. write the failing test first, then the fix. |
-| [`$benchmark-checklist`](../skills/benchmark-checklist/SKILL.md) | you ran a benchmark or measured a speedup or regression. vets the number (limiter, tuning, errors, repeat runs, end-to-end relevance) before you report or act on it. |
-| [`$no-comments`](../skills/no-comments/SKILL.md) | strip comments before review; spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. |
-| [`$typescript-best-practices`](../skills/typescript-best-practices/SKILL.md) | you're reading or editing typescript. grounds the type-system-discipline principle in syntax. |
-| [`$figure-it-out`](../skills/figure-it-out/SKILL.md) | no bundled playbook fits. designs a rigorous, auditable playbook for the task. |
-| [`$show-me-your-work`](../skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
-| [`$create-verification-skill`](../skills/create-verification-skill/SKILL.md) | your project has no scripted way to prove app behavior. generates a project-local verify skill with a feature map, for any language or platform. |
-| [`$maintain-verification-skill`](../skills/maintain-verification-skill/SKILL.md) | your verify skill's feature map has drifted from the app. source wave + one live pass, at most one PR of proven corrections. |
-| [`$create-formal-verification-skill`](../skills/create-formal-verification-skill/SKILL.md) | tests can't reach the case that breaks a race, retry, state machine, parser, or unsafe code. verifies one property with the tool that fits and generates a project-local skill to recheck it on every change. |
-| [`$maintain-formal-verification-skill`](../skills/maintain-formal-verification-skill/SKILL.md) | code your formal verification covers has changed since it was last checked. updates the model, harness, or properties to match the code, reruns, and says whether each failure is drift in the verification or a bug in the code. |
-| [`$statechart`](../skills/statechart/SKILL.md) | checks a TLA+ model, draws flat, nested, or parallel Mermaid states, and reports the shortest paths to broken rules. |
-| [`$unslop`](../skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells. |
-| [`$bro`](../skills/bro/SKILL.md) | you want the last message restated in plain human language, no jargon. |
-| [`$technical-writing`](../skills/technical-writing/SKILL.md) | layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
+| [`reflect`](../skills/reflect/SKILL.md) | a long task landed and you want the recipe captured as a skill edit. |
+| [`correct`](../skills/correct/SKILL.md) | you keep correcting agents for the same mistakes. mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and ci, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
+| [`teach`](../skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs `how` and `why` and weaves one plain explanation, built up diagram by diagram. |
+| [`tdd`](../skills/tdd/SKILL.md) | you're fixing a bug and there's a cheap local test path. write the failing test first, then the fix. |
+| [`benchmark-checklist`](../skills/benchmark-checklist/SKILL.md) | you ran a benchmark or measured a speedup or regression. vets the number (limiter, tuning, errors, repeat runs, end-to-end relevance) before you report or act on it. |
+| [`no-comments`](../skills/no-comments/SKILL.md) | strip comments before review; spawns Comment Sicko, fixes accepted findings, offers encodings for claimed constraints. |
+| [`typescript-best-practices`](../skills/typescript-best-practices/SKILL.md) | you're reading or editing typescript. grounds the type-system-discipline principle in syntax. |
+| [`figure-it-out`](../skills/figure-it-out/SKILL.md) | no bundled playbook fits. designs a rigorous, auditable playbook for the task. |
+| [`show-me-your-work`](../skills/show-me-your-work/SKILL.md) | you want a reviewable decision trail. logs decisions to a tsv you can commit. |
+| [`create-verification-skill`](../skills/create-verification-skill/SKILL.md) | your project has no scripted way to prove app behavior. generates a project-local verify skill with a feature map, for any language or platform. |
+| [`maintain-verification-skill`](../skills/maintain-verification-skill/SKILL.md) | your verify skill's feature map has drifted from the app. source wave + one live pass, at most one PR of proven corrections. |
+| [`create-formal-verification-skill`](../skills/create-formal-verification-skill/SKILL.md) | tests can't reach the case that breaks a race, retry, state machine, parser, or unsafe code. verifies one property with the tool that fits and generates a project-local skill to recheck it on every change. |
+| [`maintain-formal-verification-skill`](../skills/maintain-formal-verification-skill/SKILL.md) | code your formal verification covers has changed since it was last checked. updates the model, harness, or properties to match the code, reruns, and says whether each failure is drift in the verification or a bug in the code. |
+| [`statechart`](../skills/statechart/SKILL.md) | checks a TLA+ model, draws flat, nested, or parallel Mermaid states, and reports the shortest paths to broken rules. |
+| [`unslop`](../skills/unslop/SKILL.md) | you're cleaning up writing. removes AI tells. |
+| [`bro`](../skills/bro/SKILL.md) | you want the last message restated in plain human language, no jargon. |
+| [`technical-writing`](../skills/technical-writing/SKILL.md) | layered doc standard (Diátaxis + Google developer style + STE + Global English) for docs, RFCs, readmes, PR descriptions, commit messages. |
 
 </details>
 
@@ -60,7 +63,7 @@ $interrogate review this pr.
 
 ### examples
 
-mostly i type [`$mode`](../skills/mode/SKILL.md) at the start of a task and let it route to a playbook. the other skills fire as the steps need them. a few i reach for directly.
+Start with [`$mode`](../skills/mode/SKILL.md) and the result you want. Name a helper when you want a specific workflow.
 
 
 <details>
@@ -84,22 +87,21 @@ visual parity:     $mode the row spacing is too tall when this flag is on. the s
 figure it out:     $mode i'm stepping away. migrate every caller from the synchronous store
                    to the new async one, keeping behavior identical. i want to trust it was done
                    right when i'm back.
-how:               $how do we cancel runs? do we have an n+1 when we look up every run to cancel?
-why:               $why is this feature flag not on yet?
-architect:         design this instrumentation to be high signal with no false positives. $architect
-                   this first.
-arena:             $arena take my prompt to the arena verbatim. i want to compare their proposals
+how:               $mode use how to trace run cancellation. do we have an n+1 when we look up every run to cancel?
+why:               $mode use why to find out why this feature flag is still off.
+architect:         $mode use architect to design instrumentation that avoids false positives.
+arena:             $mode use arena with my prompt verbatim. i want to compare their proposals
                    with yours.
-swarm:             $swarm check every package under packages/ against its check.sh. one worker per
+swarm:             $mode use swarm to check every package under packages/ against its check.sh. one worker per
                    package. one report.
-interrogate:       $interrogate review this pr.
-tdd:               $tdd implement
-unslop:            can we unslop and tighten the new changes?
-reflect:           $reflect that took too long. capture what we learned so the next run doesn't
+interrogate:       $mode use interrogate to review this pr.
+tdd:               $mode use tdd to implement the agreed change.
+unslop:            $mode use unslop to tighten the new prose.
+reflect:           $mode use reflect. that took too long. capture what we learned so the next run doesn't
                    repeat it.
-correct:           $correct
-show-me-your-work: $show-me-your-work keep a decision trail i can review when i'm back.
-automate-me:       $automate-me
+correct:           $mode use correct.
+show-me-your-work: $mode use show-me-your-work to keep a decision trail i can review when i'm back.
+automate-me:       $mode use automate-me.
 help:              $help which skill should i use to review this branch?
 ```
 

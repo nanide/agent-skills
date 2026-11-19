@@ -17,6 +17,24 @@ sys.modules[SPEC.name] = cli
 SPEC.loader.exec_module(cli)
 
 
+class CatalogTests(unittest.TestCase):
+    def test_catalog_tables_cover_all_public_skills(self):
+        from markdown_it import MarkdownIt
+
+        catalog = SOURCE / "docs/catalog.md"
+        tokens = MarkdownIt().enable("table").parse(catalog.read_text())
+        entries = []
+        for index, token in enumerate(tokens):
+            if token.type == "tr_open" and tokens[index + 1].type == "td_open":
+                cell = tokens[index + 2]
+                links = [child.attrGet("href") for child in cell.children if child.type == "link_open"]
+                self.assertEqual(len(links), 1, cell.content)
+                entries.append((catalog.parent / links[0]).resolve())
+
+        names = json.loads((SOURCE / "skill-names.json").read_text()).values()
+        self.assertCountEqual(entries, [SOURCE / "skills" / name / "SKILL.md" for name in names])
+
+
 class InstallerTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -625,6 +643,12 @@ class InstallerTests(unittest.TestCase):
         manifest["skills"] = "./skills"
         self.write_json(path, manifest)
         self.command("validate", success=False)
+
+    def test_local_audit_receipts_are_outside_collection_link_validation(self):
+        receipt = self.root / ".audit/run/receipt.md"
+        receipt.parent.mkdir(parents=True)
+        receipt.write_text("[Runtime evidence](gone.txt)\n")
+        self.command("validate")
 
     def test_validator_checks_anchors_and_optional_invocation_policy(self):
         path = self.root / "skills/mode/SKILL.md"

@@ -1,8 +1,8 @@
 # Codex adapter
 
-For plugin installation, follow the [plugin guide](../../docs/plugins.md).
+For plugin installation, follow the [plugin guide](../../docs/plugins.md). Select `$nanide:mode` when the plugin selector is available.
 
-For a source checkout, install with `python3 scripts/skills.py install --provider codex`. Personal discovery uses `~/.agents/skills`. Use `--target-dir /path/to/project/.agents/skills` for a project. Refresh discovery in a new session. Select `$nanide:mode` or another installed entry point. See the official [skills documentation](https://developers.openai.com/codex/skills/).
+For a source checkout, install with `python3 scripts/skills.py install --provider codex`. Personal discovery uses `~/.agents/skills`. Use `--target-dir /path/to/project/.agents/skills` for a project. Refresh discovery in a new session. Select `$mode` or another installed entry point. Ask for helpers by name, for example `$mode use how to trace a retry`. See the official [skills documentation](https://developers.openai.com/codex/skills/).
 
 Provider-specific UI and invocation metadata lives under `skills/` in this folder. Conventional `agents/openai.yaml` entries in the shared skills link to it. Preserve these policies when editing instructions.
 

@@ -237,7 +237,11 @@ def markdown_links(root: Path):
     except ImportError as error:
         raise Invalid("Install the declared dependencies with python3 -m pip install -r requirements.txt") from error
     parser = MarkdownIt()
-    documents = [p for p in root.rglob("*.md") if not any(part in {"node_modules", ".git", ".venv", ".pstack"} for part in p.relative_to(root).parts)]
+    documents = [
+        path for path in root.rglob("*.md")
+        if not path.is_relative_to(root / ".audit")
+        and not any(part in {"node_modules", ".git", ".venv", ".pstack"} for part in path.relative_to(root).parts)
+    ]
     parsed = {p: parser.parse(p.read_text()) for p in documents}
     errors = []
     for path, tokens in parsed.items():

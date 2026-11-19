@@ -5,7 +5,7 @@ description: TypeScript best practices. Use when reading or editing any .ts or .
 
 # TypeScript best practices
 
-Apply the **principle-type-system-discipline** principle skill first.
+Apply [Type System Discipline](../principle-type-system-discipline/SKILL.md) first.
 
 | Rule | Summary |
 |------|---------|
