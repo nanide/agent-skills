@@ -24,7 +24,7 @@ A team administrator can import this repository once for the team.
 1. Open **Dashboard > Plugins & MCPs > Team Marketplaces**.
 2. Select **Add Marketplace**, then **Import from Repo**.
 3. Enter `https://github.com/nanide/agent-skills` and grant repository access when prompted.
-4. Review the plugin and set the marketplace's access policy.
+4. Select **Add to Marketplace** and review Nanide. Under **Marketplace Settings**, set **Marketplace Access** and save. To give teammates access through Cursor when they lack GitHub repository access, enable **Serve marketplace from Cursor** and wait for the initial sync.
 
 Teammates open **Customize**, find the plugin, and select **Install**. Cursor accepts the portable root `plugin.json`. Team marketplaces require a supported Teams or Enterprise plan. See [Cursor plugin installation](https://cursor.com/docs/plugins).
 

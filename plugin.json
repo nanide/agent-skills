@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "nanide",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Shared skills for investigating, implementing, reviewing, and verifying engineering work.",
   "repository": "https://github.com/nanide/agent-skills",
   "license": "MIT",

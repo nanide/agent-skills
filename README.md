@@ -1,14 +1,66 @@
 # Nanide
 
-Nanide is an independently maintained fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack), with credit to Lauren Tan and the upstream contributors.
-
-Provider-neutral skills for investigating, implementing, reviewing, and verifying engineering work. Use `mode` to route a task through the collection's playbooks, or request a named helper through that mode. The source checkout is the editable installation. A detached checkout or extracted Git archive is a stable installation.
+Nanide adds engineering workflows to Cursor, Codex, and Claude Code. Use it to trace unfamiliar code, investigate a bug, or review a change. Nanide is an independently maintained fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack).
 
 ## Install as a plugin
 
-Teammates can install Nanide through their provider's plugin tools. Follow the [plugin installation guide](docs/plugins.md) for Codex, Cursor, or Claude Code. The package includes the complete skill collection and its dependencies. No Python setup or manual source checkout is needed for plugin installation.
+Choose your client. The plugin manager handles the download. While this repository is private, you need repository access or a plugin distributed by your team.
 
-The repository includes marketplace catalogs and a build command for an uploadable ZIP. These files do not create a public directory listing. A maintainer must publish or share the plugin before teammates can discover it.
+### Cursor
+
+A team admin opens **Dashboard → Plugins & MCPs → Team Marketplaces → Add Marketplace → Import from Repo**, enters `https://github.com/nanide/agent-skills`, and connects GitHub if prompted. The admin adds Nanide with **Add to Marketplace**, sets **Marketplace Access** under **Marketplace Settings**, and saves. Teammates can then open **Customize**, find **Nanide**, and select **Install**.
+
+### Codex
+
+Run in your terminal:
+
+```sh
+codex plugin marketplace add nanide/agent-skills
+codex plugin add nanide@nanide
+```
+
+### Claude Code
+
+Run in your terminal:
+
+```sh
+claude plugin install nanide --marketplace nanide/agent-skills
+```
+
+### Try it in your project
+
+Open a fresh agent session in your project and ask:
+
+> Use Nanide to explain how this project starts and where its tests live.
+
+Look for an answer that points to files in your project. See the [plugin guide](docs/plugins.md) for team distribution, upgrades, and alternative installation commands.
+
+## Use the skills
+
+Start with **Nanide mode**. Tell it what you want to learn or change. Mode chooses the matching helper, so you can start a plan, ask why the code works a certain way, or investigate a bug from the same chat.
+
+The examples below use `nanide-mode` and `nanide-goal` as shorthand for the two skills. In Codex, select `$nanide:mode` or `$nanide:goal`. In Claude Code, use `/nanide:mode` or `/nanide:goal`. In Cursor, select the installed Nanide skill or ask for “Nanide mode” or “Nanide goal” by name.
+
+Pick a starting question for your project:
+
+```text
+nanide-mode create a plan to make invoice retries safe. Include a test that retries the same invoice twice.
+nanide-mode why does the invoice worker acknowledge a job before saving its result?
+nanide-mode investigate why retrying a failed invoice sometimes creates a second charge. Trace one retry and draft a fix plan.
+```
+
+Once you have a plan, choose how to run it:
+
+- `nanide-mode implement the plan` works through the agreed change and verifies the result in the current chat.
+- `nanide-goal implement the plan` starts a longer-running task. Goal saves the plan and checkpoints each verified step. If the conversation context is compacted one or more times, the agent can pick up from the saved checkpoint. Hosts with native Goal tracking also show the task's lifecycle status.
+
+You can change a plan while it runs. In the same chat, ask:
+
+```text
+nanide-mode update the plan to cover retries after a worker restart. Add that test before changing the worker, then continue.
+```
+
+Goal updates the existing plan, keeps the evidence for completed steps, and continues with the revised work. See the [skill catalog](docs/catalog.md) for other helpers and the [workflow guide](docs/guide/README.md) for more examples.
 
 ## Install a source checkout
 
@@ -37,19 +89,7 @@ For just one provider, replace `all` with `codex`, `cursor`, or `claude`. Use a 
 
 The installer checks for conflicting skill names and unmanaged destination paths. See [installation and recovery](docs/installation.md) for collision rules, migration, and recovery.
 
-## Use the skills
-
-Select Nanide mode, [`mode`](skills/mode/SKILL.md) with a task and a check that can pass or fail:
-
-```text
-Use Nanide mode to investigate why retries create duplicate records. reproduce, fix, and verify.
-```
-
-Plugin skills use short names such as `nanide:mode`, `nanide:help`, and `nanide:setup`. Codex source installations link directly to the short-named skills. Cursor and Claude source installations expose prefixed commands such as `/nanide-mode` and `/nanide-help`. These entry points read the same canonical workflows. The canonical `mode` skill resolves helpers such as `how` and `audit` from its own directory and reads this checkout's model configuration. Provider installations expose only the [main entry points](providers/README.md#autocomplete-entry-points) in discovery. Ask `mode` to use other helpers by name. Setup uses `setup` in Codex and `/nanide-setup` in Cursor and Claude source installations. Short helper names identify local files, not standalone catalog selectors. See [collection selection](docs/installation.md#choose-a-collection-for-the-task) for task choices and optional repository defaults.
-
-Use [`mode`](skills/mode/SKILL.md#work-on-a-pr) for PR writing, creation, review, metadata, status, CI, or shipping within the requested scope. The former `nanide-pr` and `nanide-pr-description` selectors are removed without aliases. Their writing instructions live in mode references.
-
-The [skill catalog](docs/catalog.md) and [workflow guide](docs/guide/README.md) describe the available skills and playbooks.
+For source installations, Codex exposes `$mode` and `$goal`. Cursor and Claude Code expose `/nanide-mode` and `/nanide-goal`. See the [provider entry points](providers/README.md#autocomplete-entry-points) for the full list.
 
 ## Configure model roles
 
