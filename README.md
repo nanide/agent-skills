@@ -1,6 +1,8 @@
 # Nanide
 
-Nanide adds engineering workflows to Cursor, Codex, and Claude Code. Use it to trace unfamiliar code, investigate a bug, or review a change. Nanide is an independently maintained fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack).
+This collection derives from [pstack in cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack). Its skills, engineering principles, playbooks, and supporting tools provided the foundation for Nanide. Thank you to Lauren Tan and the upstream contributors for that work.
+
+Nanide adds engineering workflows to Cursor, Codex, and Claude Code. Use it to trace unfamiliar code, investigate a bug, or review a change.
 
 ## Install as a plugin
 
@@ -167,8 +169,6 @@ Distributed copies must include the [MIT license](LICENSE) and its attribution.
 Shared skills contain workflow decisions. [Provider adapters](providers/README.md) contain host-specific behavior and metadata. The [review notes](docs/provider-neutral-review.md) explain the changes and validation limits.
 
 ## Upstream attribution
-
-This collection derives from [pstack in cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack). Its skills, engineering principles, playbooks, and supporting tools provided the foundation for Nanide. Thank you to Lauren Tan and the upstream contributors for that work.
 
 Nanide adds its own skill namespace, provider-neutral workflows, provider adapters, a shared global installer, and changes to delegation and verification. Borys maintains this fork independently of upstream.
 
