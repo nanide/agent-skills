@@ -1,13 +1,13 @@
 ---
 name: figure-it-out
-description: "Design an auditable playbook when no narrower one fits: a large migration, an ambitious multi-part change, or work a human reviews after stepping away. Scales rigor to the task, runs a hypothesis loop, and logs decisions. Use for figure-it-out or 'figure it out'."
+description: "Design an auditable playbook when existing playbooks leave a consequential workflow decision uncovered, such as how to sequence a cross-system migration. Scales rigor to the task, runs a hypothesis loop, and logs decisions. Use for figure-it-out or 'figure it out'."
 ---
 
 # Figure it out
 
 Follow the user's authorized scope and repository runbooks. This workflow does not authorize unrelated repairs, external messages, publishing, merging, or schedules. Preserve existing test-target and service-recovery approval gates; report unavailable required proof as blocked.
 
-When the task matches no playbook, design one. The deliverable before any code is the workflow itself: a sequence of phases that scales rigor to the task, runs the scientific method, and leaves a decision trail a human can audit after stepping away.
+When no playbook fits or the available playbooks leave a consequential workflow decision uncovered, design a workflow for the task. The deliverable before any code is the workflow itself: a sequence of phases that scales rigor to the task, runs the scientific method, and leaves a decision trail a human can audit after stepping away.
 
 ## Start
 

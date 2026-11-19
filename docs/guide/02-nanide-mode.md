@@ -16,7 +16,7 @@ flowchart TD
     D -->|New behavior| G[Feature]
     D -->|Structure only| H[Refactoring]
     D -->|Measured slowness| I[Perf issue]
-    D -->|Large work or no match| J[figure-it-out]
+    D -->|Uncovered workflow decision| J[figure-it-out]
     E --> K[Verify and report]
     F --> K
     G --> K
@@ -121,7 +121,7 @@ When you step away, say what done means and go:
 $mode im stepping away. keep going until the migration check reports zero old callers. log your decisions.
 ```
 
-Work you'll review later routes through [`$figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases and keeps a [`$show-me-your-work`](../../skills/show-me-your-work/SKILL.md) decision log. [Run work while you sleep](./07-overnight.md) covers the full overnight contract.
+When you step away, the agent keeps the selected playbook, saves a checkpoint, and records decisions with [`$show-me-your-work`](../../skills/show-me-your-work/SKILL.md). [Run work while you sleep](./07-overnight.md) covers the full overnight contract.
 
 **Pitfall:** don't enumerate skills in your prompt ("use $how, then $architect, then $arena..."). The playbook already sequences them, and a hand-written sequence usually reorders or drops steps the playbook would have kept. Name a skill only when you want to override a specific choice.
 

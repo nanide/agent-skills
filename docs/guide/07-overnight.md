@@ -35,7 +35,7 @@ Walk through what each line buys you:
 - An active chat can continue working within its execution limits. A request to wake later or monitor progress uses the selected provider's available scheduling tool. The [Autonomous run playbook](../../skills/mode/playbooks/autonomous-run.md) distinguishes those cases.
 - The escape hatch lets it stop at a genuine dead end and write up why, which beats eight hours of creative goal reinterpretation.
 
-Because you'll review this work after stepping away, `$mode` routes it through [`$figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
+When you step away, `$mode` keeps the task playbook and records the exit condition, checkpoint, and decision trail. If the migration leaves a consequential workflow decision open, [`$figure-it-out`](../../skills/figure-it-out/SKILL.md) designs the missing phases.
 
 To stop a run on purpose, tell the agent to pause, with an explicit pause request. The [Pause safely playbook](../../skills/mode/playbooks/pause-safely.md) finishes or backs out of the current step, commits a work-in-progress checkpoint, and writes a resume note. A fresh chat picks the work up from that note through the Session pickup playbook. Saying "keep going" never triggers a pause.
 

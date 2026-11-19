@@ -2,7 +2,7 @@
 
 **You own the contract. The structure changes. The behavior does not.** Distinct from Feature, which adds behavior, and Bug fix, which corrects it.
 
-If the cleanup reveals a missing feature or a real bug, split it out and ship the structural change first against the pinned contract. A redesign is allowed, but name it and route to Feature. Large or cross-cutting structural work belongs to the [figure-it-out](../../figure-it-out/SKILL.md) skill. This playbook is the focused-to-medium change.
+If the cleanup reveals a missing feature or a real bug, split it out and ship the structural change first against the pinned contract. A redesign is allowed, but name it and route to Feature. For cross-cutting work, use [figure-it-out](../../figure-it-out/SKILL.md) when this playbook leaves a consequential workflow decision uncovered.
 
 1. Pin the behavior contract first. Use current source and existing behavioral checks to establish the contract. Run [how](../../how/SKILL.md) when that contract is unclear. Add a characterization test, snapshot, or equivalence check when existing proof does not cover the behavior being moved. If the area has no coverage, write the pin before touching structure. Type check and lint are not a pin.
 2. Name the structure the code is missing per **principle-model-the-domain**. Boring code stays when the shape is already clear and local. The reshape must delete branches or invalid states, not add indirection.
