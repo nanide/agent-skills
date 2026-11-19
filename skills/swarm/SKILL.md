@@ -34,7 +34,7 @@ If a worker drops out, proceed with N-1 and note it.
 
 ## Phase C: Aggregate
 
-Read the terminal results. Drop a result that does not record the SHAs and method its brief names, and respawn that worker once. After a second miss, record a gap. A gap does not count as a pass. For coverage, every required slice needs a result. For a race, apply the selection rule declared up front. Use first pass, rank all, or best-of. Do not paste raw worker dumps.
+Read the terminal results. If a receipt omits a required SHA or measurement method, give the original worker one chance to supply it from the run records while its investigation is still available. If a replacement is needed, use [Delegation](../mode/references/delegation.md#choose-whether-to-resume-a-delegate) for the handoff within the same retry limit. Accept the receipt only when the evidence supports the required details. Otherwise record a gap. A gap does not count as a pass. For coverage, every required slice needs a result. For a race, apply the selection rule declared up front. Use first pass, rank all, or best-of. Do not paste raw worker dumps.
 
 ## Phase D: Report
 

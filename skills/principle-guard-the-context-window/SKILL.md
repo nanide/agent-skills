@@ -1,6 +1,6 @@
 ---
 name: principle-guard-the-context-window
-description: "Apply when context is filling up: large outputs, long files, repeated reads, fan-out planning. Route bulk to subagents; keep summaries in the main thread, not raw payloads."
+description: "Use when handling large outputs, planning fan-out, or choosing delegate history. Delegate bulk reading, keep summaries in the main thread, and limit delegate history to the assignment."
 ---
 
 # Guard the Context Window
