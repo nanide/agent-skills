@@ -44,7 +44,7 @@ For structural checks, follow each changed concept through its name, owning modu
 
 Inspect actual commands, configuration, and execution order behind documentation claims. Check that prerequisites and required approvals precede dependent actions. Structural validation and reviewer agreement do not prove operational correctness.
 
-Reuse existing review and verification only when their scope and artifact state cover the current work. Use [interrogate](../interrogate/SKILL.md) for required independent review. Include the applicable requirements and preservation concerns in its brief. Use [swarm](../swarm/SKILL.md) for delegated verification when useful or required. Repository verification skills own commands, target approvals, and shared resources. Do not create a second review panel or test run merely because this skill was invoked.
+Reuse existing review and verification only when their scope and artifact state cover the current work. When independent review is required, open [interrogate](../interrogate/SKILL.md) and follow its review procedure. Include the applicable requirements and preservation concerns in its brief. When delegated verification is useful or required, open [swarm](../swarm/SKILL.md) and follow its verification procedure. Repository verification skills own commands, target approvals, and shared resources. Do not create a second review panel or test run merely because this skill was invoked.
 
 ## Audit changed skills and documentation
 

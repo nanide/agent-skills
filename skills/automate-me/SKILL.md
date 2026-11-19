@@ -7,7 +7,7 @@ description: "Use for \"automate me\", \"create/update/refresh my -mode skill\",
 
 A guided flow for turning the user's working conventions into a skill agents will follow. The output is one `-mode` skill tailored to them (e.g. `jay-mode`, `priya-mode`).
 
-This workflow combines the inline mining pass in step 1, [Authoring a skill](../mode/playbooks/authoring-a-skill.md), and the bundled **unslop** skill.
+This workflow combines the inline mining pass in step 1, [Authoring a skill](../mode/playbooks/authoring-a-skill.md), and the bundled [unslop](../unslop/SKILL.md) skill.
 
 Follow [Delegation](../mode/references/delegation.md) for the active provider’s role configuration.
 
@@ -61,7 +61,7 @@ Group the combined signals into sections. Common ones (use only what applies):
 - **Process**: git worktrees, commits, PRs, review/merge tooling.
 - **Skills**: skill-authoring habits, fix-the-skill-first, proposing new skills.
 
-The **mode** skill shows the shape. Read it for granularity. Don't copy its content. The user's rules are not the same as mode's.
+The [mode](../mode/SKILL.md) skill shows the shape. Read it for granularity. Don't copy its content. The user's rules are not the same as mode's.
 
 ### 4. Draft the skill
 
@@ -75,7 +75,7 @@ Follow [Authoring a skill](../mode/playbooks/authoring-a-skill.md) to author the
 
 ### 5. Iterate on prose
 
-Apply the bundled **unslop** skill and authoring playbook to every line.
+Apply the bundled [unslop](../unslop/SKILL.md) skill and authoring playbook to every line.
 
 Show the draft to the user and take feedback. Expect multiple iterations. Cut ruthlessly. A mode skill is not a manual.
 

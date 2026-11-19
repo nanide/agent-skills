@@ -6,7 +6,7 @@ description: Engineering workflow for concise, detailed responses, deliberate su
 
 # Nanide mode
 
-Resolve this file through symlinks first. Resolve every named helper and principle leaf at `../<public-id>/SKILL.md` from its real directory before looking up a catalog name. Use the public IDs in `../../skill-names.json`. The registry records source IDs for provenance and validation, not callable aliases. Short helper names in these instructions identify local sibling files, not bare catalog invocations. Pass this file's resolved absolute path to every delegate, including nested delegates, so each uses this collection's siblings. If a selected helper is missing, report the limitation and continue independent authorized work. Do not silently substitute another collection's helper.
+Resolve this file through symlinks. When a step calls a bundled helper, open its linked SKILL.md and follow its procedure. For a bare public ID, open `../<public-id>/SKILL.md` from this file's real directory. Open the file even when the catalog omits the helper. Use public IDs from `../../skill-names.json`. Source IDs record provenance. Use the helper from the selected collection even when another collection exposes the same name. Pass this file's resolved absolute path to every delegate, including nested delegates. If the read fails, report the attempted path and error. If the file opens but a required tool is unavailable, follow the helper's fallback and record the missing capability. Continue independent authorized work and leave any unmet requirement open.
 
 ## Select a collection for the task
 
@@ -20,25 +20,25 @@ The Principles section below grounds every trigger. In your reply, name each pri
 
 Remaining triggers:
 
-- For an unfamiliar subsystem or unresolved architecture question, use **how**. Reuse current evidence when it already explains the affected behavior.
+- For an unfamiliar subsystem or unresolved architecture question, use [how](../how/SKILL.md). Reuse current evidence when it already explains the affected behavior.
 - About to ask a user-input question on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Actions outside the authorization scope still need the operator. Never apply a default as approval for such actions.
 - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
-- For a consequential design choice with viable alternatives, use **architect** before implementing. A mechanical edit or established pattern needs no design fan-out.
-- Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
-- Contested design → the **interrogate** skill (independent adversarial review) before shipping.
+- For a consequential design choice with viable alternatives, use [architect](../architect/SKILL.md) before implementing. A mechanical edit or established pattern needs no design fan-out.
+- Parallel fan-out → the [swarm](../swarm/SKILL.md) skill for coverage matrices, races, gauntlets, and exploration partitions. Use [arena](../arena/SKILL.md) for design or code bakeoffs with base selection and grafting.
+- Contested design → the [interrogate](../interrogate/SKILL.md) skill (independent adversarial review) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
-- Write replies per **Writing the reply**. Use **unslop** for a prose review when needed. Agent-facing prose follows the bundled [authoring playbook](playbooks/authoring-a-skill.md).
-- Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`technical-writing`).
+- Write replies per **Writing the reply**. Use [unslop](../unslop/SKILL.md) for a prose review when needed. Agent-facing prose follows the bundled [authoring playbook](playbooks/authoring-a-skill.md).
+- Docs, RFCs, readmes, PR descriptions, or commit messages → the [technical-writing](../technical-writing/SKILL.md) skill (`technical-writing`).
 - Before commit → the bundled [diff cleanup](references/diff-cleanup.md) checklist.
-- Before review → the **no-comments** skill (`no-comments`).
+- Before review → the [no-comments](../no-comments/SKILL.md) skill (`no-comments`).
 - Shipping UI / IDE / CLI → available browser, computer, or terminal tools and repository testing runbooks. Follow repository target and service-recovery approvals. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
-- Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **benchmark-checklist** skill before you report or act on the number.
+- Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the [benchmark-checklist](../benchmark-checklist/SKILL.md) skill before you report or act on the number.
 - PR work, including bodies, titles, creation, review, and metadata → use [Work on a PR](#work-on-a-pr) below. Read only the instructions for the requested operation. Editing PR guidance itself is skill authoring.
 - Any PR-status request ("babysit this", "get it green", "address the bugbot comments", and most often "check on PR X" or "anything outstanding on X") → the **Babysit** playbook (`playbooks/babysit.md`). Never triggered by merely opening a PR. Declare its mode before polling. The playbook's step 1 owns the request-to-mode mapping. A phase delegate returns its report without starting an unassigned monitor.
 - Asked to land or ship a green stack → the **Shipping** playbook (`playbooks/shipping.md`). Green is not safe. Nothing gets armed before an independent per-PR verdict, and only the contiguous verified run from the root lands.
 - Bugbot or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`.
 - Broken skill mid-task → report the concrete limitation and continue independent authorized work. Modify the skill only within the requested scope.
-- Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "continue until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
+- Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "continue until X") → a decision trail via the [show-me-your-work](../show-me-your-work/SKILL.md) skill. Commit it when stakes need an auditable record. Keep it local otherwise.
 
 ## Work on a PR
 
@@ -136,7 +136,7 @@ Comments follow the same rule as the reply. Write them clean as you go. Keep a c
 
 Follow [Execution state](references/execution-state.md) for durable plans and checkpoints. For multi-step work, use a plan tool when available or a concise checklist. Track the applicable playbook gates and task-specific checks without copying the full playbook. Explain skipped required gates. Match the task to a playbook below and open its full steps at `playbooks/<title>.md`, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its file. Read only the matched playbook and references needed for the current phase.
 
-A large or cross-cutting effort (a migration across many call sites, an ambitious multi-part change), or work the user steps away from to trust later, routes to the **figure-it-out** skill even when a narrower playbook like Feature fits. Use **figure-it-out** whenever no bundled playbook fits. It designs a bespoke, rigorous playbook for the task. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. figure-it-out designs one bespoke run, orchestrate runs the program.
+A large or cross-cutting effort (a migration across many call sites, an ambitious multi-part change), or work the user steps away from to trust later, routes to the [figure-it-out](../figure-it-out/SKILL.md) skill even when a narrower playbook like Feature fits. Use [figure-it-out](../figure-it-out/SKILL.md) whenever no bundled playbook fits. It designs a bespoke, rigorous playbook for the task. A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. figure-it-out designs one bespoke run, orchestrate runs the program.
 
 - **Investigation.** Read-only question: how does X work, why was Y built this way, are we sure about Z, should we do X or Y.
 - **Bug fix.** A reported defect to reproduce, root-cause, and fix with runtime evidence.

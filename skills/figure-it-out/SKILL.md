@@ -28,7 +28,7 @@ Present the framing and tradeoffs before committing to a long run. Reversible wo
 Decompose into atomic, independently-landable units. Sequence riskiest-unknown-first. Scaffold and verification come before features (the **principle-foundational-thinking** principle skill).
 
 - Build the verification harness before the work, with the baseline captured from the pre-change state, so the check reads as "old value vs new value".
-- For one-way-door design decisions, run the **architect** skill (it runs **arena**). Skip it for mechanical work whose shape is already concrete. A second arena over a settled design is over-engineering (the **principle-laziness-protocol** principle skill).
+- For one-way-door design decisions, run the [architect](../architect/SKILL.md) skill (it runs [arena](../arena/SKILL.md)). Skip it for mechanical work whose shape is already concrete. A second arena over a settled design is over-engineering (the **principle-laziness-protocol** principle skill).
 - Decide what fans out. Parallelize only across seams, and give each worker its own worktree or branch (the **principle-separate-before-serializing-shared-state** principle skill). Don't over-fan. Use the supported configured role models and reasoning settings described in mode. Inherit the parent by default and queue work within available slots.
 - Write the designed phase list down. That list is what the human reviews.
 
@@ -44,7 +44,7 @@ Each unit is an experiment. State the hypothesis, make the smallest change, meas
 
 ## Phase D: Keep the audit trail
 
-Log the run via the **show-me-your-work** skill. figure-it-out's work is usually ambitious enough to commit the trail so the reviewer can read it in the PR. The trail plus the diff is what lets the human come back and trust the work.
+Log the run via the [show-me-your-work](../show-me-your-work/SKILL.md) skill. figure-it-out's work is usually ambitious enough to commit the trail so the reviewer can read it in the PR. The trail plus the diff is what lets the human come back and trust the work.
 
 ## Phase E: Verify and hand back
 

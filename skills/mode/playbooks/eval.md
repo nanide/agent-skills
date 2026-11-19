@@ -17,8 +17,8 @@
 1. **Frame.** State what variant is under test and what behavior counts as success. Write the rubric (3-6 concrete criteria) for the judge only. Hold it back from candidates.
 2. **Set up sanitized environments.** Per-candidate working dir with the variant in place. Plant any context an organic task would have: a project skeleton, the skills the candidate would naturally read.
 3. **Author one organic prompt.** What a user would type. No leakage of what's being measured.
-4. **Spawn N parallel candidates** with configured models per the **arena** skill's Phase B. Each works in its own sanitized dir. Same prompt to each. Apply the model policy in the Subagents section. Omit model and reasoning overrides unless configured and supported.
-5. **Spawn one blinded judge** with independent context per the **arena** skill's Phase C. Judge sees outputs by sanitized label and the rubric, never a model name.
+4. **Spawn N parallel candidates** with configured models per the [arena](../../arena/SKILL.md) skill's Phase B. Each works in its own sanitized dir. Same prompt to each. Apply the model policy in the Subagents section. Omit model and reasoning overrides unless configured and supported.
+5. **Spawn one blinded judge** with independent context per the [arena](../../arena/SKILL.md) skill's Phase C. Judge sees outputs by sanitized label and the rubric, never a model name.
 6. **Verify the chain from available execution evidence.** Inspect tool results exposed in this run and authorized current chat reads scoped to this evaluation. Chat summaries are not full transcripts and do not establish every file read. Grade code behavior independently and mark missing tool-level evidence as unavailable. Never infer a transcript filesystem path or scan unrelated chats.
 7. **Read every candidate output yourself** end to end. Compare to the judge's verdict. Disagreement means a model is biased or the rubric is ambiguous. Synthesize.
 
