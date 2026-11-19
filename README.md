@@ -4,11 +4,15 @@ Nanide adds engineering workflows to Cursor, Codex, and Claude Code. Use it to t
 
 ## Install as a plugin
 
-Choose your client. The plugin manager handles the download. While this repository is private, you need repository access or a plugin distributed by your team.
+Choose your client. While this repository is private, use a GitHub account that can read it. For Codex and Claude Code, Git must be able to authenticate from your terminal.
 
 ### Cursor
 
-A team admin opens **Dashboard → Plugins & MCPs → Team Marketplaces → Add Marketplace → Import from Repo**, enters `https://github.com/nanide/agent-skills`, and connects GitHub if prompted. The admin adds Nanide with **Add to Marketplace**, sets **Marketplace Access** under **Marketplace Settings**, and saves. Teammates can then open **Customize**, find **Nanide**, and select **Install**.
+1. Open the [Nanide repository](https://github.com/nanide/agent-skills) on GitHub. On `main`, select **Code → Download ZIP** and extract the archive.
+2. Create `~/.cursor/plugins/local/nanide/` in your home directory and copy the contents of the extracted folder into it. Check that `plugin.json` is directly inside `nanide/`.
+3. In Cursor, run **Developer: Reload Window** from the command palette. Open **Customize** and check that the Nanide skills are available.
+
+This installs Nanide for your user account. Managed installations must allow [local plugin imports](https://cursor.com/docs/plugins#test-plugins-locally).
 
 ### Codex
 
@@ -60,7 +64,17 @@ You can change a plan while it runs. In the same chat, ask:
 nanide-mode update the plan to cover retries after a worker restart. Add that test before changing the worker, then continue.
 ```
 
-Goal updates the existing plan, keeps the evidence for completed steps, and continues with the revised work. See the [skill catalog](docs/catalog.md) for other helpers and the [workflow guide](docs/guide/README.md) for more examples.
+Goal updates the existing plan, keeps the evidence for completed steps, and continues with the revised work.
+
+### Audit the branch before review
+
+```text
+nanide-audit check changes in this branch
+```
+
+Select `$nanide:audit` in Codex, `/nanide:audit` in Claude Code, or ask for “Nanide audit” in Cursor. Audit compares the changes since the branch split from its base, including relevant uncommitted work, with the task requirements and repository instructions. For the invoice example, it would check whether the restart test actually exercises the retry path and whether its assertions catch a second charge. It reports confirmed defects, the evidence for each finding, and gaps that still need verification. A standalone audit is read-only. During an authorized implementation task, it can also correct findings within that scope.
+
+See the [skill catalog](docs/catalog.md) for other helpers and the [workflow guide](docs/guide/README.md) for more examples.
 
 ## Install a source checkout
 

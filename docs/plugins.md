@@ -19,6 +19,10 @@ Start a fresh session. Ask Codex to use Nanide to explain your project. Use the 
 
 ## Install in Cursor
 
+For a personal installation, follow the [Cursor steps in the README](../README.md#cursor). To update the local plugin, replace its files with the contents of a fresh ZIP and reload the window. Back up any personal configuration stored in the plugin folder first.
+
+### Distribute through a Cursor team marketplace
+
 A team administrator can import this repository once for the team.
 
 1. Open **Dashboard > Plugins & MCPs > Team Marketplaces**.
